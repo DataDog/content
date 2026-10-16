@@ -16,6 +16,7 @@ severity: medium
 
 identifiers:
     cce@rhel8: CCE-89997-1
+    cce@rhel9: CCE-90382-3
     cce@rhel10: CCE-86733-3
 
 ocil_clause: 'Usage of use_authtok for pam_unix.so is required'
