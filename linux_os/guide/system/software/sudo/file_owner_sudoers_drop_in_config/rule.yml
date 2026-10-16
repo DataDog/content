@@ -1,0 +1,33 @@
+documentation_complete: true
+
+title: 'Verify User Who Owns the sudo Configuration Snippets'
+
+description: |-
+    {{{ describe_files_in_directory_owner(directory="/etc/sudoers.d", owner="root") }}}
+
+rationale: |-
+    sudo reads every snippet in /etc/sudoers.d as part of its policy. Owning
+    them by root ensures exclusive control of the sudo configuration.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-89411-3
+    cce@rhel9: CCE-89412-1
+    cce@rhel10: CCE-89413-9
+
+ocil_clause: '{{{ ocil_clause_files_in_directory_owner(directory="/etc/sudoers.d", owner="root") }}}'
+
+ocil: |-
+    {{{ ocil_files_in_directory_owner(directory="/etc/sudoers.d", owner="root") }}}
+
+fixtext: '{{{ fixtext_files_in_directory_owner(directory="/etc/sudoers.d", owner="root") }}}'
+
+platform: package[sudo]
+
+template:
+    name: file_owner
+    vars:
+        filepath: /etc/sudoers.d/
+        file_regex: '^.*$'
+        uid_or_name: '0'
