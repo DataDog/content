@@ -1499,12 +1499,23 @@ fi
 {{%- endmacro %}}
 
 
-{{%- macro bash_sudo_remove_config(parameter, pattern) -%}}
+{{#
+    Comment out the lines of the sudoers files that match a pattern.
+
+:param parameter: The parameter to remove
+:type parameter: str
+:param pattern: The pattern to remove
+:type pattern: str
+:param prefix: The pattern of the text that precedes it on the line, by default any text that ends in a delimiter
+:type prefix: str
+
+#}}
+{{%- macro bash_sudo_remove_config(parameter, pattern, prefix=".*[\\s,=):]") -%}}
 for f in /etc/sudoers /etc/sudoers.d/* ; do
   if [ ! -e "$f" ] ; then
     continue
   fi
-  matching_lines=$(grep -nP '^(?!#).*[\s,=):]{{{ pattern }}}.*$' "$f" | cut -d: -f1)
+  matching_lines=$(grep -nP '^(?!#){{{ prefix }}}{{{ pattern }}}.*$' "$f" | cut -d: -f1)
   if ! test -z "$matching_lines"; then
     for line_number in $matching_lines; do
       # comment out "{{{ parameter }}}" matches to preserve user data
