@@ -1,7 +1,7 @@
 documentation_complete: true
 
 metadata:
-    version: 2.0.0
+    version: 3.0.0
     SMEs:
         - sej7278
 
@@ -12,7 +12,7 @@ title: 'CIS AlmaLinux OS 9 Benchmark for Level 2 - Workstation'
 description: |-
     This profile defines a baseline that aligns to the "Level 2 - Workstation"
     configuration from the Center for Internet Security® AlmaLinux OS 9 
-    Linux 9 Benchmark™, v2.0.0, released 2024-06-20.
+    Benchmark™, v3.0.0, released 2026-08-28.
 
     This profile includes Center for Internet Security®
     AlmaLinux OS 9 CIS Benchmarks™ content.
