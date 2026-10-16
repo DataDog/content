@@ -1,0 +1,48 @@
+documentation_complete: true
+
+title: 'Do Not Disable Wayland in GDM'
+
+{{% if 'ubuntu' in product %}}
+{{% set gdm_conf_path = '/etc/gdm3/custom.conf' %}}
+{{% elif 'debian' in product %}}
+{{% set gdm_conf_path = '/etc/gdm3/daemon.conf' %}}
+{{% else %}}
+{{% set gdm_conf_path = '/etc/gdm/custom.conf' %}}
+{{% endif %}}
+
+description: |-
+    GDM runs the login screen and the user sessions on Wayland unless
+    <code>WaylandEnable</code> is set to <code>false</code> under the
+    <code>[daemon]</code> section of <code>{{{ gdm_conf_path }}}</code>. Make sure
+    that it is not, for example by leaving <code>WaylandEnable</code> unset or by
+    setting:
+    <pre>
+    [daemon]
+    WaylandEnable=true
+    </pre>
+
+rationale: |-
+    Under the X Window System, any client connected to the display can read the
+    input and the windows of the other clients, so one compromised application
+    can log keystrokes typed into another. Wayland isolates clients from each
+    other.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88859-4
+    cce@rhel9: CCE-88860-2
+    cce@rhel10: CCE-88861-0
+
+ocil_clause: 'WaylandEnable is set to a value other than true in the daemon section of {{{ gdm_conf_path }}}'
+
+ocil: |-
+    To verify that GDM does not disable Wayland, run the following command:
+    <pre>sed -n '/\[daemon\]/,/\[/p' {{{ gdm_conf_path }}} | grep -Pi '^\h*WaylandEnable\h*='</pre>
+    The command should return no output, or a line setting <code>WaylandEnable</code> to <code>true</code>.
+
+fixtext: |-
+    Remove WaylandEnable=false from the [daemon] section of "{{{ gdm_conf_path }}}", or set:
+
+    [daemon]
+    WaylandEnable=true
