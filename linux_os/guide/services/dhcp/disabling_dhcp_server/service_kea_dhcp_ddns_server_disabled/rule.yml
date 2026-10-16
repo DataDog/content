@@ -27,4 +27,5 @@ template:
     vars:
         servicename: kea-dhcp-ddns-server
         packagename: kea
+        packagename@ubuntu2404: kea-dhcp-ddns-server
         packagename@ubuntu2604: kea-dhcp-ddns-server
