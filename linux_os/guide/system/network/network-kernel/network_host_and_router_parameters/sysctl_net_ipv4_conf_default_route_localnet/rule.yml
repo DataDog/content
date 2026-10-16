@@ -1,0 +1,27 @@
+documentation_complete: true
+
+title: 'Prevent Routing External Traffic to Local Loopback on IPv4 Interfaces by Default'
+
+description: '{{{ describe_sysctl_option_value(sysctl="net.ipv4.conf.default.route_localnet", value="0")}}}'
+
+rationale: |-
+    Refuse the routing of packets whose source or destination address is the local loopback
+    on interfaces created after boot, which take their settings from the default.
+    This prohibits the use of network 127/8 for local routing purposes.
+    Enabling <tt>route_localnet</tt> can expose applications listening on localhost to external traffic.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87287-9
+    cce@rhel9: CCE-87291-1
+    cce@rhel10: CCE-87292-9
+
+{{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.route_localnet", value="0") }}}
+
+template:
+    name: sysctl
+    vars:
+        sysctlvar: net.ipv4.conf.default.route_localnet
+        sysctlval: '0'
+        datatype: int
