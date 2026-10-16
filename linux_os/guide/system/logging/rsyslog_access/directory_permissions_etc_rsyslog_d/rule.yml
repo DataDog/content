@@ -1,0 +1,35 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the rsyslog Drop-In Directory'
+
+description: |-
+    The <tt>/etc/rsyslog.d</tt> directory should have mode <tt>0755</tt> or less
+    permissive.
+
+rationale: |-
+    A user who can write to the drop-in directory can add a configuration file
+    that rsyslog loads at its next start.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87847-0
+    cce@rhel9: CCE-87850-4
+    cce@rhel10: CCE-87851-2
+
+ocil_clause: '/etc/rsyslog.d has a mode more permissive than 0755'
+
+ocil: |-
+    To find the files or directories that do not comply, run the following command:
+    <pre>$ sudo find /etc/rsyslog.d -maxdepth 0 -type d -perm /7022</pre>
+    The command should return no output.
+
+fixtext: |-
+    Run the following command:
+    $ sudo chmod u-s,g-ws,o-wt /etc/rsyslog.d
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /etc/rsyslog.d/
+        filemode: '0755'

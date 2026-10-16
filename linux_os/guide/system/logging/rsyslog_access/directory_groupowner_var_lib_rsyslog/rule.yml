@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Verify Group Who Owns the rsyslog Work Directory'
+
+description: |-
+    The rsyslog work directory <tt>/var/lib/rsyslog</tt> should be group-owned by
+    <tt>root</tt>.
+
+rationale: |-
+    The work directory holds the rsyslog queue files and state, which contain
+    log messages not yet written or forwarded. Other users must not read or
+    alter them.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87856-1
+    cce@rhel9: CCE-87857-9
+    cce@rhel10: CCE-87858-7
+
+ocil_clause: '/var/lib/rsyslog is not group-owned by root'
+
+ocil: |-
+    To find the files or directories that do not comply, run the following command:
+    <pre>$ sudo find /var/lib/rsyslog -maxdepth 0 -type d ! -group root</pre>
+    The command should return no output.
+
+fixtext: |-
+    Run the following command:
+    $ sudo chgrp root /var/lib/rsyslog
+
+template:
+    name: file_groupowner
+    vars:
+        filepath: /var/lib/rsyslog/
+        gid_or_name: '0'

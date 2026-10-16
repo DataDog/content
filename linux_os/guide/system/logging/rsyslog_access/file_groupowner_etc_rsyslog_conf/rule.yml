@@ -1,0 +1,41 @@
+documentation_complete: true
+
+title: 'Verify Group Who Owns rsyslog Configuration Files'
+
+description: |-
+    The <tt>/etc/rsyslog.conf</tt> file and the <tt>.conf</tt> files in
+    <tt>/etc/rsyslog.d/</tt> should be group-owned by <tt>root</tt>.
+
+rationale: |-
+    The rsyslog configuration decides which messages are kept, where they go and
+    which remote hosts may send messages. A user who can change it can hide
+    activity from the logs or send them elsewhere.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87821-5
+    cce@rhel9: CCE-87822-3
+    cce@rhel10: CCE-87825-6
+
+ocil_clause: 'a configuration file is not group-owned by root'
+
+ocil: |-
+    To find the files or directories that do not comply, run the following command:
+    <pre>$ sudo find /etc/rsyslog.conf /etc/rsyslog.d/ -maxdepth 1 -type f -name '*.conf' ! -group root</pre>
+    The command should return no output.
+
+fixtext: |-
+    Run the following command:
+    $ sudo chgrp root /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+
+template:
+    name: file_groupowner
+    vars:
+        filepath:
+            - /etc/
+            - /etc/rsyslog.d/
+        file_regex:
+            - ^(.*/)?rsyslog\.conf$
+            - ^.*\.conf$
+        gid_or_name: '0'

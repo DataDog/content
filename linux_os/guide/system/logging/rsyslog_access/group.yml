@@ -1,0 +1,9 @@
+documentation_complete: true
+
+title: 'Ensure Proper Access to rsyslog Configuration and Work Files'
+
+description: |-
+    The rsyslog configuration files, the drop-in directory and the work
+    directory belong to <tt>root</tt> and are not writable by other users.
+
+platform: package[rsyslog]
