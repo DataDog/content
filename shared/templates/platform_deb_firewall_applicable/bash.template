@@ -1,0 +1,22 @@
+{{#-
+A utility is in use as in the OVAL check: ufw installed, enabled in
+/etc/ufw/ufw.conf and its service enabled, nftables installed and its
+service enabled, iptables-persistent installed. The nftables and iptables
+remediations run only where their utility is in use. The ufw ones also
+run where no utility is in use, so the remediation sets ufw up on such a
+host, and the other two sections stop applying.
+-#}}
+{{%- macro in_use(u) -%}}
+{{%- if u == "ufw" -%}}
+{ {{{ bash_pkg_conditional("ufw") | trim }}} && grep -Eqs '^[[:blank:]]*ENABLED="?(yes|YES)"?[[:blank:]]*$' /etc/ufw/ufw.conf && systemctl is-enabled ufw.service 2>/dev/null | grep -q '^enabled'; }
+{{%- elif u == "nftables" -%}}
+{ {{{ bash_pkg_conditional("nftables") | trim }}} && systemctl is-enabled nftables.service 2>/dev/null | grep -q '^enabled'; }
+{{%- else -%}}
+{{{ bash_pkg_conditional("iptables-persistent") | trim }}}
+{{%- endif -%}}
+{{%- endmacro -%}}
+{{%- if ARG == "ufw" -%}}
+{ {{{ in_use("ufw") }}} || ! { {{{ in_use("nftables") }}} || {{{ in_use("iptables") }}}; }; }
+{{%- else -%}}
+{{{ in_use(ARG) }}}
+{{%- endif -%}}
