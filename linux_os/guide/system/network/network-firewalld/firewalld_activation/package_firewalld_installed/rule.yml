@@ -37,6 +37,10 @@ references:
     stigid@ol7: OL07-00-040520
     stigid@ol8: OL08-00-040100
 
+{{% if product in ["rhel8", "rhel9", "rhel10", "almalinux9"] %}}
+platform: firewall_applicable[firewalld]
+{{% endif %}}
+
 {{{ complete_ocil_entry_package_installed("firewalld") }}}
 
 fixtext: |-
