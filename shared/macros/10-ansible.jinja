@@ -911,9 +911,11 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 :type parameter: str
 :param pattern: The pattern to remove
 :type pattern: str
+:param prefix: The pattern of the text that precedes it on the line, by default any text that ends in a delimiter
+:type prefix: str
 
 #}}
-{{%- macro ansible_sudo_remove_config(parameter, pattern) -%}}
+{{%- macro ansible_sudo_remove_config(parameter, pattern, prefix=".*[\\s,=):]") -%}}
 
 - name: Find /etc/sudoers.d/ files
   ansible.builtin.find:
@@ -923,7 +925,7 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 
 - name: "Remove lines containing {{{ parameter }}} from sudoers files"
   ansible.builtin.replace:
-    regexp: '(^(?!#).*[\s,=):]{{{ pattern }}}.*$)'
+    regexp: '(^(?!#){{{ prefix }}}{{{ pattern }}}.*$)'
     replace: '# \g<1>'
     path: "{{ item.path }}"
     validate: /usr/sbin/visudo -cf %s
