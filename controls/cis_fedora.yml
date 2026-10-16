@@ -1672,7 +1672,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - file_permissions_sshd_private_key
+          - file_permissions_sshd_private_key_cis
           - file_ownership_sshd_private_key
           - file_groupownership_sshd_private_key
 

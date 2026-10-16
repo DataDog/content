@@ -1,0 +1,45 @@
+documentation_complete: true
+
+title: 'Verify Permissions on SSH Server Private *_key Key Files for CIS Benchmark'
+
+{{% set dedicated_ssh_groupname = groups.get("dedicated_ssh_keyowner", {}).get("name") %}}
+
+description: |-
+    SSH server private keys, the files that match the <code>/etc/ssh/*_key</code> glob,
+    have to have restricted permissions, as the CIS Benchmarks require.
+    If those files are owned by the <code>root</code> user and the <code>root</code> group,
+    they have to have the <code>0600</code> permission or stricter.
+    {{% if dedicated_ssh_groupname -%}}
+    If they are owned by the <code>root</code> user and the dedicated group
+    <code>{{{ dedicated_ssh_groupname }}}</code>, they can have the <code>0640</code>
+    permission or stricter.
+    {{%- endif %}}
+
+rationale: |-
+    If an unauthorized user obtains the private SSH host key file, the host could be
+    impersonated.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-89887-4
+    cce@rhel9: CCE-89888-2
+    cce@rhel10: CCE-89890-8
+
+ocil_clause: 'a private key file has a more permissive mode than its group allows'
+
+ocil: |-
+    To list the private host key files with a more permissive mode than their group
+    allows, run the following command:
+    <pre>$ sudo find -H /etc/ssh/ -maxdepth 1 -name '*_key' -type f \( \( -group root -perm /0177 \){{% if dedicated_ssh_groupname %}} -o \( -group {{{ dedicated_ssh_groupname }}} -perm /0137 \){{% endif %}} \)</pre>
+    The command should return no output.
+
+fixtext: |-
+    Set the mode of the root:root-owned private host keys to 0600{{% if dedicated_ssh_groupname %}}, and of the root:{{{ dedicated_ssh_groupname }}}-owned ones to 0640 or stricter{{% endif %}}.
+
+warnings:
+    - general: |-
+        Remediation is not possible at bootable container build time because SSH host
+        keys are generated post-deployment.
+
+platform: system_with_kernel
