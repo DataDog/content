@@ -11,6 +11,9 @@ rationale: |-
     masquerading, etc.
 
 severity: medium
+{{%- if product in ["ubuntu2204", "ubuntu2404"] %}}
+platform: deb_firewall_applicable[ufw]
+{{%- endif %}}
 
 references:
     srg: SRG-OS-000297-GPOS-00115

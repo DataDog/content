@@ -1,0 +1,23 @@
+{{#-
+As the Bash conditional, with the facts Ansible gathers: ufw is in use
+when installed with ufw.service enabled (the facts leave out ufw.conf).
+Without service facts, no service counts as enabled: the ufw tasks run
+unless iptables-persistent is installed, the nftables ones never run.
+-#}}
+{{%- macro service_enabled(s) -%}}
+(((ansible_facts.services | default({}))["{{{ s }}}.service"] | default({})).status | default("")) in ["enabled", "enabled-runtime"]
+{{%- endmacro -%}}
+{{%- macro in_use(u) -%}}
+{{%- if u == "ufw" -%}}
+({{{ ansible_pkg_conditional("ufw") }}} and {{{ service_enabled("ufw") }}})
+{{%- elif u == "nftables" -%}}
+({{{ ansible_pkg_conditional("nftables") }}} and {{{ service_enabled("nftables") }}})
+{{%- else -%}}
+{{{ ansible_pkg_conditional("iptables-persistent") }}}
+{{%- endif -%}}
+{{%- endmacro -%}}
+{{%- if ARG == "ufw" -%}}
+({{{ in_use("ufw") }}} or not ({{{ in_use("nftables") }}} or {{{ in_use("iptables") }}}))
+{{%- else -%}}
+{{{ in_use(ARG) }}}
+{{%- endif -%}}
