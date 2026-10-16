@@ -152,7 +152,6 @@ disable_host_auth
 disable_users_coredumps
 disable_weak_deps
 ensure_gpgcheck_globally_activated
-ensure_journald_and_rsyslog_not_active_together
 ensure_pam_wheel_group_empty
 ensure_redhat_gpgkey_installed
 ensure_root_password_configured
@@ -272,6 +271,7 @@ has_nonlocal_mta
 inactivity_timeout_value=15_minutes
 journald_compress
 journald_disable_forward_to_syslog
+journald_forward_to_syslog
 journald_storage
 kernel_module_atm_disabled
 kernel_module_can_disabled
@@ -340,6 +340,7 @@ package_openldap-clients_removed
 package_pam_pwquality_installed
 package_postfix_installed
 package_rsync_removed
+package_rsyslog_installed
 package_samba_removed
 package_sequoia-sq_installed
 package_setroubleshoot_removed
@@ -365,6 +366,7 @@ rsyslog_filecreatemode
 rsyslog_files_groupownership
 rsyslog_files_ownership
 rsyslog_files_permissions
+rsyslog_nolisten
 selinux_not_disabled
 selinux_policytype
 selinux_state
@@ -379,6 +381,7 @@ service_dnsmasq_disabled
 service_firewalld_enabled
 service_nfs_disabled
 service_rpcbind_disabled
+service_rsyslog_enabled
 service_systemd-journal-upload_enabled
 service_systemd-journald_enabled
 set_password_hashing_algorithm_logindefs
