@@ -1,0 +1,38 @@
+documentation_complete: true
+
+title: 'Configure AIDE to Send Its Reports to Syslog'
+
+description: |-
+    AIDE writes the report of every check to each destination that a
+    <tt>report_url</tt> line of <tt>{{{ aide_conf_path }}}</tt> names. Make sure
+    that at least one of them is the system log, for example:
+    <pre>report_url=syslog:LOG_LOCAL0</pre>
+    Other destinations, such as <tt>report_url=file:/var/log/aide/aide.log</tt>,
+    may stay.
+
+rationale: |-
+    A report in the system log reaches the log collection and the remote log
+    servers of the site, where an alert on a changed file is raised and kept
+    out of reach of whoever changed it.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88329-8
+    cce@rhel9: CCE-88331-4
+    cce@rhel10: CCE-88332-2
+
+ocil_clause: 'no report_url line of {{{ aide_conf_path }}} sends the report to syslog'
+
+ocil: |-
+    To verify that AIDE sends its report to the system log, run the following command:
+    <pre>$ sudo grep -E '^\s*report_url\s*=\s*syslog:' {{{ aide_conf_path }}}</pre>
+    The output should list at least one line, for example:
+    <pre>report_url=syslog:LOG_LOCAL0</pre>
+
+fixtext: |-
+    Add the following line to "{{{ aide_conf_path }}}":
+
+    report_url=syslog:LOG_LOCAL0
+
+platform: package[aide]
