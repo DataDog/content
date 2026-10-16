@@ -33,7 +33,7 @@ template:
     vars:
         pkgname: systemd-journal-remote
 
-{{% if 'ubuntu' in product %}}
+{{% if 'ubuntu' in product or product in ['rhel8', 'rhel10'] %}}
 platform: service_disabled[rsyslog]
 {{% endif %}}
 
