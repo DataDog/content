@@ -1,0 +1,8 @@
+name: "cpe:/a:deb-firewall-applicable-{arg}"
+title: "The CIS guidance for the {arg} firewall utility applies"
+template:
+  name: platform_deb_firewall_applicable
+args:
+  ufw: {}
+  nftables: {}
+  iptables: {}
