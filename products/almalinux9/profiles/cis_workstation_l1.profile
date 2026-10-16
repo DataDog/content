@@ -19,6 +19,3 @@ description: |-
 
 selections:
     - cis_almalinux9:all:l1_workstation
-    - '!file_ownership_home_directories'
-    - '!group_unique_name'
-    - '!file_owner_at_allow'
