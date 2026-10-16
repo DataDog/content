@@ -47,6 +47,7 @@ rules:
 - gnome_gdm_disable_guest_login
 - gnome_gdm_disable_unattended_automatic_login
 - gnome_gdm_disable_xdmcp
+- gnome_gdm_enable_wayland
 - gui_login_dod_acknowledgement
 - package_gdm_removed
 - xwayland_disabled
