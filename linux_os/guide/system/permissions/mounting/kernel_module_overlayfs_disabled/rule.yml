@@ -18,6 +18,7 @@ severity: low
 
 identifiers:
     cce@rhel8: CCE-90461-5
+    cce@rhel9: CCE-90419-3
     cce@rhel10: CCE-87507-0
     cce@sle15: CCE-92579-2
 

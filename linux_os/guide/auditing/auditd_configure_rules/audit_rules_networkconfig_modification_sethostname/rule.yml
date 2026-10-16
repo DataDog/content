@@ -19,6 +19,7 @@ description: |-
     <pre>-a always,exit -F arch=ARCH -S sethostname -F auid&gt;={{{ auid }}} -F auid!=unset -F key=system-locale</pre>
 
 identifiers:
+    cce@rhel9: CCE-90398-9
     cce@rhel10: CCE-89913-8
 
 rationale: |-

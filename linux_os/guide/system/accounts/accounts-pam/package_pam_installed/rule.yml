@@ -16,6 +16,7 @@ severity: medium
 
 identifiers:
     cce@rhel8: CCE-89184-6
+    cce@rhel9: CCE-90426-8
 
 {{{ complete_ocil_entry_package_installed("pam") }}}
 

@@ -13,6 +13,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel9: CCE-90393-0
     cce@rhel10: CCE-89917-9
 
 ocil_clause: 'the system is not configured to audit changes of the network configuration'

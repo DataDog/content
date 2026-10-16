@@ -17,6 +17,7 @@ severity: medium
 
 identifiers:
     cce@rhel8: CCE-89186-1
+    cce@rhel9: CCE-90423-5
 
 {{{ complete_ocil_entry_package_installed("authselect") }}}
 

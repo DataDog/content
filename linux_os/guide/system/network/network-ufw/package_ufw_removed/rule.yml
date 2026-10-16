@@ -11,6 +11,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel9: CCE-90427-6
+
 {{{ complete_ocil_entry_package_removed("ufw") }}}
 
 platform: system_with_kernel
