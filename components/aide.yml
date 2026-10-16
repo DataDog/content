@@ -9,6 +9,7 @@ rules:
 - aide_disable_silentreports
 - aide_periodic_cron_checking
 - aide_periodic_checking_systemd_timer
+- aide_report_url_syslog
 - aide_scan_notification
 - aide_use_fips_hashes
 - aide_verify_acls
