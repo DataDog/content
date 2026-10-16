@@ -36,7 +36,9 @@ dynamic_uid_min: 61184
 faillock_path: /var/run/faillock
 full_name: AlmaLinux OS 9
 gid_min: 1000
-groups: {}
+groups:
+  dedicated_ssh_keyowner:
+    name: ssh_keys
 grub2_boot_path: /boot/grub2
 grub2_uefi_boot_path: /boot/grub2
 grub_helper_executable: grubby
