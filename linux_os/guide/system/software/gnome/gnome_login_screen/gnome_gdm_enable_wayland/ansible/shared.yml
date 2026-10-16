@@ -1,0 +1,32 @@
+# platform = multi_platform_all
+# reboot = false
+# strategy = unknown
+# complexity = low
+# disruption = medium
+
+{{% if 'ubuntu' in product %}}
+{{% set gdm_conf_path = "/etc/gdm3/custom.conf" %}}
+{{% elif 'debian' in product %}}
+{{% set gdm_conf_path = "/etc/gdm3/daemon.conf" %}}
+{{% else %}}
+{{% set gdm_conf_path = "/etc/gdm/custom.conf" %}}
+{{% endif %}}
+
+- name: "{{{ rule_title }}} - Find WaylandEnable in {{{ gdm_conf_path }}}"
+  ansible.builtin.lineinfile:
+    path: "{{{ gdm_conf_path }}}"
+    regexp: '^\s*WaylandEnable\s*='
+    state: absent
+  check_mode: true
+  changed_when: false
+  failed_when: false
+  register: gdm_wayland_enable
+
+- name: "{{{ rule_title }}} - Set WaylandEnable to true"
+  community.general.ini_file:
+    path: "{{{ gdm_conf_path }}}"
+    section: daemon
+    option: WaylandEnable
+    value: "true"
+    no_extra_spaces: true
+  when: gdm_wayland_enable.found is defined and gdm_wayland_enable.found > 0
