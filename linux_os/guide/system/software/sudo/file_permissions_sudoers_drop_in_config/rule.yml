@@ -1,0 +1,34 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the sudo Configuration Snippets'
+
+description: |-
+    {{{ describe_files_in_directory_permissions(directory="/etc/sudoers.d", perms="0440") }}}
+
+rationale: |-
+    sudo reads every snippet in /etc/sudoers.d as part of its policy. A snippet
+    that other users can write lets them grant themselves root, and one they can
+    read shows them who may run which commands.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-89420-4
+    cce@rhel9: CCE-89421-2
+    cce@rhel10: CCE-89422-0
+
+ocil_clause: '{{{ ocil_clause_files_in_directory_permissions(directory="/etc/sudoers.d", perms="-r--r-----") }}}'
+
+ocil: |-
+    {{{ ocil_files_in_directory_permissions(directory="/etc/sudoers.d", perms="-r--r-----") }}}
+
+fixtext: '{{{ fixtext_files_in_directory_permissions(directory="/etc/sudoers.d", mode="0440") }}}'
+
+platform: package[sudo]
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /etc/sudoers.d/
+        file_regex: '^.*$'
+        filemode: '0440'

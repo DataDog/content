@@ -8,8 +8,11 @@ rules:
 - directory_owner_etc_sudoersd
 - directory_permissions_etc_sudoersd
 - file_groupowner_etc_sudoers
+- file_groupowner_sudoers_drop_in_config
 - file_owner_etc_sudoers
+- file_owner_sudoers_drop_in_config
 - file_permissions_etc_sudoers
+- file_permissions_sudoers_drop_in_config
 - package_sudo_installed
 - sudo_add_env_reset
 - sudo_add_ignore_dot

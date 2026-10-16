@@ -1,0 +1,33 @@
+documentation_complete: true
+
+title: 'Verify Group Who Owns the sudo Configuration Snippets'
+
+description: |-
+    {{{ describe_files_in_directory_group_owner(directory="/etc/sudoers.d", group="root") }}}
+
+rationale: |-
+    sudo reads every snippet in /etc/sudoers.d as part of its policy. Group
+    ownership by root keeps other groups from changing it.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-89415-4
+    cce@rhel9: CCE-89416-2
+    cce@rhel10: CCE-89417-0
+
+ocil_clause: '{{{ ocil_clause_files_in_directory_group_owner(directory="/etc/sudoers.d", group="root") }}}'
+
+ocil: |-
+    {{{ ocil_files_in_directory_group_owner(directory="/etc/sudoers.d", group="root") }}}
+
+fixtext: '{{{ fixtext_files_in_directory_group_owner(directory="/etc/sudoers.d", group="root") }}}'
+
+platform: package[sudo]
+
+template:
+    name: file_groupowner
+    vars:
+        filepath: /etc/sudoers.d/
+        file_regex: '^.*$'
+        gid_or_name: '0'
