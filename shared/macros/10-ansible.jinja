@@ -935,6 +935,45 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 {{% endif %}}
 {{%- endmacro -%}}
 
+{{#
+    This macro replaces an option in the Defaults entries of /etc/sudoers and of the files of
+    /etc/sudoers.d that sudo reads, before any comment, and keeps the rest of each entry.
+    A file changes only when visudo accepts the result.
+
+:param parameter: The option to replace, as the task name names it
+:type parameter: str
+:param pattern: The Python regular expression of the option
+:type pattern: str
+:param replacement: The text that replaces the option, in which Python reads ``\`` as a special character
+:type replacement: str
+
+#}}
+{{%- macro ansible_sudo_replace_defaults_option(parameter, pattern, replacement) -%}}
+
+- name: Find the /etc/sudoers.d/ files that sudo reads
+  ansible.builtin.find:
+    paths:
+      - /etc/sudoers.d/
+    excludes:
+      # sudo skips the files whose names contain a "." or end in "~"
+      - "*.*"
+      - "*~"
+  register: sudoers
+
+- name: "Replace {{{ parameter }}} with {{{ replacement }}} in the Defaults entries of the sudoers files"
+  ansible.builtin.replace:
+    regexp: '^([ \t]*Defaults\b[^#\n]*[\s,]){{{ pattern }}}'
+    replace: '\g<1>{{{ replacement }}}'
+    path: "{{ item.path }}"
+    validate: /usr/sbin/visudo -cf %s
+  with_items:
+    - { path: /etc/sudoers }
+    - "{{ sudoers.files }}"
+{{% if product in [ 'sle16', 'slmicro6' ] %}}
+  when: not ansible_check_mode
+{{% endif %}}
+{{%- endmacro -%}}
+
 
 {{#
   This macro creates an Ansible snipped which is used in `when` clause to

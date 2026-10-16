@@ -1516,6 +1516,43 @@ for f in /etc/sudoers /etc/sudoers.d/* ; do
 done
 {{%- endmacro -%}}
 
+
+{{#
+    Replace an option in the Defaults entries of /etc/sudoers and of the files of
+    /etc/sudoers.d that sudo reads, before any comment, and keep the rest of each
+    entry. A file changes only when visudo accepts the result.
+
+:param parameter: The option to replace, as the comment of the script names it
+:type parameter: str
+:param pattern: The extended regular expression of the option, for grep -E and sed -E
+:type pattern: str
+:param replacement: The text that replaces the option, in which sed reads ``/``, ``&`` and ``\`` as special characters
+:type replacement: str
+
+#}}
+{{%- macro bash_sudo_replace_defaults_option(parameter, pattern, replacement) -%}}
+{{%- set regex = "^([[:blank:]]*Defaults\\b[^#]*[[:space:],])" ~ pattern -%}}
+# Replace {{{ parameter }}} with {{{ replacement }}} in the Defaults entries
+for f in /etc/sudoers /etc/sudoers.d/*; do
+    # sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~"
+    case "$f" in
+        /etc/sudoers.d/*.* | *~) continue ;;
+    esac
+    if [ -f "$f" ] && grep -qE '{{{ regex }}}' "$f"; then
+        # The copy sits beside the file, so visudo resolves relative includes
+        # as it does for the file, and sudo skips it for the "." in its name
+        sudoers_new=$(mktemp "$f.XXXXXX")
+        sed -E 's/{{{ regex }}}/\1{{{ replacement }}}/' "$f" > "$sudoers_new"
+        if /usr/sbin/visudo -qcf "$sudoers_new"; then
+            cat "$sudoers_new" > "$f"
+        else
+            echo "Fail to validate remediated $f, keeping the original file" >&2
+        fi
+        rm -f "$sudoers_new"
+    fi
+done
+{{%- endmacro -%}}
+
 {{% macro bash_sssd_ldap_config(parameter, value, rule_id=None) -%}}
 SSSD_CONF="/etc/sssd/sssd.conf"
 LDAP_REGEX='[[:space:]]*\[domain\/[^]]*]([^(\n)]*(\n)+)+?[[:space:]]*{{{ parameter }}}'
