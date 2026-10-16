@@ -22,6 +22,9 @@ rules:
 - sudo_dedicated_group
 - sudo_remove_no_authenticate
 - sudo_remove_nopasswd
+- sudo_remove_pwfeedback
+- sudo_remove_timestamp_type_global
+- sudo_remove_visiblepw
 - sudo_require_authentication
 - sudo_require_reauthentication
 - sudo_restrict_others_executable_permission

@@ -1,0 +1,34 @@
+documentation_complete: true
+
+title: 'Ensure sudo Does Not Accept Passwords on a Visible Terminal - sudo visiblepw'
+
+description: |-
+    The sudo <tt>visiblepw</tt> option lets sudo read a password from a terminal
+    that cannot turn echo off, so the password shows on the screen as the user
+    types it. Make sure that no <tt>Defaults</tt> entry in <tt>/etc/sudoers</tt>
+    or in the sudo configuration snippets in <tt>/etc/sudoers.d/</tt> enables
+    <tt>visiblepw</tt>. The option is off by default, and <tt>!visiblepw</tt>
+    turns it off explicitly.
+
+rationale: |-
+    A password typed on a terminal that echoes it can be read from the screen, from
+    a terminal log or from a session recording.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-86501-4
+    cce@rhel9: CCE-86527-9
+    cce@rhel10: CCE-86530-3
+
+ocil_clause: 'visiblepw is enabled in the sudo configuration'
+
+ocil: |-
+    To determine if <tt>visiblepw</tt> is enabled for sudo, run the following command:
+    <pre>$ sudo grep -rP '^\h*Defaults\h+([^#]+,\h*)?visiblepw\b' /etc/sudoers /etc/sudoers.d/</pre>
+    The command should return no output.
+
+fixtext: |-
+    Remove the visiblepw option from every Defaults entry in "/etc/sudoers" and in the files of "/etc/sudoers.d".
+
+platform: package[sudo]

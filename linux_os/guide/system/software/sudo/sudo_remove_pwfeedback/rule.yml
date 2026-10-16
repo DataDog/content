@@ -1,0 +1,33 @@
+documentation_complete: true
+
+title: 'Ensure sudo Does Not Show Password Feedback - sudo pwfeedback'
+
+description: |-
+    The sudo <tt>pwfeedback</tt> option makes sudo print an asterisk for every
+    character of the password the user types. Make sure that no <tt>Defaults</tt>
+    entry in <tt>/etc/sudoers</tt> or in the sudo configuration snippets in
+    <tt>/etc/sudoers.d/</tt> enables <tt>pwfeedback</tt>. The option is off by
+    default, and <tt>!pwfeedback</tt> turns it off explicitly.
+
+rationale: |-
+    Password feedback shows the length of the password to anyone who can see the
+    terminal, which narrows a guessing attack.
+
+severity: low
+
+identifiers:
+    cce@rhel8: CCE-86498-3
+    cce@rhel9: CCE-86499-1
+    cce@rhel10: CCE-86500-6
+
+ocil_clause: 'pwfeedback is enabled in the sudo configuration'
+
+ocil: |-
+    To determine if <tt>pwfeedback</tt> is enabled for sudo, run the following command:
+    <pre>$ sudo grep -rP '^\h*Defaults\h+([^#]+,\h*)?pwfeedback\b' /etc/sudoers /etc/sudoers.d/</pre>
+    The command should return no output.
+
+fixtext: |-
+    Remove the pwfeedback option from every Defaults entry in "/etc/sudoers" and in the files of "/etc/sudoers.d".
+
+platform: package[sudo]

@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Ensure sudo Does Not Share Authentication Across Sessions - sudo timestamp_type'
+
+description: |-
+    The sudo <tt>timestamp_type</tt> option sets the scope of the cached
+    authentication that spares a user from typing the password again within
+    <tt>timestamp_timeout</tt>. With <tt>global</tt>, one authentication covers
+    every session of the user. Make sure that no <tt>Defaults</tt> entry in
+    <tt>/etc/sudoers</tt> or in the sudo configuration snippets in
+    <tt>/etc/sudoers.d/</tt> sets <tt>timestamp_type</tt> to <tt>global</tt>. The
+    default, <tt>tty</tt>, keeps a separate timestamp for every terminal.
+
+rationale: |-
+    With a global timestamp, a process in any other session of the user, such as a
+    background job or a second login, can run sudo without a password once the user
+    has authenticated anywhere.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-86541-0
+    cce@rhel9: CCE-86542-8
+    cce@rhel10: CCE-86543-6
+
+ocil_clause: 'timestamp_type=global is enabled in the sudo configuration'
+
+ocil: |-
+    To determine if <tt>timestamp_type=global</tt> is enabled for sudo, run the following command:
+    <pre>$ sudo grep -rP 'timestamp_type\h*=\h*global' /etc/sudoers /etc/sudoers.d/</pre>
+    The command should return no output.
+
+fixtext: |-
+    Remove the timestamp_type=global option from every Defaults entry in "/etc/sudoers" and in the files of "/etc/sudoers.d".
+
+platform: package[sudo]
