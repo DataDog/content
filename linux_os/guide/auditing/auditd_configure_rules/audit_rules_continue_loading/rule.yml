@@ -16,6 +16,7 @@ severity: medium
 
 identifiers:
     cce@rhel8: CCE-87730-8
+    cce@rhel9: CCE-90386-4
     cce@rhel10: CCE-90697-4
 
 ocil_clause: "the option '-c' is not set in the '/etc/audit/audit.rules' file"
