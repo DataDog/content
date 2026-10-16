@@ -33,4 +33,5 @@ template:
         servicename@rhel10: kea-dhcp4
         servicename@sle16: kea-dhcp4
         packagename: kea
+        packagename@ubuntu2404: kea-dhcp4-server
         packagename@ubuntu2604: kea-dhcp4-server
