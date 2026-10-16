@@ -2036,9 +2036,9 @@ controls:
           - l1_workstation
       status: automated
       notes: |-
-          The module is properly enabled by the rules mentioned in related_rules.
-          Requirements in 5.3.3.3 use these rules.
-      related_rules:
+          The rules check that pam_pwhistory is in the password-auth and system-auth
+          stacks with the remember option of 5.3.3.3.1.
+      rules:
           - accounts_password_pam_pwhistory_remember_password_auth
           - accounts_password_pam_pwhistory_remember_system_auth
 
@@ -2551,11 +2551,8 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: supported
-      notes: |-
-          The rule journald_forward_to_syslog is the opposite of the rule
-          journald_disable_forward_to_syslog which is also a part of this profile.
-      related_rules:
+      status: automated
+      rules:
           - journald_forward_to_syslog
 
     - id: 6.2.2.4

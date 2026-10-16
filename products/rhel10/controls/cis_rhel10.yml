@@ -1942,9 +1942,9 @@ controls:
           - l1_workstation
       status: automated
       notes: |-
-          The module is properly enabled by the rules mentioned in related_rules.
-          Requirements in 5.3.2.3 use these rules.
-      related_rules:
+          The rules check that pam_pwhistory is in the password-auth and system-auth
+          stacks with the remember option of 5.3.2.3.1.
+      rules:
           - accounts_password_pam_pwhistory_remember_password_auth
           - accounts_password_pam_pwhistory_remember_system_auth
 
@@ -2398,7 +2398,14 @@ controls:
           - l1_server
           - l1_workstation
       status: automated
+      notes: |-
+          CIS passes this recommendation when rsyslog or journald is active, and
+          then applies the rsyslog or the journald subsection. journald runs on every
+          systemd host. The journald and rsyslog rules of 6.2.2 and 6.2.3 apply
+          according to whether rsyslog is in use.
       rules:
+          - service_systemd-journald_enabled
+      related_rules:
           - ensure_journald_and_rsyslog_not_active_together
 
     - id: 6.2.2.1.1
@@ -2467,8 +2474,8 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: supported
-      related_rules:
+      status: automated
+      rules:
           - package_rsyslog_installed
 
     - id: 6.2.3.2
@@ -2476,8 +2483,8 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: supported
-      related_rules:
+      status: automated
+      rules:
           - service_rsyslog_enabled
 
     - id: 6.2.3.3
@@ -2485,8 +2492,8 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: supported
-      related_rules:
+      status: automated
+      rules:
           - journald_forward_to_syslog
 
     - id: 6.2.3.4
@@ -2519,8 +2526,8 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: supported
-      related_rules:
+      status: automated
+      rules:
           - rsyslog_nolisten
 
     - id: 6.2.3.8
