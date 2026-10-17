@@ -64,8 +64,9 @@
     <ind:object object_ref="object_sudoersd_without_includes" />
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_sudoersd_without_includes" version="1">
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
     <ind:path>/etc/sudoers.d/</ind:path>
-    <ind:filename operation="pattern match">.*</ind:filename>
+    <ind:filename operation="pattern match">^[^.]*[^.~]$</ind:filename>
     <ind:pattern operation="pattern match">^[#@]include(?:dir)?[\s]+.*$</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
