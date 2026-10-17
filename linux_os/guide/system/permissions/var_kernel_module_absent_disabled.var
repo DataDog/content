@@ -1,0 +1,18 @@
+documentation_complete: true
+
+title: 'Absent Kernel Modules Count as Disabled'
+
+description: |-
+    Whether a kernel module that no installed kernel provides counts as
+    disabled. CIS Benchmarks require no configuration for such a module.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
