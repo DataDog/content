@@ -5,7 +5,7 @@
 # disruption = low
 - (xccdf-var var_password_pam_{{{ VARIABLE }}})
 
-{{% if 'ol' in families or 'rhel' in product %}}
+{{% if 'ol' in families or 'rhel' in product or 'ubuntu' in product %}}
 - name: {{{ rule_title }}} - Find pwquality.conf.d files
   ansible.builtin.find:
     paths: /etc/security/pwquality.conf.d/
@@ -46,6 +46,12 @@
 {{% if product == 'sle16' %}}
 {{{ ansible_copy_distro_defaults('/usr/lib/security/pwquality.conf', pwquality_path, rule_title=rule_title) }}}
 {{% endif %}}
+
+- name: {{{ rule_title }}} - Remove indented settings of {{{ VARIABLE }}}
+  ansible.builtin.lineinfile:
+    path: "{{{ pwquality_path }}}"
+    regexp: '^\s+{{{ VARIABLE }}}\b'
+    state: absent
 
 - name: {{{ rule_title }}} - Ensure PAM variable {{{ VARIABLE }}} is set accordingly
   ansible.builtin.lineinfile:
