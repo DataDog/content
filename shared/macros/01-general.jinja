@@ -1249,10 +1249,23 @@ For more details on configuring kernel arguments in bootable container images, p
 
 #}}
 {{%- macro aide_string() -%}}
-{{%- if 'rhel' not in product and 'ubuntu' not in product and 'ol' not in families and product not in ['fedora'] -%}}
+{{%- if 'rhel' not in product and 'almalinux' not in product and 'ubuntu' not in product and 'ol' not in families and product not in ['al2023', 'fedora'] -%}}
 p+i+n+u+g+s+b+acl+selinux+xattrs+sha512
 {{%- else -%}}
 p+i+n+u+g+s+b+acl+xattrs+sha512
+{{%- endif -%}}
+{{%- endmacro -%}}
+
+
+{{#
+    The directory of the audit tools in the AIDE configuration. The CIS
+    Amazon Linux 2023 Benchmark names them under /sbin.
+#}}
+{{%- macro aide_audit_dir() -%}}
+{{%- if product == 'al2023' -%}}
+/sbin
+{{%- else -%}}
+/usr/sbin
 {{%- endif -%}}
 {{%- endmacro -%}}
 
@@ -1263,7 +1276,7 @@ p+i+n+u+g+s+b+acl+xattrs+sha512
 #}}
 {{%- macro aide_config_file_lines() -%}}
     {{% for binary in aide_audit_binaries -%}}
-    /usr/sbin/{{{ binary }}} {{{ aide_string() }}}
+    {{{ aide_audit_dir() }}}/{{{ binary }}} {{{ aide_string() }}}
     {{% endfor %}}
 {{% endmacro %}}
 
