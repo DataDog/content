@@ -1,0 +1,64 @@
+documentation_complete: true
+
+title: 'Ensure the System Wide Crypto Policy Disables Weak MACs'
+
+{{% if product in ["rhel8", "rhel10"] %}}
+{{% set weak_mac_suffix = "-128" %}}
+{{% set weak_mac_example = "UMAC-128" %}}
+{{% set module_line = "mac = -*-128*" %}}
+{{% else %}}
+{{% set weak_mac_suffix = "-64" %}}
+{{% set weak_mac_example = "UMAC-64" %}}
+{{% set module_line = "mac = -*-64" %}}
+{{% endif %}}
+
+description: |-
+    The system wide crypto policy has to disable the message authentication codes
+    (MACs) that the CIS Benchmark considers weak. The rule reads the resolved policy
+    that <tt>update-crypto-policies</tt> writes to
+    <tt>/etc/crypto-policies/state/CURRENT.pol</tt> when it applies a policy.
+    That file has to exist, and
+    {{% if product in ["rhel8", "rhel10"] %}}
+    its global <tt>mac</tt> line has to list no MAC whose name ends in
+    <tt>{{{ weak_mac_suffix }}}</tt>, such as <tt>{{{ weak_mac_example }}}</tt>.
+    {{% else %}}
+    its global <tt>mac</tt> line and its scoped <tt>mac@</tt> lines have to list no
+    MAC whose name ends in <tt>{{{ weak_mac_suffix }}}</tt>, such as
+    <tt>{{{ weak_mac_example }}}</tt>, the MAC with a 64-bit tag.
+    <tt>UMAC-128</tt> is a strong MAC and can stay enabled.
+    {{% endif %}}
+
+    To disable these MACs, add the following line to
+    <tt>/etc/crypto-policies/policies/modules/NO-WEAKMAC.pmod</tt>:
+    <pre>{{{ module_line }}}</pre>
+    Then add the <tt>NO-WEAKMAC</tt> subpolicy to the system wide crypto policy,
+    together with the subpolicies already in use, for example:
+    <pre>$ sudo update-crypto-policies --set DEFAULT:NO-WEAKMAC</pre>
+
+rationale: |-
+    A MAC algorithm protects the integrity and the origin of a message. An attacker
+    who can compute the MAC of a message without the key can alter the messages of a
+    connection, for instance from a man-in-the-middle position, and capture the
+    credentials and data it carries. Weak MAC algorithms make that attack feasible
+    with enough computing power.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88581-4
+    cce@rhel9: CCE-88624-2
+    cce@rhel10: CCE-88670-5
+
+ocil_clause: 'the system wide crypto policy enables a weak MAC'
+
+ocil: |-
+    To verify that the resolved system wide crypto policy disables weak MACs, run the
+    following command:
+    {{% if product in ["rhel8", "rhel10"] %}}
+    <pre>$ sudo grep -Pi '^\s*mac\s*=.*{{{ weak_mac_suffix }}}\b' /etc/crypto-policies/state/CURRENT.pol</pre>
+    {{% else %}}
+    <pre>$ sudo grep -Pi '^\s*mac(@\S+)?\s*=.*{{{ weak_mac_suffix }}}\b' /etc/crypto-policies/state/CURRENT.pol</pre>
+    {{% endif %}}
+    The command should return no output.
+
+platform: package[crypto-policies]
