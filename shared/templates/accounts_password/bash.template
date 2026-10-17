@@ -6,7 +6,7 @@
 
 {{{ bash_instantiate_variables("var_password_pam_" ~ VARIABLE) }}}
 
-{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' %}}
+{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product %}}
 if grep -sq {{{ VARIABLE }}} /etc/security/pwquality.conf.d/*.conf ; then
     sed -i "/{{{ VARIABLE }}}/d" /etc/security/pwquality.conf.d/*.conf
 fi
@@ -39,4 +39,9 @@ fi
 {{{ bash_copy_distro_defaults('/usr/lib/security/pwquality.conf', pwquality_path) }}}
 {{% endif %}}
 
+# pwquality reads indented settings as well, and bash_replace_or_append
+# replaces those that start a line, so remove the indented ones.
+if [ -f "{{{ pwquality_path }}}" ]; then
+    LC_ALL=C sed -i --follow-symlinks "/^[[:space:]]\+{{{ VARIABLE }}}\>/Id" "{{{ pwquality_path }}}"
+fi
 {{{ bash_replace_or_append(pwquality_path, '^' ~ VARIABLE , '$var_password_pam_' ~ VARIABLE , '%s = %s', cce_identifiers=cce_identifiers) }}}
