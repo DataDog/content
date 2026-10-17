@@ -19,14 +19,15 @@ fi
 if /usr/sbin/visudo -qcf /etc/sudoers; then
     cp /etc/sudoers /etc/sudoers.bak
     chmod 0440 /etc/sudoers.bak
-    if ! grep -P '^[\s]*Defaults.*timestamp_timeout[\s]*=[\s]*[-]?\w+.*$' /etc/sudoers; then
-        # sudoers file doesn't define Option timestamp_timeout
+    # Set every timestamp_timeout value, signed, fractional or quoted, to the required one
+    sed -Ei "s/(^[[:blank:]]*Defaults.*timestamp_timeout[[:blank:]]*=)[[:blank:]]*\"?[-+]?[0-9.]+\"?/\1${var_sudo_timestamp_timeout}/" /etc/sudoers
+    # Keep one Defaults entry for all users: drop the lines that set only timestamp_timeout
+    if [ "$(grep -cP '^[\s]*Defaults[\s]+(.*[\s,])?timestamp_timeout[\s]*=' /etc/sudoers)" -gt 1 ]; then
+        sed -Ei '/^[[:blank:]]*Defaults[[:blank:]]+timestamp_timeout[[:blank:]]*=[^,#]*(#.*)?$/d' /etc/sudoers
+    fi
+    if ! grep -qP '^[\s]*Defaults[\s]+(.*[\s,])?timestamp_timeout[\s]*=' /etc/sudoers; then
+        # sudoers file doesn't define Option timestamp_timeout for all users
         echo "Defaults timestamp_timeout=${var_sudo_timestamp_timeout}" >> /etc/sudoers
-    else
-        # sudoers file defines Option timestamp_timeout, remediate wrong values if present
-        if grep -qP "^[\s]*Defaults\s.*\btimestamp_timeout[\s]*=[\s]*(?!${var_sudo_timestamp_timeout}\b)[-]?\w+\b.*$" /etc/sudoers; then
-            sed -Ei "s/(^[[:blank:]]*Defaults.*timestamp_timeout[[:blank:]]*=)[[:blank:]]*[-]?\w+(.*$)/\1${var_sudo_timestamp_timeout}\2/" /etc/sudoers
-        fi
     fi
 
     # Check validity of sudoers and cleanup bak
