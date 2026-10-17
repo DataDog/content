@@ -8,12 +8,21 @@ packages:
 - rsyslog
 - rsyslog-gnutls
 rules:
+- directory_groupowner_etc_rsyslog_d
+- directory_groupowner_var_lib_rsyslog
+- directory_owner_etc_rsyslog_d
+- directory_owner_var_lib_rsyslog
+- directory_permissions_etc_rsyslog_d
+- directory_permissions_var_lib_rsyslog
 - disable_logwatch_for_logserver
 - ensure_journald_and_rsyslog_not_active_together
 - ensure_logrotate_activated
 - ensure_rtc_utc_configuration
+- file_groupowner_etc_rsyslog_conf
 - file_groupowner_var_log_syslog
+- file_owner_etc_rsyslog_conf
 - file_owner_var_log_syslog
+- file_permissions_etc_rsyslog_conf
 - journald_compress
 - journald_forward_to_syslog
 - journald_storage

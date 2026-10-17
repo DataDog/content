@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the rsyslog Work Directory'
+
+description: |-
+    The rsyslog work directory <tt>/var/lib/rsyslog</tt> should have mode
+    <tt>0700</tt> or less permissive.
+
+rationale: |-
+    The work directory holds the rsyslog queue files and state, which contain
+    log messages not yet written or forwarded. Other users must not read or
+    alter them.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87859-5
+    cce@rhel9: CCE-87860-3
+    cce@rhel10: CCE-87861-1
+
+ocil_clause: '/var/lib/rsyslog has a mode more permissive than 0700'
+
+ocil: |-
+    To find the files or directories that do not comply, run the following command:
+    <pre>$ sudo find /var/lib/rsyslog -maxdepth 0 -type d -perm /7077</pre>
+    The command should return no output.
+
+fixtext: |-
+    Run the following command:
+    $ sudo chmod u-s,g-rwxs,o-rwxt /var/lib/rsyslog
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /var/lib/rsyslog/
+        filemode: '0700'
