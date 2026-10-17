@@ -2335,7 +2335,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - ensure_root_password_configured
+          - ensure_root_access_controlled
 
     - id: 5.4.2.5
       title: Ensure root path integrity (Automated)
