@@ -69,19 +69,23 @@
     - chrony_confdir_paths.stdout_lines | default([]) | length > 0
     - (chrony_sourcedir_paths.stdout_lines | default([]) | length == 0 or chrony_sourcedir_has_servers.rc != 0)
 
+- name: "Select the sourcedir paths outside /run, a tmpfs that starts empty at boot"
+  ansible.builtin.set_fact:
+    chrony_persistent_sourcedirs: "{{ chrony_sourcedir_paths.stdout_lines | default([]) | reject('match', '/(var/)?run/') | list }}"
+
 - name: "Create sourcedir directory if needed"
   ansible.builtin.file:
-    path: "{{ chrony_sourcedir_paths.stdout_lines[0] }}"
+    path: "{{ chrony_persistent_sourcedirs[0] }}"
     state: directory
     mode: '0755'
   when:
     - chrony_conf_has_servers.rc != 0
-    - chrony_sourcedir_paths.stdout_lines | default([]) | length > 0
+    - chrony_persistent_sourcedirs | length > 0
     - chrony_sourcedir_has_servers.rc != 0
 
 - name: "Add remote time servers to sourcedir .sources file"
   ansible.builtin.lineinfile:
-    path: "{{ chrony_sourcedir_paths.stdout_lines[0] }}/ntp-servers.sources"
+    path: "{{ chrony_persistent_sourcedirs[0] }}/ntp-servers.sources"
     line: 'server {{ item }}'
     state: present
     create: true
@@ -89,7 +93,7 @@
   loop: '{{ var_multiple_time_servers.split(",") }}'
   when:
     - chrony_conf_has_servers.rc != 0
-    - chrony_sourcedir_paths.stdout_lines | default([]) | length > 0
+    - chrony_persistent_sourcedirs | length > 0
     - chrony_sourcedir_has_servers.rc != 0
 
 - name: "Create confdir directory if needed"
