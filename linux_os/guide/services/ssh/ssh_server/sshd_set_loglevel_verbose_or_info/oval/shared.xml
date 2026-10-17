@@ -1,0 +1,10 @@
+{{{ sshd_oval_check(
+    parameter="LogLevel",
+    value="(?i)(VERBOSE|INFO)",
+    missing_parameter_pass=true,
+    config_is_distributed=sshd_distributed_config,
+    runtime_check=sshd_runtime_check,
+    datatype="string",
+    rule_id=rule_id,
+    rule_title=rule_title
+) }}}

@@ -1,7 +1,7 @@
 {{%- set sshd_main_config = sshd_main_config_file -%}}
 {{%- set sshd_drop_in_dir = sshd_config_dir -%}}
 <def-group>
-  <definition class="compliance" id="{{{rule_id}}}" version="1">
+  <definition class="compliance" id="{{{rule_id}}}" version="2">
     {{{ oval_metadata("The SSH number of max sessions should be set to an
       appropriate value.", rule_title=rule_title) }}}
     <criteria comment="SSH is configured correctly or is not installed"
@@ -37,7 +37,11 @@
         <criterion comment="test if SSH main configuration {{{ sshd_main_config_file }}} exists for {{{ rule_id }}}"
             test_ref="test_{{{ rule_id }}}_config_file_exists"/>
         {{% endif %}}
-        <criterion comment="the configuration exists" test_ref="test_MaxSessions_present_sshd_set_max_sessions" />
+        <criteria comment="MaxSessions is set, or its default of 10 is within the limit" operator="OR">
+          <criterion comment="the configuration exists" test_ref="test_MaxSessions_present_sshd_set_max_sessions" />
+          <criterion comment="the default MaxSessions of 10 is within var_sshd_max_sessions"
+          test_ref="test_sshd_set_max_sessions_default_within_limit" />
+        </criteria>
       </criteria>
     </criteria>
   </definition>
@@ -101,6 +105,21 @@
   id="state_maxsessions_value_lower_bound" version="1">
     <ind:subexpression datatype="int" operation="greater than or equal">0</ind:subexpression>
   </ind:textfilecontent54_state>
+
+  <ind:variable_test check="all" check_existence="at_least_one_exists"
+  comment="sshd allows 10 sessions when MaxSessions is absent, which complies when var_sshd_max_sessions is 10 or more"
+  id="test_sshd_set_max_sessions_default_within_limit" version="1">
+    <ind:object object_ref="obj_sshd_set_max_sessions_limit" />
+    <ind:state state_ref="state_sshd_set_max_sessions_default_within_limit" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_sshd_set_max_sessions_limit" version="1">
+    <ind:var_ref>var_sshd_max_sessions</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_sshd_set_max_sessions_default_within_limit" version="1">
+    <ind:value datatype="int" operation="greater than or equal">10</ind:value>
+  </ind:variable_state>
 
   <external_variable comment="maxsessions value" datatype="int"
   id="var_sshd_max_sessions" version="1" />

@@ -1131,9 +1131,10 @@ controls:
           - l1_server
       status: automated
       rules:
-          - sshd_set_loglevel_verbose
+          - sshd_set_loglevel_verbose_or_info
       related_rules:
           - sshd_set_loglevel_info
+          - sshd_set_loglevel_verbose
 
     - id: 4.2.6
       title: Ensure SSH PAM is enabled (Automated)
@@ -1262,7 +1263,7 @@ controls:
           - sshd_idle_timeout_value=15_minutes
           - sshd_set_idle_timeout
           - sshd_set_keepalive
-          - var_sshd_set_keepalive=1
+          - var_sshd_set_keepalive=3
 
     - id: 4.3.1
       title: Ensure sudo is installed (Automated)

@@ -1776,7 +1776,7 @@ controls:
           - sshd_set_idle_timeout
           - sshd_idle_timeout_value=5_minutes
           - sshd_set_keepalive
-          - var_sshd_set_keepalive=1
+          - var_sshd_set_keepalive=3
 
     - id: 5.1.10
       title: Ensure sshd DisableForwarding is enabled (Automated)
@@ -1852,9 +1852,10 @@ controls:
           profile uses VERBOSE by default, as it allows for the capture of login and logout activity
           as well as key fingerprints.
       rules:
-          - sshd_set_loglevel_verbose
+          - sshd_set_loglevel_verbose_or_info
       related_rules:
           - sshd_set_loglevel_info
+          - sshd_set_loglevel_verbose
 
     - id: 5.1.17
       title: Ensure sshd MACs are configured (Automated)
