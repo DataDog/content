@@ -17,9 +17,43 @@
 {{% if "ubuntu" not in product and "rhel" not in product and "almalinux" not in product and "ol" not in families and product not in ["al2023", "fedora"] %}}
       <criterion test_ref="test_kernmod_{{{ KERNMODULE }}}_modprobeconf" comment="kernel module {{{ KERNMODULE }}} disabled in /etc/modprobe.conf" />
 {{% endif %}}
-
+      <criteria operator="AND" comment="kernel module {{{ KERNMODULE }}} absent, where an absent module counts as disabled">
+        <criterion test_ref="test_kernmod_{{{ KERNMODULE }}}_absent_disabled"
+        comment="an absent kernel module counts as disabled" />
+        <criterion test_ref="test_kernmod_{{{ KERNMODULE }}}_absent"
+        comment="kernel module {{{ KERNMODULE }}} absent from every installed kernel" />
+      </criteria>
     </criteria>
   </definition>
+
+  <ind:variable_test id="test_kernmod_{{{ KERNMODULE }}}_absent_disabled" version="1" check="all"
+  check_existence="all_exist" comment="an absent kernel module counts as disabled">
+    <ind:object object_ref="obj_kernmod_{{{ KERNMODULE }}}_absent_disabled" />
+    <ind:state state_ref="state_kernmod_{{{ KERNMODULE }}}_absent_disabled" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_kernmod_{{{ KERNMODULE }}}_absent_disabled" version="1">
+    <ind:var_ref>var_kernel_module_absent_disabled</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_kernmod_{{{ KERNMODULE }}}_absent_disabled" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+
+  <external_variable id="var_kernel_module_absent_disabled" datatype="boolean" version="1"
+  comment="an absent kernel module counts as disabled" />
+
+  <unix:file_test id="test_kernmod_{{{ KERNMODULE }}}_absent" version="1" check="all"
+  check_existence="none_exist" comment="kernel module {{{ KERNMODULE }}} absent from every installed kernel">
+    <unix:object object_ref="obj_kernmod_{{{ KERNMODULE }}}_absent" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_kernmod_{{{ KERNMODULE }}}_absent" version="1"
+  comment="files of kernel module {{{ KERNMODULE }}} in the installed kernels">
+    <unix:behaviors recurse="directories" recurse_direction="down" recurse_file_system="local" />
+    <unix:path operation="pattern match">^/lib/modules/[^/]+/kernel$</unix:path>
+    <unix:filename operation="pattern match">^{{{ KERNMODULE }}}\.ko(\.(gz|xz|zst))?$</unix:filename>
+  </unix:file_object>
 
   <ind:textfilecontent54_test id="test_kernmod_{{{ KERNMODULE }}}_disabled" version="1" check="all"
   comment="kernel module {{{ KERNMODULE }}} disabled">
