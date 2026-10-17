@@ -15,6 +15,14 @@
         When set, it will test if the **variable** value matches the OVAL operation
         when compared to zero.
 
+    -   **pwquality_default**: (optional) the value pwquality uses when the
+        configuration files leave **variable** out. When the XCCDF variable
+        `var_password_pam_pwquality_default_compliant` is true, the check also
+        passes if the configuration files leave **variable** out and this
+        default meets the requirement. It works with the operations `equals`,
+        `greater than or equal` and `less than or equal`, and conflicts with
+        **zero_comparison_operation**.
+
 -   Languages: Ansible, Bash, OVAL
 
 #### auditd_lineinfile

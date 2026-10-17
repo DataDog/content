@@ -6,6 +6,9 @@ title: 'Ensure PAM Enforces Password Requirements - Prevent the Use of Dictionar
 description: |-
     The pam_pwquality module's <tt>dictcheck</tt> check if passwords contains dictionary words. When
     <tt>dictcheck</tt> is set to <tt>1</tt> passwords will be checked for dictionary words.
+    pwquality checks dictionary words by default, so where
+    <tt>var_password_pam_pwquality_default_compliant</tt> is true, the rule also passes
+    when the pwquality configuration files leave <tt>dictcheck</tt> out.
 
 rationale: |-
     Use of a complex password helps to increase the time and resources required to compromise the password.
@@ -46,6 +49,7 @@ template:
     vars:
         variable: dictcheck
         operation: equals
+        pwquality_default: 1
 
 fixtext: |-
     Configure {{{ full_name }}} to prevent the use of dictionary words for passwords.
