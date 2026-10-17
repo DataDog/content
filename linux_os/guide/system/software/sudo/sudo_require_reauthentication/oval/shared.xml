@@ -1,9 +1,26 @@
+{{#- The default timestamp_timeout is set when sudo is built (sudo -V shows it).
+    Debian and Ubuntu build sudo with 15 minutes, the others keep the upstream 5. -#}}
+{{%- if 'debian' in product or 'ubuntu' in product %}}
+{{%- set sudo_default_timestamp_timeout = 15 %}}
+{{%- else %}}
+{{%- set sudo_default_timestamp_timeout = 5 %}}
+{{%- endif %}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
-    {{{ oval_metadata("'Ensure sudo timestamp_timeout is appropriate - sudo timestamp_timeout", rule_title=rule_title) }}}
-    <criteria comment="The timestamp_timeout should be configured" operator="AND">
-      <criterion comment="check configuration in /etc/sudoers" test_ref="test_sudo_timestamp_timeout" />
-      <criterion comment="check for - sign in configuration" test_ref="test_sudo_timestamp_timeout_no_signs" />
+    {{{ oval_metadata("Ensure sudo asks for the password again after at most var_sudo_timestamp_timeout minutes", rule_title=rule_title) }}}
+    <criteria comment="The effective timestamp_timeout is between 0 and var_sudo_timestamp_timeout" operator="AND">
+      <criterion comment="every timestamp_timeout setting is between 0 and var_sudo_timestamp_timeout"
+        test_ref="test_{{{ rule_id }}}_range" />
+      <criteria operator="OR">
+        <criterion comment="one global timestamp_timeout setting"
+          test_ref="test_{{{ rule_id }}}_global" />
+        <criteria operator="AND">
+          <criterion comment="no global timestamp_timeout setting"
+            test_ref="test_{{{ rule_id }}}_global_unset" />
+          <criterion comment="the sudo default of {{{ sudo_default_timestamp_timeout }}} minutes is within var_sudo_timestamp_timeout"
+            test_ref="test_{{{ rule_id }}}_default" />
+        </criteria>
+      </criteria>
       {{% if product in [ 'sle16', 'slmicro6' ] %}}
       <criterion
           comment="test if configuration file /etc/sudoers exists for {{{ rule_id }}}"
@@ -12,27 +29,67 @@
     </criteria>
   </definition>
 
-  <!-- Define 1st test for sudo timestamp. -->
-  <ind:textfilecontent54_test check="all" check_existence="only_one_exists" comment="check correct configuration in /etc/sudoers" id="test_sudo_timestamp_timeout" version="1">
-    <ind:object object_ref="obj_sudo_timestamp_timeout"/>
+  <ind:textfilecontent54_test check="all" check_existence="any_exist" state_operator="AND"
+    comment="every timestamp_timeout setting is between 0 and var_sudo_timestamp_timeout"
+    id="test_{{{ rule_id }}}_range" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_all" />
+    <ind:state state_ref="state_{{{ rule_id }}}_not_negative" />
+    <ind:state state_ref="state_{{{ rule_id }}}_at_most_variable" />
   </ind:textfilecontent54_test>
 
-  <!-- Define 2nd test for sudo timestamp. -->
-  <ind:textfilecontent54_test check="all" check_existence="none_exist" comment="check correct configuration in /etc/sudoers" id="test_sudo_timestamp_timeout_no_signs" version="1">
-    <ind:object object_ref="obj_sudo_timestamp_timeout_no_signs"/>
+  <ind:textfilecontent54_test check="all" check_existence="only_one_exists"
+    comment="one global timestamp_timeout setting"
+    id="test_{{{ rule_id }}}_global" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_global" />
   </ind:textfilecontent54_test>
 
-  <ind:textfilecontent54_object id="obj_sudo_timestamp_timeout" version="1">
-    <ind:filepath operation="pattern match">^\/etc\/(sudoers|sudoers\.d\/.*)$</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*Defaults[\s]+timestamp_timeout[\s]*=\s*[+]?(\d*\.\d+|\d+\.\d*|\d+)$</ind:pattern>
-    <ind:instance datatype="int">1</ind:instance>
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no global timestamp_timeout setting"
+    id="test_{{{ rule_id }}}_global_unset" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_global" />
+  </ind:textfilecontent54_test>
+
+  <!-- Every Defaults entry, global or for a user, host, command or runas list.
+       sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~". -->
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_all" version="1">
+    <ind:filepath operation="pattern match">^/etc/sudoers(|\.d/[^/.]*[^/.~])$</ind:filepath>
+    <ind:pattern operation="pattern match">^[ \t]*Defaults\b[^#\n]*[ \t,]timestamp_timeout[ \t]*=[ \t]*"?([+-]?(?:\d+\.?\d*|\.\d+))</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
 
-   <ind:textfilecontent54_object id="obj_sudo_timestamp_timeout_no_signs" version="1">
-    <ind:filepath operation="pattern match">^\/etc\/(sudoers|sudoers\.d\/.*)$</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*Defaults[\s]+timestamp_timeout[\s]*=\s*[\-](\d*\.\d+|\d+\.\d*|\d+)$</ind:pattern>
-    <ind:instance datatype="int">1</ind:instance>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_global" version="1">
+    <ind:filepath operation="pattern match">^/etc/sudoers(|\.d/[^/.]*[^/.~])$</ind:filepath>
+    <ind:pattern operation="pattern match">^[ \t]*Defaults[ \t]+(?:[^#\n]*[ \t,])?timestamp_timeout[ \t]*=[ \t]*"?([+-]?(?:\d+\.?\d*|\.\d+))</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
+
+  <!-- A negative timestamp_timeout disables the timeout. -->
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_not_negative" version="1">
+    <ind:subexpression datatype="float" operation="greater than or equal">0</ind:subexpression>
+  </ind:textfilecontent54_state>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_at_most_variable" version="1">
+    <ind:subexpression datatype="float" operation="less than or equal" var_ref="var_sudo_timestamp_timeout" />
+  </ind:textfilecontent54_state>
+
+  <ind:variable_test check="all"
+    comment="the sudo default of {{{ sudo_default_timestamp_timeout }}} minutes is within var_sudo_timestamp_timeout"
+    id="test_{{{ rule_id }}}_default" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_variable" />
+    <ind:state state_ref="state_{{{ rule_id }}}_default" />
+  </ind:variable_test>
+
+  <ind:variable_object id="object_{{{ rule_id }}}_variable" version="1">
+    <ind:var_ref>var_sudo_timestamp_timeout</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_{{{ rule_id }}}_default" version="1">
+    <ind:value datatype="float" operation="greater than or equal">{{{ sudo_default_timestamp_timeout }}}</ind:value>
+  </ind:variable_state>
+
+  <external_variable comment="maximum sudo timestamp_timeout in minutes" datatype="float"
+    id="var_sudo_timestamp_timeout" version="1" />
+
   {{% if product in [ 'sle16', 'slmicro6' ] %}}
   {{{ oval_config_file_exists_test('/etc/sudoers', rule_id=rule_id) }}}
   {{{ oval_config_file_exists_object('/etc/sudoers', rule_id=rule_id) }}}
