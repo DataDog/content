@@ -1,0 +1,25 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("A remote time server is configured in a file of /etc/chrony.d.", rule_title=rule_title) }}}
+    <criteria>
+      <criterion comment="server or pool line in a file of /etc/chrony.d"
+        test_ref="test_chronyd_server_in_chrony_d" />
+    </criteria>
+  </definition>
+
+  <!-- The CIS Amazon Linux 2023 Benchmark (2.1.2) reads the time sources
+       from the files of /etc/chrony.d alone. -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    id="test_chronyd_server_in_chrony_d" version="1"
+    comment="server or pool line in a file of /etc/chrony.d">
+    <ind:object object_ref="obj_chronyd_server_in_chrony_d" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_chronyd_server_in_chrony_d" version="1">
+    <ind:behaviors recurse="directories" recurse_direction="down" max_depth="-1" />
+    <ind:path>/etc/chrony.d</ind:path>
+    <ind:filename operation="pattern match">^.*$</ind:filename>
+    <ind:pattern operation="pattern match">^[\s]*(?:server|pool)[\s]+[^#\s][^#]*$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>
