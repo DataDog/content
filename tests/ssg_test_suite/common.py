@@ -518,20 +518,37 @@ INSTALL_COMMANDS = dict(
 
 
 def install_packages(test_env, packages):
+    """
+    Installs packages on the tested system and returns the ones it couldn't
+    install. One package missing from the repositories fails the whole install
+    command, so on failure the packages are installed one at a time to find
+    out which ones those are.
+    """
     log_file_name = os.path.join(LogHelper.LOG_DIR, "env-preparation.log")
 
     with open(log_file_name, "a") as log_file:
         platform_cpe = get_cpe_of_tested_os(test_env, log_file)
     platform = cpes_to_platform([platform_cpe])
-
-    command_str = " ".join(INSTALL_COMMANDS[platform] + tuple(packages))
+    install_command = INSTALL_COMMANDS[platform]
 
     with open(log_file_name, 'a') as log_file:
         print("Installing packages", file=log_file)
         log_file.flush()
-        test_env.execute_ssh_command(
-            command_str, log_file,
-            "Couldn't install required packages: {packages}".format(packages=",".join(packages)))
+        try:
+            test_env.execute_ssh_command(
+                " ".join(install_command + tuple(packages)), log_file)
+            return set()
+        except RuntimeError:
+            pass
+
+        unavailable = set()
+        for package in sorted(packages):
+            try:
+                test_env.execute_ssh_command(
+                    " ".join(install_command + (package,)), log_file)
+            except RuntimeError:
+                unavailable.add(package)
+        return unavailable
 
 
 def _match_rhel_version(cpe):
