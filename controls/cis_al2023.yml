@@ -330,6 +330,7 @@ controls:
       status: automated
       rules:
           - package_aide_installed
+      related_rules:
           - aide_build_database
 
     - id: 1.3.2
@@ -660,8 +661,9 @@ controls:
           - l1_server
       status: automated
       rules:
-          - package_net-snmp_removed
           - service_snmpd_disabled
+      related_rules:
+          - package_net-snmp_removed
 
     - id: 2.2.13
       title: Ensure telnet-server is not installed (Automated)
@@ -715,9 +717,9 @@ controls:
           - l1_server
       status: automated
       rules:
-          - package_rsync_removed
-      related_rules:
           - service_rsyncd_disabled
+      related_rules:
+          - package_rsync_removed
 
     - id: 2.3.1
       title: Ensure telnet client is not installed (Automated)

@@ -40,6 +40,8 @@ ocil_clause: '{{{ ocil_clause_file_permissions(file="/etc/at.allow", perms=targe
 ocil: |-
     {{{ ocil_file_permissions(file="/etc/at.allow", perms=target_perms) }}}
 
+platform: package[at]
+
 template:
     name: file_permissions
     vars:
