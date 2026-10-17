@@ -31,7 +31,8 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_{{{ rule_id }}}" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <!-- The regex idea: <user list> <host list> = (<the whole command with at least an arg>,)* <command with no arg> <end of the line or next command spec we don't care about>
          where a command is <runas spec>?<anything except ,>+,
            - ',' is a command delimiter, while
@@ -55,7 +56,7 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_{{{ rule_id }}}_sudoers_drop_in" version="1">
-    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/.*$</ind:filepath>
+    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/[^/.]*[^/.~]$</ind:filepath>
     <ind:pattern operation="pattern match">^(?!\s*Defaults)(?:\s*[^#=]+)=(?:\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+(?:[ \t]+[^,\s]+)+[ \t]*,)*(\s*(?:\([^\)]+\))?\s*(?!\s*\()[^,\s]+[ \t]*(?:,|$))</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
