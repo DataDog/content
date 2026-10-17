@@ -1,0 +1,39 @@
+documentation_complete: true
+
+title: 'Keep the Post-Quantum Key Exchange Algorithm in the SSH Server'
+
+description: |-
+    OpenSSH offers <tt>sntrup761x25519-sha512</tt>, a hybrid of the Streamlined NTRU
+    Prime post-quantum algorithm and X25519, in its default key exchange list. Make
+    sure that every <tt>KexAlgorithms</tt> directive in
+    <tt>{{{ sshd_main_config_file }}}</tt> and in <tt>{{{ sshd_config_dir }}}/*.conf</tt>
+    keeps it: a list that replaces the default must name it, for example
+    <pre>KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256</pre>
+    and a list that removes algorithms from the default (starting with <tt>-</tt>)
+    must not name it or match it with a pattern such as <tt>sntrup*</tt>. Lists
+    that add to the default (<tt>+</tt>) or put algorithms first (<tt>^</tt>) keep
+    it, as does leaving the directive unset.
+
+rationale: |-
+    Traffic recorded today can be decrypted once a quantum computer can break the
+    classical key exchange. A hybrid post-quantum key exchange protects the session
+    keys against such harvest-now, decrypt-later attacks.
+
+severity: medium
+
+ocil_clause: 'a KexAlgorithms directive drops sntrup761x25519-sha512'
+
+ocil: |-
+    To verify that the SSH server offers the post-quantum key exchange, run the
+    following command:
+    <pre>$ sudo sshd -T | grep -i '^kexalgorithms'</pre>
+    The list should include <tt>sntrup761x25519-sha512</tt> or
+    <tt>sntrup761x25519-sha512@openssh.com</tt>.
+
+fixtext: |-
+    Name sntrup761x25519-sha512@openssh.com in every KexAlgorithms directive of
+    "{{{ sshd_main_config_file }}}" and "{{{ sshd_config_dir }}}/*.conf" that replaces the
+    default list, and take the names and patterns that match it out of the
+    directives that remove algorithms.
+
+platform: package[openssh-server]
