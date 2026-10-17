@@ -1753,7 +1753,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_ciphers_cis
 
     - id: 5.1.9
       title: Ensure sshd ClientAliveInterval and ClientAliveCountMax are configured (Automated)
@@ -1815,13 +1815,8 @@ controls:
           - l1_server
           - l1_workstation
       status: automated
-      notes: |-
-          We don't select rule sshd_use_strong_kex because the CIS Benchmark
-          recommends using system-wide crypto policies to disable the weak
-          SHA1 key exchange algorithms instead of configuring KexAlgorithms
-          in sshd configuration.
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_kex_cis
 
     - id: 5.1.15
       title: Ensure sshd LoginGraceTime is configured (Automated)
@@ -1856,7 +1851,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_macs_cis
 
     - id: 5.1.18
       title: Ensure sshd MaxAuthTries is configured (Automated)
