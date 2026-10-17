@@ -1,6 +1,6 @@
 {{% if 'ubuntu' in product or product == 'debian12' %}}
  {{%- set package = "isc-dhcp-server" %}}
-{{% elif product in ['almalinux9', 'ol8', 'ol9', 'rhel8', 'rhel9', 'sle12', 'sle15'] %}}
+{{% elif product in ['al2023', 'almalinux9', 'ol8', 'ol9', 'rhel8', 'rhel9', 'sle12', 'sle15'] %}}
  {{%- set package = "dhcp-server" %}}
 {{% else %}}
  {{%- set package = "dhcp" %}}
@@ -49,6 +49,7 @@ template:
     vars:
         pkgname: dhcp
         pkgname@debian12: isc-dhcp-server
+        pkgname@al2023: dhcp-server
         pkgname@almalinux9: dhcp-server
         pkgname@rhel8: dhcp-server
         pkgname@rhel9: dhcp-server
