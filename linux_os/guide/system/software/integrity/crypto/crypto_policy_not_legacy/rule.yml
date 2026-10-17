@@ -32,6 +32,11 @@ rationale: >-
 
 severity: high
 
+identifiers:
+    cce@rhel8: CCE-88582-2
+    cce@rhel9: CCE-88625-9
+    cce@rhel10: CCE-88671-3
+
 ocil_clause: 'cryptographic policy is set to LEGACY'
 
 ocil: |-

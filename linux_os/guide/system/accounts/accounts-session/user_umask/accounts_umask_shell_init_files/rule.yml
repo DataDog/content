@@ -22,6 +22,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel9: CCE-88618-4
+
 ocil_clause: 'a shell initialization file sets a less restrictive umask'
 
 ocil: |-

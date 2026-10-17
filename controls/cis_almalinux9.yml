@@ -480,24 +480,12 @@ controls:
       levels:
           - l1_server
           - l1_workstation
-      status: pending
-      notes: |-
-          RHEL9 unified the paths for grub2 files. This requirement demands a deeper review of
-          the rules.
+      status: automated
       rules:
-          - file_groupowner_grub2_cfg
-          - file_owner_grub2_cfg
-          - file_permissions_grub2_cfg
-          - file_groupowner_user_cfg
-          - file_owner_user_cfg
-          - file_permissions_user_cfg
-      related_rules:
-          - file_groupowner_efi_grub2_cfg
-          - file_owner_efi_grub2_cfg
-          - file_permissions_efi_grub2_cfg
-          - file_groupowner_efi_user_cfg
-          - file_owner_efi_user_cfg
-          - file_permissions_efi_user_cfg
+          - file_permissions_grub2_config_files
+          - file_permissions_efi_grub2_config_files
+          - file_owner_grub2_config_files
+          - file_groupowner_grub2_config_files
     - id: 1.4.3
       title: Ensure authentication is required when booting into rescue mode (Automated)
       levels:
@@ -522,7 +510,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - grub2_disable_interactive_boot
+          - grub2_systemd_confirm_spawn_argument_absent
       status: automated
 
     - id: 1.5.1
@@ -614,7 +602,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_not_legacy
     - id: 1.6.2
       title: Ensure system wide crypto policy disables sha1 hash and signature support (Automated)
       levels:
@@ -622,6 +610,8 @@ controls:
           - l1_workstation
       status: automated
       rules:
+          - crypto_policy_no_sha1_cis
+      related_rules:
           - configure_custom_crypto_policy_cis
     - id: 1.6.3
       title: Ensure system wide crypto policy macs are configured (Automated)
@@ -630,7 +620,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_no_weak_macs_cis
     - id: 1.6.4
       title: Ensure system wide crypto policy disables cbc for ssh (Automated)
       levels:
@@ -638,7 +628,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_no_ssh_cbc_cis
     - id: 1.6.5
       title: Ensure system wide crypto policy disables chacha20-poly1305 for ssh (Manual)
       levels:
@@ -797,6 +787,7 @@ controls:
       status: automated
       rules:
           - service_autofs_disabled
+          - var_service_disabled_mask_optional=true
     - id: 2.1.2
       title: Ensure avahi daemon services are not in use (Automated)
       levels:
@@ -805,6 +796,7 @@ controls:
       status: automated
       rules:
           - service_avahi-daemon_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_avahi_removed
     - id: 2.1.3
@@ -815,6 +807,7 @@ controls:
       status: automated
       rules:
           - service_cockpit_disabled
+          - var_service_disabled_mask_optional=true
     - id: 2.1.4
       title: Ensure dhcp server services are not in use (Automated)
       levels:
@@ -822,9 +815,11 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_dhcp_removed
-      related_rules:
           - service_dhcpd_disabled
+          - service_dhcpd6_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dhcp_removed
     - id: 2.1.5
       title: Ensure dns server services are not in use (Automated)
       levels:
@@ -832,9 +827,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_bind_removed
-      related_rules:
           - service_named_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_bind_removed
     - id: 2.1.6
       title: Ensure dnsmasq services are not in use (Automated)
       levels:
@@ -843,6 +839,7 @@ controls:
       status: automated
       rules:
           - service_dnsmasq_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_dnsmasq_removed
     - id: 2.1.7
@@ -852,9 +849,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_samba_removed
-      related_rules:
           - service_smb_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_samba_removed
     - id: 2.1.8
       title: Ensure ftp server services are not in use (Automated)
       levels:
@@ -862,9 +860,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_vsftpd_removed
-      related_rules:
           - service_vsftpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_vsftpd_removed
     - id: 2.1.9
       title: Ensure message access server services are not in use (Automated)
       levels:
@@ -872,10 +871,11 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_dovecot_removed
           - package_cyrus-imapd_removed
-      related_rules:
           - service_dovecot_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dovecot_removed
     # new rule would be nice to disable cyrus-imapd service
     - id: 2.1.10
       title: Ensure network file system services are not in use (Automated)
@@ -888,6 +888,7 @@ controls:
           nfs-utils package.
       rules:
           - service_nfs_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_nfs-utils_removed
     - id: 2.1.11
@@ -897,6 +898,7 @@ controls:
       status: automated
       rules:
           - service_cups_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_cups_removed
     - id: 2.1.12
@@ -910,6 +912,7 @@ controls:
           package used for The Network File System (NFS), are dependent on the rpcbind package.
       rules:
           - service_rpcbind_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_rpcbind_removed
     - id: 2.1.13
@@ -919,9 +922,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_rsync_removed
-      related_rules:
           - service_rsyncd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_rsync_removed
     - id: 2.1.14
       title: Ensure snmp services are not in use (Automated)
       levels:
@@ -929,9 +933,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_net-snmp_removed
-      related_rules:
           - service_snmpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_net-snmp_removed
     - id: 2.1.15
       title: Ensure telnet server services are not in use (Automated)
       levels:
@@ -949,9 +954,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_tftp-server_removed
-      related_rules:
           - service_tftp_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_tftp-server_removed
     - id: 2.1.17
       title: Ensure web proxy server services are not in use (Automated)
       levels:
@@ -959,9 +965,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_squid_removed
-      related_rules:
           - service_squid_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_squid_removed
     - id: 2.1.18
       title: Ensure web server services are not in use (Automated)
       levels:
@@ -969,11 +976,12 @@ controls:
           - l1_workstation
       status: automated
       rules:
+          - service_httpd_disabled
+          - service_nginx_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
           - package_httpd_removed
           - package_nginx_removed
-      related_rules:
-          - service_httpd_disabled
-    # rule would be nice to disable nginx service
     - id: 2.1.19
       title: Ensure mail transfer agents are configured for local-only mode (Automated)
       levels:
@@ -1163,11 +1171,13 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - file_cron_deny_not_exist
           - file_cron_allow_exists
           - file_groupowner_cron_allow
           - file_owner_cron_allow
           - file_permissions_cron_allow
+          - file_groupowner_cron_deny
+          - file_owner_cron_deny
+          - file_permissions_cron_deny
     - id: 2.4.2.1
       title: Ensure access to at is configured (Automated)
       levels:
@@ -1271,6 +1281,7 @@ controls:
       status: automated
       rules:
           - sysctl_net_ipv4_conf_all_forwarding
+          - var_sysctl_ip_forward_counts_for_forwarding=true
     - id: 3.3.1.3
       title: Ensure net.ipv4.conf.default.forwarding is configured (Automated)
       levels:
@@ -1280,6 +1291,7 @@ controls:
       rules:
           - sysctl_net_ipv4_conf_default_forwarding
           - sysctl_net_ipv4_conf_default_forwarding_value=disabled
+          - var_sysctl_ip_forward_counts_for_forwarding=true
     - id: 3.3.1.4
       title: Ensure net.ipv4.conf.all.send_redirects is configured (Automated)
       levels:
@@ -1649,20 +1661,15 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_ciphers_cis
     - id: 5.1.6
       title: Ensure sshd KexAlgorithms is configured (Automated)
       levels:
           - l1_server
           - l1_workstation
       status: automated
-      notes: |-
-          We don't select rule sshd_use_strong_kex because the CIS Benchmark
-          recommends using system-wide crypto policies to disable the weak
-          SHA1 key exchange algorithms instead of configuring KexAlgorithms
-          in sshd configuration.
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_kex_cis
     - id: 5.1.7
       title: Ensure sshd MACs are configured (Automated)
       levels:
@@ -1670,7 +1677,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - sshd_use_strong_macs_cis
     - id: 5.1.8
       title: Ensure sshd access is configured (Automated)
       levels:
@@ -1702,7 +1709,7 @@ controls:
           - sshd_idle_timeout_value=5_minutes
           - sshd_set_idle_timeout
           - sshd_set_keepalive
-          - var_sshd_set_keepalive=1
+          - var_sshd_set_keepalive=3
     - id: 5.1.11
       title: Ensure sshd DisableForwarding is enabled (Automated)
       levels:
@@ -1760,9 +1767,10 @@ controls:
           profile uses VERBOSE by default, as it allows for the capture of login and logout activity
           as well as key fingerprints.
       rules:
-          - sshd_set_loglevel_verbose
+          - sshd_set_loglevel_verbose_or_info
       related_rules:
           - sshd_set_loglevel_info
+          - sshd_set_loglevel_verbose
     - id: 5.1.17
       title: Ensure sshd MaxAuthTries is configured (Automated)
       levels:
@@ -1977,6 +1985,7 @@ controls:
       rules:
           - var_authselect_profile=sssd
           - enable_authselect
+      related_rules:
           - accounts_password_pam_modules_in_authselect_profile
       status: automated
 
@@ -2315,10 +2324,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - accounts_root_path_dirs_no_write
-          - root_path_no_dot
-          - no_dirs_unowned_by_root
-          - root_path_all_dirs
+          - root_path_login_integrity
     - id: 5.4.2.6
       title: Ensure root user umask is configured (Automated)
       levels:
@@ -2361,7 +2367,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - accounts_tmout
+          - accounts_tmout_cis
           - var_accounts_tmout=15_min
     - id: 5.4.3.3
       title: Ensure default user umask is configured in /etc/login.defs (Automated)
@@ -2379,8 +2385,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - accounts_umask_etc_bashrc
-          - accounts_umask_etc_profile
+          - accounts_umask_shell_init_files
           - var_accounts_user_umask=027
       status: automated
 
@@ -2557,6 +2562,13 @@ controls:
           - rsyslog_files_groupownership
           - rsyslog_files_ownership
           - rsyslog_files_permissions
+          - permissions_local_var_log
+          - file_permissions_var_log_wbtmp
+          - file_permissions_var_log_lastlog
+          - file_permissions_var_log_cloud-init
+          - file_permissions_var_log_localmessages
+          - file_permissions_var_log_waagent
+          - file_permissions_var_log_dnf
     - id: 6.2.1.1
       title: Ensure auditd packages are installed (Automated)
       levels:
@@ -3048,6 +3060,7 @@ controls:
       status: automated
       rules:
           - package_aide_installed
+      related_rules:
           - aide_build_database
     - id: 6.3.2
       title: Ensure filesystem integrity is regularly checked (Automated)

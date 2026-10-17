@@ -22,6 +22,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88614-3
+    cce@rhel9: CCE-88657-2
+    cce@rhel10: CCE-88702-6
+
 platform: package[openssh-server]
 
 ocil_clause: 'the effective SSH cipher list contains a prohibited cipher'

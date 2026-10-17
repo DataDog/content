@@ -17,6 +17,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel9: CCE-88644-0
+
 ocil_clause: 'systemd.confirm_spawn is set on a boot entry'
 
 ocil: |-

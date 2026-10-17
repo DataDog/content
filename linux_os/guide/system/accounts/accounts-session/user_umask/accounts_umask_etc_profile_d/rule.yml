@@ -20,6 +20,10 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88572-3
+    cce@rhel10: CCE-88662-2
+
 ocil_clause: 'no script in /etc/profile.d sets the umask, or one sets a less restrictive value'
 
 ocil: |-

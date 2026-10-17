@@ -18,6 +18,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88598-8
+    cce@rhel9: CCE-88630-9
+    cce@rhel10: CCE-88673-9
+
 ocil_clause: '{{{ ocil_clause_file_permissions(file="/etc/cron.deny", perms=target_perms) }}}'
 
 ocil: |-

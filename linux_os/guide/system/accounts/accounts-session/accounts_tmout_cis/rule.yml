@@ -43,6 +43,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88571-5
+    cce@rhel9: CCE-88617-6
+    cce@rhel10: CCE-88660-6
+
 ocil_clause: 'TMOUT is unset, out of range, or not marked read only and exported in the same file'
 
 ocil: |-

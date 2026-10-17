@@ -12,6 +12,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel9: CCE-88635-8
+
 ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/dnf.*", perms="-rw-r--r--") }}}'
 
 ocil: |-

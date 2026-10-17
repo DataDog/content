@@ -21,6 +21,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88612-7
+    cce@rhel9: CCE-88656-4
+    cce@rhel10: CCE-88701-8
+
 ocil_clause: 'the effective LogLevel is QUIET, FATAL, ERROR or a DEBUG level'
 
 ocil: |-
