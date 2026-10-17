@@ -10,6 +10,7 @@ rules:
 - configured_firewalld_default_deny
 - ensure_firewall_rules_for_open_ports
 - firewalld-backend
+- firewalld_active_zone_target
 - firewalld_loopback_traffic_restricted
 - firewalld_loopback_traffic_trusted
 - network_implement_access_control
