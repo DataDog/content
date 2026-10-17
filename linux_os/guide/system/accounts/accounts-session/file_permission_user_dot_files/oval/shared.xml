@@ -1,0 +1,44 @@
+<def-group>
+    <definition class="compliance" id="{{{ rule_id }}}" version="1">
+        {{{ oval_metadata("User dot files have mode 0644 or less permissive", rule_title=rule_title) }}}
+        <criteria>
+            <criterion comment="No regular dot file of an interactive user is more permissive than 0644"
+                test_ref="test_{{{ rule_id }}}" />
+        </criteria>
+    </definition>
+
+    <unix:file_test id="test_{{{ rule_id }}}" check="all" check_existence="none_exist" version="1"
+        comment="No regular dot file of an interactive user is more permissive than 0644">
+        <unix:object object_ref="object_{{{ rule_id }}}"/>
+    </unix:file_test>
+
+    <unix:file_object id="object_{{{ rule_id }}}" version="1">
+        <unix:path var_ref="var_{{{ rule_id }}}_home_dirs" var_check="at least one"/>
+        <unix:filename operation="pattern match">^\.(?!bash_history$|netrc$).+$</unix:filename>
+        <filter action="include">state_{{{ rule_id }}}_too_permissive</filter>
+        <filter action="exclude">state_{{{ rule_id }}}_not_regular</filter>
+    </unix:file_object>
+
+    <unix:file_state id="state_{{{ rule_id }}}_not_regular" version="1">
+        <unix:type operation="not equal">regular</unix:type>
+    </unix:file_state>
+
+    <unix:file_state id="state_{{{ rule_id }}}_too_permissive" operator="OR" version="1">
+        <unix:suid datatype="boolean">true</unix:suid>
+        <unix:sgid datatype="boolean">true</unix:sgid>
+        <unix:sticky datatype="boolean">true</unix:sticky>
+        <unix:uexec datatype="boolean">true</unix:uexec>
+        <unix:gwrite datatype="boolean">true</unix:gwrite>
+        <unix:gexec datatype="boolean">true</unix:gexec>
+        <unix:owrite datatype="boolean">true</unix:owrite>
+        <unix:oexec datatype="boolean">true</unix:oexec>
+    </unix:file_state>
+
+    {{%- set interactive_users_object = "object_" ~ rule_id ~ "_objects" -%}}
+    {{{ create_interactive_users_list_object(interactive_users_object, rule_id=rule_id) }}}
+
+    <local_variable id="var_{{{ rule_id }}}_home_dirs" datatype="string" version="1"
+        comment="Home directories of the interactive users">
+        <object_component item_field="home_dir" object_ref="{{{ interactive_users_object }}}"/>
+    </local_variable>
+</def-group>
