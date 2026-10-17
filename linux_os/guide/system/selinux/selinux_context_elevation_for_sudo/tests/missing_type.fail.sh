@@ -4,4 +4,4 @@
 # packages = sudo
 # remediation = none
 
-echo '%wheel ALL=(ALL) ROLE=sysadm_r ALL' >> /etc/sudoers.d/01-complianceascode.conf
+echo '%wheel ALL=(ALL) ROLE=sysadm_r ALL' >> /etc/sudoers.d/01-complianceascode

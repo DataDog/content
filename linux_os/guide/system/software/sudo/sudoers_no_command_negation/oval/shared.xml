@@ -18,7 +18,8 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_{{{ rule_id }}}" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <!-- The regex idea: <user list> <host list> = (<the whole command without negation>,)* <command with negation> <whatever>
          where a command is <runas spec>?<anything except , or !>+,
            - ',' is a command delimiter, while
