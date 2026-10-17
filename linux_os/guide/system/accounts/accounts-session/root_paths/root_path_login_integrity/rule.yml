@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Ensure the PATH of a Root Login Shell Holds Only Safe Directories'
+
+description: |-
+    A login shell of root takes its <tt>PATH</tt> from <tt>/etc/profile</tt>, the
+    files in <tt>/etc/profile.d</tt> and the startup files in the home directory of
+    root. Each entry of that <tt>PATH</tt> should be the absolute path of an
+    existing directory owned by root and writable by its owner only. An empty
+    entry, a trailing one included, stands for the current directory.
+    To list the <tt>PATH</tt> of a root login shell, run the command:
+    <pre># su - root -c 'printf "%s\n" "$PATH"'</pre>
+    Remove each empty, relative or trailing entry from the file that adds it.
+    Create each missing directory, or remove it from the <tt>PATH</tt>, and give
+    each directory the owner root and the mode <tt>0755</tt> or stricter.
+
+rationale: |-
+    Root runs the first program of a given name that it finds in its
+    <tt>PATH</tt>. A relative or empty entry, or a directory that other users can
+    write to, lets them plant a program that root then runs.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88609-3
+    cce@rhel9: CCE-88647-3
+    cce@rhel10: CCE-88681-2
+
+ocil_clause: 'the PATH of a root login shell holds an unsafe entry'
+
+ocil: |-
+    Run the following command to list the <tt>PATH</tt> of a root login shell:
+    <pre># su - root -c 'printf "%s\n" "$PATH"'</pre>
+    Verify that each entry is the absolute path of an existing directory owned by
+    root, with mode <tt>0755</tt> or stricter, and that the <tt>PATH</tt> holds no
+    empty entry and ends with a directory.
