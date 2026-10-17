@@ -93,9 +93,12 @@ rules:
 - sshd_use_directory_configuration
 - sshd_use_priv_separation
 - sshd_use_strong_ciphers
+- sshd_use_strong_ciphers_cis
 - sshd_use_strong_kex
+- sshd_use_strong_kex_cis
 - sshd_use_strong_kex_ubuntu2604
 - sshd_use_strong_macs
+- sshd_use_strong_macs_cis
 - sshd_use_strong_rng
 - sshd_x11_use_localhost
 - sshd_include_crypto_policy
