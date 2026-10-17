@@ -1,0 +1,41 @@
+documentation_complete: true
+
+title: 'Disable SSH Ciphers Prohibited by CIS'
+
+description: |-
+    The SSH server must not offer the ciphers that the CIS benchmarks list as
+    weak:
+    <pre>{{{ sshd_cis_weak_ciphers() }}}</pre>
+    Where a system-wide crypto policy governs the SSH server, remove them
+    through the policy. Elsewhere, a subtractive list ahead of any other
+    <tt>Ciphers</tt> line in the SSH server configuration removes them from
+    the defaults:
+    <pre>Ciphers -{{{ sshd_cis_weak_ciphers() }}}</pre>
+    The check reads the list that <tt>sshd -T</tt> prints, which reflects the
+    defaults, the crypto policy and the configuration files.
+
+rationale: |-
+    Cipher block chaining (CBC) mode in SSH lets an attacker recover parts of
+    the plaintext of a session. The 64-bit block ciphers 3DES, Blowfish and
+    CAST-128 are open to birthday attacks such as Sweet32 on long sessions,
+    and the RC4 (arcfour) key stream is biased.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88614-3
+    cce@rhel9: CCE-88657-2
+    cce@rhel10: CCE-88702-6
+
+platform: package[openssh-server]
+
+ocil_clause: 'the effective SSH cipher list contains a prohibited cipher'
+
+ocil: |-
+    Print the ciphers that the SSH server offers:
+    {{%- if product == "rhel8" %}}
+    <pre>$ sudo bash -c '. /etc/crypto-policies/back-ends/opensshserver.config; . /etc/sysconfig/sshd; sshd -T $OPTIONS $CRYPTO_POLICY' | grep '^ciphers '</pre>
+    {{%- else %}}
+    <pre>$ sudo sshd -T | grep '^ciphers '</pre>
+    {{%- endif %}}
+    The list must not contain any of the ciphers above.
