@@ -3,6 +3,7 @@ packages:
 - operating-system
 rules:
 - accounts_tmout
+- accounts_tmout_cis
 - accounts_user_home_paths_only
 - accounts_user_interactive_home_directory_defined
 - accounts_user_interactive_home_directory_exists
