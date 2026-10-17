@@ -40,6 +40,22 @@ def preprocess(data, lang):
         raise ValueError(errmsg)
     data["missing_parameter_pass"] = parse_template_boolean_value(
         data, parameter="missing_parameter_pass", default_value=False)
+    data["xccdf_variable_is_maximum"] = parse_template_boolean_value(
+        data, parameter="xccdf_variable_is_maximum", default_value=False)
+    if data["xccdf_variable_is_maximum"] and (
+            not data.get("xccdf_variable") or data["datatype"] != "int"
+            or data["missing_parameter_pass"]):
+        errmsg = ("The template instance of the rule {0} sets xccdf_variable_is_maximum, "
+                  "which needs xccdf_variable, the int datatype and "
+                  "missing_parameter_pass false.".format(data["_rule_id"]))
+        raise ValueError(errmsg)
+    data["sshd_default"] = str(data.get("sshd_default", ""))
+    if data["sshd_default"] and (
+            not data["xccdf_variable_is_maximum"] or not data["sshd_default"].isdigit()
+            or int(data["sshd_default"]) < 1):
+        errmsg = ("The template instance of the rule {0} sets sshd_default, which needs "
+                  "xccdf_variable_is_maximum and a positive integer.".format(data["_rule_id"]))
+        raise ValueError(errmsg)
 
     is_default_value = parse_template_boolean_value(
         data, parameter="is_default_value", default_value=False)
