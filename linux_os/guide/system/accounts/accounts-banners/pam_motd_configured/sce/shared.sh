@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = Ubuntu 26.04
+# platform = Ubuntu 24.04,Ubuntu 26.04
 # check-import = stdout
 
 result=$XCCDF_RESULT_PASS
