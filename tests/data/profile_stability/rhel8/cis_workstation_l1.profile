@@ -175,6 +175,7 @@ file_permissions_sshd_pub_key
 file_permissions_unauthorized_world_writable
 file_permissions_user_cfg
 firewalld-backend
+firewalld_active_zone_target
 gid_passwd_group_same
 gnome_gdm_disable_xdmcp
 group_unique_id
