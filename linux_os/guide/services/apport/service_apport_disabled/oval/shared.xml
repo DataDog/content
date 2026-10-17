@@ -1,0 +1,37 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Every enabled setting in /etc/default/apport is 0 and apport.service is stopped.", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="every enabled setting in /etc/default/apport is 0"
+        test_ref="test_{{{ rule_id }}}_not_enabled" />
+      <criterion comment="apport.service is not active"
+        test_ref="test_{{{ rule_id }}}_not_active" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    id="test_{{{ rule_id }}}_not_enabled" version="1"
+    comment="lines of /etc/default/apport that set enabled to a value other than 0">
+    <ind:object object_ref="obj_{{{ rule_id }}}_enabled" />
+  </ind:textfilecontent54_test>
+  {{#- The pattern is the CIS audit's grep -Psi '^\h*enabled\h*=\h*[^0]\b'.
+      The class excludes \n so that a match stays on one line, as with grep. -#}}
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_enabled" version="1">
+    <ind:filepath>/etc/default/apport</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*enabled[ \t]*=[ \t]*[^0\n]\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <linux:systemdunitproperty_test check="all" check_existence="any_exist"
+    id="test_{{{ rule_id }}}_not_active" version="1" comment="apport.service is not active">
+    <linux:object object_ref="obj_{{{ rule_id }}}_active_state" />
+    <linux:state state_ref="state_{{{ rule_id }}}_not_active" />
+  </linux:systemdunitproperty_test>
+  <linux:systemdunitproperty_object id="obj_{{{ rule_id }}}_active_state" version="1">
+    <linux:unit>apport.service</linux:unit>
+    <linux:property>ActiveState</linux:property>
+  </linux:systemdunitproperty_object>
+  <linux:systemdunitproperty_state id="state_{{{ rule_id }}}_not_active" version="1">
+    <linux:value operation="not equal">active</linux:value>
+  </linux:systemdunitproperty_state>
+</def-group>
