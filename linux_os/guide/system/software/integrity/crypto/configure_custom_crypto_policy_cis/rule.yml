@@ -26,7 +26,7 @@ title: Implement Custom Crypto Policy Modules for CIS Benchmark
         "value": "-*-128*"
     },
 ] %}}
-{{% elif product == "rhel9" %}}
+{{% elif product in ["almalinux9", "rhel9"] %}}
 {{% set base_policy = "DEFAULT:NO-SHA1" %}}
 {{% set sub_policies = [
     {
@@ -54,20 +54,6 @@ title: Implement Custom Crypto Policy Modules for CIS Benchmark
         "key": "hash@rpm",
         "value": "-SHA1",
         "scope": "rpm-sequoia"
-    },
-] %}}
-{{% elif product == "almalinux9" %}}
-{{% set base_policy = "DEFAULT:NO-SHA1" %}}
-{{% set sub_policies = [
-    {
-        "module_name": "NO-WEAKMAC",
-        "key": "mac",
-        "value": "-*-64*"
-    },
-    {
-        "module_name": "NO-SSHCBC",
-        "key": "cipher@SSH",
-        "value": "-*-CBC"
     },
 ] %}}
 {{% elif product == "rhel10" or product == "fedora" %}}
