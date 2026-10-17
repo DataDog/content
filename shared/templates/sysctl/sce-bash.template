@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # check-import = stdout
 {{% if SYSCTLVAL == "" %}}
-# check-export = sysctl_{{{ SYSCTLID }}}_value=sysctl_{{{ SYSCTLID }}}_value
+# check-export = sysctl_{{{ SYSCTLID }}}_value=sysctl_{{{ SYSCTLID }}}_value{{% if ALTERNATIVE_SYSCTLVAR %}},{{{ ALTERNATIVE_VARIABLE }}}={{{ ALTERNATIVE_VARIABLE }}}{{% endif %}}
 {{% endif %}}
 
 {{% if product in [ "ol7", "ol8", "ol9", "rhcos4", "rhel8", "rhel9", "rhel10", "ubuntu2204", "ubuntu2404"] %}}
@@ -100,11 +100,21 @@ if [[ $? == 0 ]] ; then
     exit $XCCDF_RESULT_PASS
 fi
 {{% endif %}}
+{{%- if ALTERNATIVE_SYSCTLVAR %}}
+
+# {{{ ALTERNATIVE_SYSCTLVAR }}} also sets {{{ SYSCTLVAR }}}
+function check_sysctl_configuration_or_alternative()
+{
+    check_sysctl_configuration "$@" && return 0
+    [[ "$XCCDF_VALUE_{{{ ALTERNATIVE_VARIABLE }}}" == "true" ]] || return 1
+    check_sysctl_configuration "{{{ ALTERNATIVE_SYSCTLVAR }}}" "{{{ ALTERNATIVE_SYSCTLVAL }}}"
+}
+{{%- endif %}}
 
 {{% if SYSCTLVAL is string %}}
 {{% if SYSCTLVAL == "" -%}}
 expected_value="$XCCDF_VALUE_sysctl_{{{ SYSCTLID }}}_value"
-check_sysctl_configuration "{{{ SYSCTLVAR }}}" "$expected_value"
+check_sysctl_configuration{{% if ALTERNATIVE_SYSCTLVAR %}}_or_alternative{{% endif %}} "{{{ SYSCTLVAR }}}" "$expected_value"
 if [[ $? == 0 ]] ; then
 {{% if CHECK_RUNTIME == "true" %}}
     runtime_value=$(sysctl -n "{{{ SYSCTLVAR }}}" 2>/dev/null)

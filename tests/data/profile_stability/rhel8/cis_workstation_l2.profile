@@ -500,5 +500,6 @@ var_sshd_set_keepalive=1
 var_sshd_set_login_grace_time=60
 var_sshd_set_maxstartups=10:30:60
 var_sudo_timestamp_timeout=15_minutes
+var_sysctl_ip_forward_counts_for_forwarding=true
 var_user_initialization_files_regex=all_dotfiles
 xwayland_disabled

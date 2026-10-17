@@ -2,7 +2,11 @@ documentation_complete: true
 
 title: Disable Kernel Parameter for IPv4 Forwarding By Default
 
-description: '{{{ describe_sysctl_option_value(sysctl="net.ipv4.conf.default.forwarding", value="0") }}}'
+description: |-
+    {{{ describe_sysctl_option_value(sysctl="net.ipv4.conf.default.forwarding", value="0") }}}
+    When the XCCDF Value <tt>var_sysctl_ip_forward_counts_for_forwarding</tt>
+    is true, as in the CIS profiles, <tt>net.ipv4.ip_forward = 0</tt> in the
+    sysctl configuration also satisfies the configuration part of the check.
 
 rationale: |-
     IP forwarding permits the kernel to forward packets from one network
@@ -43,3 +47,6 @@ template:
     vars:
         sysctlvar: net.ipv4.conf.default.forwarding
         datatype: int
+        alternative_sysctlvar: net.ipv4.ip_forward
+        alternative_sysctlval: '0'
+        alternative_variable: var_sysctl_ip_forward_counts_for_forwarding

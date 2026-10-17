@@ -43,4 +43,21 @@ def preprocess(data, lang):
 
     if "check_runtime" not in data:
         data["check_runtime"] = "true"
+
+    # alternative_sysctlvar names a sysctl whose configured value also sets
+    # sysctlvar, as net.ipv4.ip_forward sets the forwarding of all
+    # interfaces. Its own rule supplies the static check, and the boolean
+    # alternative_variable decides whether it counts.
+    data.setdefault("alternative_sysctlvar", "")
+    if data["alternative_sysctlvar"]:
+        if data["sysctlval"] != "":
+            raise ValueError(
+                "{0} sets alternative_sysctlvar with a fixed sysctlval".format(
+                    data["_rule_id"]))
+        for key in ("alternative_sysctlval", "alternative_variable"):
+            if not data.get(key):
+                raise ValueError(
+                    "{0} sets alternative_sysctlvar without {1}".format(
+                        data["_rule_id"], key))
+        data["alternative_sysctlid"] = ssg.utils.escape_id(data["alternative_sysctlvar"])
     return data
