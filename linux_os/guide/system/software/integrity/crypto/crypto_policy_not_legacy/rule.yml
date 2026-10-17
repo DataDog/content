@@ -14,11 +14,13 @@ description: >-
     SSH2. DSA is not allowed, while RSA and Diffie-Hellman parameters are accepted if no
     less than 2048 bits. This policy provides at least 80-bit security.
 
-    The rule checks if settings for selected crypto policy are configured as expected.
-    Configuration files in the <tt>/etc/crypto-policies/back-ends</tt> are either symlinks
-    to correct files provided by crypto-policies package or they are regular files in case
-    crypto policy customizations are applied. Crypto policies may be customized by crypto
-    policy modules, in which case it is delimited from the base policy using a colon.
+    The rule checks that <tt>/etc/crypto-policies/config</tt> and
+    <tt>/etc/crypto-policies/state/current</tt> name a base policy other than
+    <tt>LEGACY</tt>. Crypto policy modules follow the base policy after a colon, so
+    <tt>LEGACY:AD-SUPPORT</tt> counts as <tt>LEGACY</tt>. The rule also checks that the
+    configured policy is applied: <tt>/etc/crypto-policies/state/current</tt> is at
+    least as recent as <tt>/etc/crypto-policies/config</tt>, and
+    <tt>/etc/crypto-policies/back-ends/nss.config</tt> exists.
 
 rationale: >-
     Centralized cryptographic policies simplify applying secure ciphers across an operating system and
@@ -36,7 +38,7 @@ ocil: |-
     To verify that cryptography policy has been configured correctly, run the
     following command:
     <pre>$ update-crypto-policies --show</pre>
-    The output should not return <pre>LEGACY</pre>.
+    The output should not begin with <pre>LEGACY</pre>.
     Run the command to check if the policy is correctly applied:
     <pre>$ update-crypto-policies --is-applied</pre>
     The output should be <pre>The configured policy is applied</pre>.
