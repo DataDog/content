@@ -1074,6 +1074,20 @@ The selected value can be changed in the profile (consult the actual variable fo
     -   **check_runtime** - whether to generate checks for runtime configuration.
         Default value: `true`.
 
+    -   **alternative_sysctlvar**: a sysctl whose configured value also sets
+        **sysctlvar**, eg. `net.ipv4.ip_forward`. When the XCCDF Value named
+        by **alternative_variable** is true, the static check also passes when
+        the static check of the rule `"sysctl_" + $escaped_alternative_sysctlvar`
+        passes. The runtime check reads **sysctlvar** alone. Requires
+        **sysctlval** unset and the two parameters below.
+
+    -   **alternative_sysctlval**: the value of **alternative_sysctlvar** that
+        the SCE check accepts. It must equal the **sysctlval** of the rule of
+        **alternative_sysctlvar**, whose static check the OVAL reuses.
+
+    -   **alternative_variable**: a boolean XCCDF Value, false by default, that
+        decides whether **alternative_sysctlvar** counts.
+
     In case the **sysctl_remediate_drop_in_file** property is set to true in the product file,
     the remediation scripts will set the variable with correct value to a drop-in file in
     `/etc/sysctl.d/var_name.conf` file.
