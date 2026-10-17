@@ -169,6 +169,7 @@ file_permissions_sshd_private_key_cis
 file_permissions_sshd_pub_key
 file_permissions_unauthorized_world_writable
 firewalld-backend
+firewalld_active_zone_target
 firewalld_loopback_traffic_trusted
 gid_passwd_group_same
 group_unique_id
