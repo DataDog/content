@@ -45,8 +45,8 @@
           test_ref="test_sshd_idle_timeout_included_files"/>
           {{%- endif %}}
         </criteria>
-        {{%- if product not in ["ol8", "ol9"] and "rhel" not in product %}}
-        <extend_definition comment="The SSH ClientAliveCountMax is set to zero" definition_ref="sshd_set_keepalive" />
+        {{%- if product not in ["al2023", "almalinux9", "ol8", "ol9"] and "rhel" not in product %}}
+        <extend_definition comment="The SSH ClientAliveCountMax is set correctly" definition_ref="sshd_set_keepalive" />
         {{% endif %}}
       </criteria>
     </criteria>

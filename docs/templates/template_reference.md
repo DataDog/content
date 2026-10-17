@@ -966,6 +966,19 @@ When the remediation is applied duplicate occurrences of `key` are removed.
         set to `"false"` and the parameter is not present in the
         configuration file, the OVAL check will return false (default value: `"false"`).
 
+    -   **xccdf_variable_is_maximum**: effective only in OVAL checks, needs
+        **xccdf_variable**, the **int** datatype and **missing_parameter_pass**
+        set to `"false"`. If set to `"true"`, the OVAL check passes for values
+        greater than 0 and less than or equal to the variable, and for 0 when
+        the variable is 0. If set to `"false"`, the value must equal the
+        variable (default value: `"false"`).
+
+    -   **sshd_default**: effective only in OVAL checks, needs
+        **xccdf_variable_is_maximum**. The value, a positive integer, that sshd
+        uses when the configuration leaves **parameter** out, eg. `3` for
+        `ClientAliveCountMax`. The OVAL check then also passes an absent
+        **parameter** when this value is less than or equal to the variable.
+
     -   **is_default_value** - effective only in Ansible and Bash remediation, if
         set to `"true"`, settings will be remediated into a file
         called (in case of Fedora or RHEL9 and newer):

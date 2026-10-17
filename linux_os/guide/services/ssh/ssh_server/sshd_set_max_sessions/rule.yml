@@ -6,6 +6,8 @@ description: |-
     The <tt>MaxSessions</tt> parameter specifies the maximum number of open sessions permitted
     from a given connection. To set MaxSessions edit
     <tt>/etc/ssh/sshd_config</tt> as follows: <pre>MaxSessions {{{ xccdf_value("var_sshd_max_sessions") }}}</pre>
+    The sshd default of 10 sessions applies when the configuration omits
+    <tt>MaxSessions</tt>, and complies when the limit is 10 or more.
 
 rationale: |-
     To protect a system from denial of service due to a large number of concurrent
@@ -27,13 +29,12 @@ references:
     cis@sle12: 5.2.22
     cis@sle15: 5.2.22
 
-ocil_clause: "MaxSessions is not configured or not configured correctly"
+ocil_clause: "the effective MaxSessions is greater than the limit"
 
 ocil: |-
-    Run the following command to see what the max sessions number is:
-    <pre>$ sudo grep MaxSessions /etc/ssh/sshd_config</pre>
-    If properly configured, the output should be:
-    <pre>MaxSessions {{{ xccdf_value("var_sshd_max_sessions") }}}</pre>
+    Run the following command to see the effective max sessions number:
+    <pre>$ sudo sshd -T | grep -i '^maxsessions'</pre>
+    If properly configured, the number is {{{ xccdf_value("var_sshd_max_sessions") }}} or less.
 
 template:
     name: sshd_lineinfile

@@ -8,7 +8,9 @@
             runtime_check=sshd_runtime_check,
             datatype=DATATYPE,
             rule_id=rule_id,
-            rule_title=rule_title
+            rule_title=rule_title,
+            xccdf_variable_is_maximum=XCCDF_VARIABLE_IS_MAXIMUM,
+            sshd_default=SSHD_DEFAULT
         )
     }}}
 {{%- else -%}}
