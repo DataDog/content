@@ -10,7 +10,7 @@
   </definition>
 
   <ind:textfilecontent54_state id="state_aide_check_attributes" version="1">
-    {{% if 'rhel' not in product and 'ubuntu' not in product and 'ol' not in families and 'fedora' not in product %}}
+    {{% if 'rhel' not in product and 'almalinux' not in product and 'ubuntu' not in product and 'ol' not in families and product not in ['al2023', 'fedora'] %}}
     {{% if product in ['sle16'] %}}
     <ind:subexpression operation="equals">p+i+n+u+g+s+b+acl+selinux+sha512</ind:subexpression>
     {{% else %}}
