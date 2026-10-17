@@ -8,6 +8,7 @@ rules:
 - all_apparmor_profiles_enforced
 - all_apparmor_profiles_in_enforce_complain_mode
 - apparmor_configured
+- grub2_apparmor_not_disabled
 - grub2_enable_apparmor
 - package_apparmor_installed
 - package_apparmor-utils_installed

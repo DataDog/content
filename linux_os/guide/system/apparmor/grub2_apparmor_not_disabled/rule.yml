@@ -1,0 +1,34 @@
+documentation_complete: true
+
+title: 'Ensure AppArmor Is Not Disabled at Boot'
+
+description: |-
+    AppArmor must not be disabled on the kernel command line: no boot entry should
+    carry <tt>apparmor=0</tt>.
+
+    {{{ describe_grub2_argument_absent("apparmor=0") | indent(4) }}}
+
+rationale: |-
+    With <tt>apparmor=0</tt> on the kernel command line, the kernel boots without
+    AppArmor and loads none of its profiles, so the confinement they describe
+    never applies.
+
+severity: medium
+
+ocil_clause: 'apparmor=0 is set on the kernel command line'
+
+ocil: |-
+    To verify that no boot entry disables AppArmor, run the following command:
+    <pre>$ grep '^\s*linux' {{{ grub2_boot_path }}}/grub.cfg | grep 'apparmor=0'</pre>
+    The command should return no output.
+
+fixtext: |-
+    Remove apparmor=0 from GRUB_CMDLINE_LINUX and GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub and
+    the files of /etc/default/grub.d, then regenerate the GRUB configuration:
+
+    $ sudo update-grub
+
+template:
+    name: grub2_bootloader_argument_absent
+    vars:
+        arg_name: 'apparmor=0'
