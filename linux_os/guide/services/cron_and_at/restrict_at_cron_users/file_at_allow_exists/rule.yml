@@ -28,6 +28,8 @@ ocil: |-
     </pre>
     and the output should list the file.
 
+platform: package[at]
+
 template:
     name: file_existence
     vars:
