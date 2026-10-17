@@ -16,7 +16,14 @@
   when: prelink.stat.exists
 
 - name: Ensure prelink is Removed
+{{%- if pkg_manager == "apt_get" %}}
+  ansible.builtin.apt:
+    name: "prelink"
+    state: absent
+    purge: true
+{{%- else %}}
   ansible.builtin.package:
     name: "prelink"
     state: absent
+{{%- endif %}}
 
