@@ -3,8 +3,10 @@ documentation_complete: true
 title: 'Configure Access to pam_motd Message Files'
 
 description: |-
-    Files selected by active <tt>pam_motd.so motd=PATH</tt> arguments must be
-    owned by root, group-owned by root, and mode 0644 or more restrictive.
+    The files that the lines of <tt>/etc/pam.d</tt> name with
+    <tt>motd=PATH</tt>, commented lines included, must be owned by root,
+    group-owned by root, and have mode 0644 or more restrictive. A
+    <tt>motd=</tt> value can name several files, separated by colons.
 
 rationale: |-
     Restrictive ownership and permissions prevent unauthorized modification of
@@ -20,5 +22,6 @@ requires:
 ocil_clause: 'a referenced pam_motd file is not root-owned or is more permissive than 0644'
 
 ocil: |-
-    Identify paths in active <tt>pam_motd.so motd=PATH</tt> PAM entries and
-    verify each path is owned by root:root with mode 0644 or more restrictive.
+    List the paths that the lines of <tt>/etc/pam.d</tt> name with
+    <tt>motd=PATH</tt>, and verify that each existing one is owned by
+    root:root with mode 0644 or more restrictive.
