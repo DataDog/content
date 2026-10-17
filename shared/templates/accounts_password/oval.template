@@ -1,4 +1,4 @@
-{{% if 'ol' in families or 'rhel' in product %}}
+{{% if 'ol' in families or 'rhel' in product or 'ubuntu' in product %}}
 {{% set filepath_regex="^/etc/security/pwquality\.conf(\.d/[^/]+\.conf)?$" %}}
 {{% else %}}
 {{% set filepath_regex="^" + pwquality_path + "$" %}}
@@ -10,6 +10,16 @@
       <extend_definition comment="pwquality.so exists in system-auth" definition_ref="accounts_password_pam_pwquality" />
       <criteria operator="OR">
         <criterion comment="pwquality.conf" test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}" />
+        {{%- if PWQUALITY_DEFAULT is not none %}}
+        <criteria operator="AND" comment="{{{ VARIABLE }}} keeps its pwquality default, which meets the requirement">
+          <criterion comment="pwquality defaults that meet the requirement count as compliant"
+            test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" />
+          <criterion comment="the pwquality default {{{ PWQUALITY_DEFAULT }}} meets the requirement"
+            test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" />
+          <criterion comment="the pwquality configuration files leave {{{ VARIABLE }}} out"
+            test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}_unset" />
+        </criteria>
+        {{%- endif %}}
       </criteria>
       {{% if "ol" in families %}}
       <criterion comment="{{{ VARIABLE }}} is not overwritten in system-auth"
@@ -74,6 +84,54 @@
   <ind:textfilecontent54_state id="state_password_pam_{{{ VARIABLE }}}_zero_comparison" version="1">
     <ind:subexpression datatype="int" operation="{{{ ZERO_COMPARISON_OPERATION }}}" >0</ind:subexpression>
   </ind:textfilecontent54_state>
+  {{%- endif %}}
+
+  {{%- if PWQUALITY_DEFAULT is not none %}}
+
+  <ind:variable_test id="test_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" version="1"
+    check="all" check_existence="all_exist"
+    comment="pwquality defaults that meet the requirement count as compliant">
+    <ind:object object_ref="obj_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" />
+    <ind:state state_ref="state_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" version="1">
+    <ind:var_ref>var_password_pam_pwquality_default_compliant</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_password_pam_pwquality_{{{ VARIABLE }}}_default_compliant" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+
+  <ind:variable_test id="test_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" version="1"
+    check="all" check_existence="all_exist"
+    comment="the pwquality default {{{ PWQUALITY_DEFAULT }}} meets the requirement">
+    <ind:object object_ref="obj_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" />
+    <ind:state state_ref="state_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" version="1">
+    <ind:var_ref>var_password_pam_{{{ VARIABLE }}}</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_password_pam_pwquality_{{{ VARIABLE }}}_default_meets" version="1">
+    <ind:value datatype="int" operation="{{{ DEFAULT_OPERATION }}}">{{{ PWQUALITY_DEFAULT }}}</ind:value>
+  </ind:variable_state>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist" version="1"
+    comment="the pwquality configuration files leave {{{ VARIABLE }}} out"
+    id="test_password_pam_pwquality_{{{ VARIABLE }}}_unset">
+    <ind:object object_ref="obj_password_pam_pwquality_{{{ VARIABLE }}}_unset" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_password_pam_pwquality_{{{ VARIABLE }}}_unset" version="1">
+    <ind:filepath operation="pattern match">{{{ filepath_regex }}}</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*{{{ VARIABLE }}}\s*=</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <external_variable comment="pwquality defaults that meet the requirement count as compliant"
+    datatype="boolean" id="var_password_pam_pwquality_default_compliant" version="1" />
   {{%- endif %}}
 
   <external_variable comment="External variable for pam_{{{ VARIABLE }}}" datatype="int" id="var_password_pam_{{{ VARIABLE }}}" version="3" />
