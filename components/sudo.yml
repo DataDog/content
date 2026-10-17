@@ -20,6 +20,7 @@ rules:
 - sudo_add_use_pty
 - sudo_custom_logfile
 - sudo_dedicated_group
+- sudo_events_in_journal
 - sudo_remove_no_authenticate
 - sudo_remove_nopasswd
 - sudo_require_authentication
