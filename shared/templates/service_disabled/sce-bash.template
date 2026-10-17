@@ -1,6 +1,12 @@
 #!/bin/bash
 # check-import = stdout
+# check-export = var_service_disabled_mask_optional=var_service_disabled_mask_optional
 if [[ $(systemctl is-enabled {{{ DAEMONNAME }}}.service) == "masked" ]] ; then
+    exit "$XCCDF_RESULT_PASS"
+fi
+if [[ "$XCCDF_VALUE_var_service_disabled_mask_optional" == "true" ]] &&
+    ! systemctl is-enabled {{{ DAEMONNAME }}}.service {{{ DAEMONNAME }}}.socket 2>/dev/null | grep -q '^enabled' &&
+    ! systemctl is-active {{{ DAEMONNAME }}}.service {{{ DAEMONNAME }}}.socket 2>/dev/null | grep -q '^active'; then
     exit "$XCCDF_RESULT_PASS"
 fi
 exit "$XCCDF_RESULT_FAIL"

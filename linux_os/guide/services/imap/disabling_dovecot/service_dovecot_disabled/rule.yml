@@ -35,5 +35,6 @@ template:
     vars:
         servicename: dovecot
         packagename@debian13: dovecot-core
+        packagename@ubuntu2204: dovecot-core
         packagename@ubuntu2404: dovecot-core
         packagename@ubuntu2604: dovecot-core

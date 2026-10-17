@@ -52,6 +52,10 @@ ocil: |-
 template:
     name: file_permissions
     vars:
+        excluded_files@almalinux9: ['[bw]tmp*', 'lastlog*', 'cloud-init.log*', 'localmessages*', 'waagent.log*', 'dnf.*', 'dnf5.log*', 'hawkey.log*', 'yum.log*']
+        excluded_files@rhel8: ['[bw]tmp', '[bw]tmp.*', '[bw]tmp-*', 'lastlog', 'lastlog.*', 'README', 'cloud-init.log*', 'localmessages*', 'waagent.log*']
+        excluded_files@rhel9: ['[bw]tmp*', 'lastlog*', 'cloud-init.log*', 'localmessages*', 'waagent.log*', 'dnf.*', 'dnf5.log*', 'hawkey.log*', 'yum.log*']
+        excluded_files@rhel10: ['[bw]tmp', '[bw]tmp.*', '[bw]tmp-*', 'lastlog', 'lastlog.*', 'README', 'cloud-init.log*', 'localmessages*', 'waagent.log*']
         excluded_files@sle15: ['*[bw]tmp', '*lastlog']
         excluded_files@slmicro5: ['*[bw]tmp', '*lastlog']
         excluded_files@slmicro6: ['*[bw]tmp', '*lastlog']
@@ -62,7 +66,11 @@ template:
         file_regex: '.*'
         filemode: '0640'
         filepath: /var/log/
+        recursive@almalinux9: 'true'
         recursive@debian13: 'true'
+        recursive@rhel8: 'true'
+        recursive@rhel9: 'true'
+        recursive@rhel10: 'true'
         recursive@sle12: 'true'
         recursive@sle15: 'true'
         recursive@sle16: 'true'
