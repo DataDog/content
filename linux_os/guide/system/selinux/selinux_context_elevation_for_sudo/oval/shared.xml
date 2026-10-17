@@ -25,13 +25,14 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="obj_sudo_selinux_elevation_type" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^\s*%\w+.*TYPE=(\w+).*$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_object id="obj_sudo_selinux_elevation_role" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^\s*%\w+.*ROLE=(\w+).*$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
