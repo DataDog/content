@@ -1,4 +1,4 @@
-# platform = multi_platform_rhel
+# platform = multi_platform_almalinux,multi_platform_rhel
 
 {{{ bash_ensure_authselect_custom_profile() }}}
 pam_profile="$(head -1 /etc/authselect/authselect.conf)"
