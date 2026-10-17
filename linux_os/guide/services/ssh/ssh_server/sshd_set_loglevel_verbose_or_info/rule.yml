@@ -1,0 +1,39 @@
+documentation_complete: true
+
+title: 'Set SSH Daemon LogLevel to VERBOSE or INFO'
+
+description: |-
+    The <tt>LogLevel</tt> parameter sets how much the SSH daemon logs. The
+    <tt>INFO</tt> and <tt>VERBOSE</tt> levels both record login and logout
+    activity, and <tt>VERBOSE</tt> also records the fingerprint of the key used
+    to log in. To set the log level, add or correct the following line in
+    {{{ sshd_config_file() }}}
+    <pre>LogLevel VERBOSE</pre>
+    <tt>LogLevel INFO</tt> also complies. It is the default, which applies when
+    the configuration omits <tt>LogLevel</tt>.
+
+rationale: |-
+    The login and logout records of the <tt>INFO</tt> and <tt>VERBOSE</tt> levels
+    show when a user was active on a system, which incident response depends on.
+    The <tt>DEBUG</tt> levels log so much that important security information is
+    hard to find, and the <tt>QUIET</tt>, <tt>FATAL</tt> and <tt>ERROR</tt> levels
+    drop the login records.
+
+severity: medium
+
+ocil_clause: 'the effective LogLevel is QUIET, FATAL, ERROR or a DEBUG level'
+
+ocil: |-
+    To determine the log level of the SSH daemon, run the following command:
+    <pre>$ sudo sshd -T | grep -i '^loglevel'</pre>
+    If properly configured, the output is <tt>loglevel VERBOSE</tt> or
+    <tt>loglevel INFO</tt>.
+
+template:
+    name: sshd_lineinfile
+    vars:
+        parameter: LogLevel
+        value: VERBOSE
+        datatype: string
+        backends:
+            oval: "off"
