@@ -11,6 +11,11 @@ rationale: |-
 
 severity: unknown
 
+identifiers:
+    cce@rhel8: CCE-88611-9
+    cce@rhel9: CCE-88651-5
+    cce@rhel10: CCE-88695-2
+
 ocil_clause: |-
     {{{ ocil_clause_service_disabled(service="nginx") }}}
 

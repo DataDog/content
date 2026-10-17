@@ -20,6 +20,7 @@ severity: unknown
 identifiers:
     cce@rhel8: CCE-82761-8
     cce@rhel9: CCE-84213-8
+    cce@rhel10: CCE-88690-3
     cce@sle12: CCE-92247-6
     cce@sle15: CCE-91367-3
     cce@slmicro5: CCE-93917-3

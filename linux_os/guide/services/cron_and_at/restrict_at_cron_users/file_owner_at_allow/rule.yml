@@ -31,6 +31,8 @@ ocil_clause: '{{{ ocil_clause_file_owner(file="/etc/at.allow", owner="root") }}}
 ocil: |-
     {{{ ocil_file_owner(file="/etc/at.allow", owner="root") }}}
 
+platform: package[at]
+
 template:
     name: file_owner
     vars:
