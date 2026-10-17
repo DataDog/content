@@ -96,6 +96,7 @@ rules:
 - banner_etc_motd
 - banner_etc_motd_cis
 - banner_etc_profiled_ssh_confirm
+- banner_motd_files_cis
 - coreos_disable_interactive_boot
 - cracklib_accounts_password_pam_dcredit
 - cracklib_accounts_password_pam_difok
@@ -128,6 +129,7 @@ rules:
 - file_permissions_etc_issue_net
 - file_permissions_etc_motd
 - file_permissions_lastlog
+- file_permissions_motd_files
 - file_permissions_pam_motd
 - group_unique_id
 - group_unique_name
