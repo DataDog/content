@@ -8,6 +8,9 @@ description: |-
     succeeds or the LoginGraceTime expires for a connection. To configure MaxStartups, you should
     add or edit the following line in the <tt>/etc/ssh/sshd_config</tt> file:
     <pre>MaxStartups {{{ xccdf_value("var_sshd_set_maxstartups") }}}</pre>
+    Each of the start, rate and full fields must be less than or equal to the
+    corresponding field of this value. The single-number form <tt>MaxStartups N</tt>
+    sets start and full to N.
 
 rationale: |-
     To protect a system from denial of service due to a large number of pending authentication
