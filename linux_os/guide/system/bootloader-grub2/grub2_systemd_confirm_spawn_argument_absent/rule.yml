@@ -1,0 +1,34 @@
+documentation_complete: true
+
+title: 'Remove systemd.confirm_spawn from the Kernel Command Line'
+
+description: |-
+    The <tt>systemd.confirm_spawn</tt> kernel argument makes systemd ask on the
+    console for confirmation before it spawns each unit during boot. Ensure the
+    argument is absent, whatever its value, from the kernel command line of the
+    boot entries.
+
+    {{{ describe_grub2_argument_absent("systemd.confirm_spawn") | indent(4) }}}
+
+rationale: |-
+    An interactive boot process lets a person with console access choose which
+    units start, and so keep auditing, firewalls or other security services
+    from starting.
+
+severity: medium
+
+ocil_clause: 'systemd.confirm_spawn is set on a boot entry'
+
+ocil: |-
+    Run the following command to list the boot entries that set
+    <tt>systemd.confirm_spawn</tt>:
+    <pre># grubby --info=ALL | grep -E '^\s*args=' | grep 'systemd.confirm_spawn'</pre>
+    The command should return nothing.
+
+fixtext: |-
+    {{{ fixtext_grub2_bootloader_argument_absent("systemd.confirm_spawn") | indent(4) }}}
+
+template:
+    name: grub2_bootloader_argument_absent
+    vars:
+        arg_name: systemd.confirm_spawn

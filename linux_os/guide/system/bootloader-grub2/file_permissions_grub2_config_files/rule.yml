@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the GRUB2 Configuration Files in {{{ grub2_boot_path }}}'
+
+description: |-
+    The GRUB2 configuration files in <tt>{{{ grub2_boot_path }}}</tt> and its
+    subdirectories, which are the files whose names start with <tt>grub</tt>,
+    such as <tt>grub.cfg</tt> and <tt>grubenv</tt>, and the files named
+    <tt>user.cfg</tt>, should have mode <tt>0600</tt> or stricter.
+    To set their mode, run the command:
+    <pre>$ sudo find {{{ grub2_boot_path }}} -type f \( -name 'grub*' -o -name user.cfg \) -exec chmod u-x,go-rwx {} +</pre>
+
+rationale: |-
+    These files hold the boot parameters and the boot loader password hashes.
+    A user who can read them learns the boot settings, which can reveal
+    weaknesses to exploit at boot.
+
+severity: medium
+
+ocil_clause: 'a GRUB2 configuration file has a mode greater than 0600'
+
+ocil: |-
+    Run the following command to list the GRUB2 configuration files whose mode
+    is greater than <tt>0600</tt>:
+    <pre>$ sudo find {{{ grub2_boot_path }}} -type f \( -name 'grub*' -o -name user.cfg \) -perm /0177</pre>
+    The command should return nothing.
+
+platform: not container
+
+template:
+    name: file_permissions
+    vars:
+        filepath: {{{ grub2_boot_path }}}/
+        file_regex: '^(.*/)?(grub[^/]*|user\.cfg)$'
+        recursive: 'true'
+        filemode: '0600'

@@ -164,6 +164,7 @@ rules:
 - restrict_serial_port_logins
 - root_path_all_dirs
 - root_path_default
+- root_path_login_integrity
 - sebool_httpd_mod_auth_pam
 - securetty_root_login_console_only
 - service_pcscd_enabled
