@@ -1,0 +1,49 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the GRUB2 Files of the EFI System Partition'
+
+description: |-
+    The GRUB2 files in <tt>/boot/efi/EFI</tt> and its subdirectories, which are
+    the files whose names start with <tt>grub</tt>, such as <tt>grub.cfg</tt>,
+    <tt>grubenv</tt> and the <tt>grubx64.efi</tt> boot loader, and the files
+    named <tt>user.cfg</tt>, should have mode <tt>0700</tt> or stricter.
+    The EFI system partition is a FAT file system, which takes the mode of its
+    files from its mount options. To set it, add the <tt>fmask=0077</tt> option
+    to the <tt>/boot/efi</tt> entry in <tt>/etc/fstab</tt>, for example:
+    <pre>UUID=... /boot/efi vfat defaults,umask=0027,fmask=0077,uid=0,gid=0 0 2</pre>
+    and remount the file system.
+
+rationale: |-
+    These files hold the boot parameters and the boot loader password hashes.
+    A user who can read them learns the boot settings, which can reveal
+    weaknesses to exploit at boot.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88600-2
+    cce@rhel9: CCE-88631-7
+
+ocil_clause: 'a GRUB2 file of the EFI system partition has a mode greater than 0700'
+
+ocil: |-
+    Run the following command to list the GRUB2 files of the EFI system
+    partition whose mode is greater than <tt>0700</tt>:
+    <pre>$ sudo find /boot/efi/EFI -type f \( -name 'grub*' -o -name user.cfg \) -perm /0077</pre>
+    The command should return nothing.
+
+warnings:
+    - functionality: |-
+        The chmod command of the remediation leaves the mode of the files on a
+        FAT file system as it is. Set the fmask option in /etc/fstab and remount
+        /boot/efi, which may need a reboot.
+
+platform: not container
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /boot/efi/EFI/
+        file_regex: '^(.*/)?(grub[^/]*|user\.cfg)$'
+        recursive: 'true'
+        filemode: '0700'
