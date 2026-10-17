@@ -412,7 +412,7 @@ sshd_max_auth_tries_value=4
 sshd_set_idle_timeout
 sshd_set_keepalive
 sshd_set_login_grace_time
-sshd_set_loglevel_verbose
+sshd_set_loglevel_verbose_or_info
 sshd_set_max_auth_tries
 sshd_set_max_sessions
 sshd_set_maxstartups
@@ -512,7 +512,7 @@ var_selinux_policy_name=targeted
 var_selinux_state=enforcing
 var_service_disabled_mask_optional=true
 var_sshd_max_sessions=10
-var_sshd_set_keepalive=1
+var_sshd_set_keepalive=3
 var_sshd_set_login_grace_time=60
 var_sshd_set_maxstartups=10:30:60
 var_sudo_timestamp_timeout=15_minutes
