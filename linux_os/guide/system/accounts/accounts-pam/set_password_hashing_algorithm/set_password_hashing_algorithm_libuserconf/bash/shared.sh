@@ -1,6 +1,10 @@
-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle,multi_platform_almalinux
+# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_sle,multi_platform_almalinux,multi_platform_al
 
 {{{ bash_instantiate_variables("var_password_hashing_algorithm_pam") }}}
+
+# Allow multiple algorithms, but choose the first one for remediation
+var_password_hashing_algorithm_pam="$(echo $var_password_hashing_algorithm_pam | cut -d \| -f 1)"
+
 LIBUSER_CONF="/etc/libuser.conf"
 CRYPT_STYLE_REGEX='[[:space:]]*\[defaults](.*(\n)+)+?[[:space:]]*crypt_style[[:space:]]*'
 

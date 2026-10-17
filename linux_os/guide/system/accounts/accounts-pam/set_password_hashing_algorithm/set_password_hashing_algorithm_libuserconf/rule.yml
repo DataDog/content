@@ -3,10 +3,10 @@ documentation_complete: true
 title: 'Set Password Hashing Algorithm in /etc/libuser.conf'
 
 description: |-
-    In <tt>/etc/libuser.conf</tt>, add or correct the following line in its <tt>[defaults]</tt>
-    section to ensure the system will use the {{{ xccdf_value("var_password_hashing_algorithm_pam") }}}
-    algorithm for password hashing:
-    <pre>crypt_style = {{{ xccdf_value("var_password_hashing_algorithm_pam") }}}</pre>
+    In <tt>/etc/libuser.conf</tt>, add or correct the <tt>crypt_style</tt> line in its
+    <tt>[defaults]</tt> section to name the first hashing algorithm of
+    <tt>{{{ xccdf_value("var_password_hashing_algorithm_pam") }}}</tt>, which lists one
+    algorithm, or several separated by a vertical bar, as the remediation does.
 
 rationale: |-
     Passwords need to be protected at all times, and encryption is the standard method for
