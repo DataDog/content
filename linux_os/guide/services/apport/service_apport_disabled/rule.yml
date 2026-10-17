@@ -5,19 +5,34 @@ title: 'Disable Apport Service'
 description: |-
     The Apport modifies certain kernel configuration values at
     runtime which may decrease the overall security of the system and expose sensitive data.
-    {{{ describe_service_disable(service="apport") }}}
+    Disable Apport in <tt>/etc/default/apport</tt>:
+    <pre>enabled=0</pre>
+    Then stop and mask the <tt>apport</tt> service:
+    <pre>$ sudo systemctl stop apport.service
+    $ sudo systemctl mask apport.service</pre>
+    This rule checks that every <tt>enabled</tt> setting in
+    <tt>/etc/default/apport</tt> is <tt>0</tt> and that <tt>apport.service</tt>
+    is stopped.
 
 rationale: |-
     The Apport service modifies the kernel
     <tt>fs.suid_dumpable</tt> configuration at runtime which
     prevents other hardening from being persistent. Disabling the
-    service prevents this behavior.
+    service prevents this behavior. Apport also collects core dumps,
+    stack traces, and log files, which can contain passwords and other
+    private data.
 
 severity: unknown
 
 platform: package[apport]
 
-template:
-    name: service_disabled
-    vars:
-        servicename: apport
+ocil_clause: '/etc/default/apport enables Apport or apport.service is active'
+
+ocil: |-
+    Run the following command to check that <tt>/etc/default/apport</tt>
+    does not enable Apport:
+    <pre>$ grep -Pi '^\h*enabled\h*=\h*[^0]\b' /etc/default/apport</pre>
+    Nothing should be returned.
+    Run the following command to check that the <tt>apport</tt> service is not active:
+    <pre>$ systemctl is-active apport.service</pre>
+    The output should not be <tt>active</tt>.
