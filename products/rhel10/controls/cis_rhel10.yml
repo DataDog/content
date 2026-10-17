@@ -774,6 +774,7 @@ controls:
       status: automated
       rules:
           - service_autofs_disabled
+          - var_service_disabled_mask_optional=true
 
     - id: 2.1.2
       title: Ensure avahi daemon services are not in use (Automated)
@@ -783,6 +784,7 @@ controls:
       status: automated
       rules:
           - service_avahi-daemon_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_avahi_removed
 
@@ -794,6 +796,7 @@ controls:
       status: automated
       rules:
           - service_cockpit_disabled
+          - var_service_disabled_mask_optional=true
 
     - id: 2.1.4
       title: Ensure dhcp server services are not in use (Automated)
@@ -802,8 +805,11 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_kea_removed
+          - service_kea_dhcp4_server_disabled
+          - service_kea_dhcp6_server_disabled
+          - service_kea_dhcp_ddns_server_disabled
       related_rules:
+          - package_kea_removed
           - service_dhcpd_disabled
 
     - id: 2.1.5
@@ -813,9 +819,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_bind_removed
-      related_rules:
           - service_named_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_bind_removed
 
     - id: 2.1.6
       title: Ensure dnsmasq services are not in use (Automated)
@@ -825,6 +832,7 @@ controls:
       status: automated
       rules:
           - service_dnsmasq_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_dnsmasq_removed
 
@@ -835,9 +843,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_vsftpd_removed
-      related_rules:
           - service_vsftpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_vsftpd_removed
 
     - id: 2.1.8
       title: Ensure message access server services are not in use (Automated)
@@ -846,10 +855,11 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_dovecot_removed
           - package_cyrus-imapd_removed
-      related_rules:
           - service_dovecot_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dovecot_removed
 
     - id: 2.1.9
       title: Ensure network file system services are not in use (Automated)
@@ -862,6 +872,7 @@ controls:
           nfs-utils package.
       rules:
           - service_nfs_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_nfs-utils_removed
 
@@ -872,6 +883,7 @@ controls:
       status: automated
       rules:
           - service_cups_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_cups_removed
 
@@ -886,6 +898,7 @@ controls:
           package used for The Network File System (NFS), are dependent on the rpcbind package.
       rules:
           - service_rpcbind_disabled
+          - var_service_disabled_mask_optional=true
       related_rules:
           - package_rpcbind_removed
 
@@ -896,9 +909,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_rsync_removed
-      related_rules:
           - service_rsyncd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_rsync_removed
 
     - id: 2.1.13
       title: Ensure samba file server services are not in use (Automated)
@@ -907,9 +921,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_samba_removed
-      related_rules:
           - service_smb_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_samba_removed
 
     - id: 2.1.14
       title: Ensure snmp services are not in use (Automated)
@@ -918,9 +933,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_net-snmp_removed
-      related_rules:
           - service_snmpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_net-snmp_removed
 
     - id: 2.1.15
       title: Ensure telnet server services are not in use (Automated)
@@ -940,9 +956,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_tftp-server_removed
-      related_rules:
           - service_tftp_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_tftp-server_removed
 
     - id: 2.1.17
       title: Ensure web proxy server services are not in use (Automated)
@@ -951,9 +968,10 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - package_squid_removed
-      related_rules:
           - service_squid_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_squid_removed
 
     - id: 2.1.18
       title: Ensure web server services are not in use (Automated)
@@ -962,10 +980,12 @@ controls:
           - l1_workstation
       status: automated
       rules:
+          - service_httpd_disabled
+          - service_nginx_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
           - package_httpd_removed
           - package_nginx_removed
-      related_rules:
-          - service_httpd_disabled
 
     - id: 2.1.19
       title: Ensure GNOME Display Manager is removed (Automated)
@@ -1166,11 +1186,13 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - file_cron_deny_not_exist
           - file_cron_allow_exists
           - file_groupowner_cron_allow
           - file_owner_cron_allow
           - file_permissions_cron_allow
+          - file_groupowner_cron_deny
+          - file_owner_cron_deny
+          - file_permissions_cron_deny
 
     - id: 2.4.2.1
       title: Ensure access to at is configured (Automated)
@@ -2345,6 +2367,7 @@ controls:
       status: automated
       rules:
           - package_aide_installed
+      related_rules:
           - aide_build_database
 
     - id: 6.1.2
@@ -2545,6 +2568,12 @@ controls:
           - rsyslog_files_groupownership
           - rsyslog_files_ownership
           - rsyslog_files_permissions
+          - permissions_local_var_log
+          - file_permissions_var_log_wbtmp
+          - file_permissions_var_log_lastlog
+          - file_permissions_var_log_cloud-init
+          - file_permissions_var_log_localmessages
+          - file_permissions_var_log_waagent
 
     - id: 6.3.1.1
       title: Ensure auditd packages are installed (Automated)

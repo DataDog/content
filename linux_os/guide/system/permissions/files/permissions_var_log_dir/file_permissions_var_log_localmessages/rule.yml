@@ -11,6 +11,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88605-1
+    cce@rhel9: CCE-88639-0
+    cce@rhel10: CCE-88677-0
+
 
 
 ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/localmessages", perms="-rw-r--r--") }}}'

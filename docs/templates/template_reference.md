@@ -834,6 +834,10 @@ When the remediation is applied duplicate occurrences of `key` are removed.
 #### service_disabled
 -   Checks if a service is disabled. Uses either systemd or SysV init
     based on the product configuration in `product.yml`.
+    With systemd, the check passes when the package is removed or when
+    the units of the service are masked and inactive. When the XCCDF
+    variable `var_service_disabled_mask_optional` is true, units that are
+    neither enabled nor active also pass.
 
 -   Parameters:
 
@@ -1112,6 +1116,12 @@ The selected value can be changed in the profile (consult the actual variable fo
     - **missing_config_file_fail** - a boolean which is used in OVAL. In case it
         is set to true, the rule will fail in case the master configuration file
         is not present. Default is true.
+
+    - **vendor_dropin_dirs** - a boolean which is used in OVAL. If set to
+        "true", the check also reads the dropin directories of the same name
+        under `/run`, `/usr/local/lib` and `/usr/lib`, as systemd does, e.g.
+        `/usr/lib/systemd/journald.conf.d` for the `dropin_dir`
+        `/etc/systemd/journald.conf.d`. Default is false.
 
     - **remediation_xccdf_variable** - if specified, then the given XCCDF
         variable is used during remediation instead of hardcoded value. The

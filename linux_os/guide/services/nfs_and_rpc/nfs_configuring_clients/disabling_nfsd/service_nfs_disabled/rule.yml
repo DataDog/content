@@ -46,5 +46,6 @@ template:
         packagename: nfs-utils
         packagename@debian12: nfs-kernel-server
         packagename@debian13: nfs-kernel-server
+        packagename@ubuntu2204: nfs-kernel-server
         packagename@ubuntu2404: nfs-kernel-server
         packagename@sle15: nfs-kernel-server

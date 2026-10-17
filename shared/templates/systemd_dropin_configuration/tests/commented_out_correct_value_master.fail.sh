@@ -3,6 +3,9 @@ SECTION="{{{ SECTION }}}"
 PARAM="{{{ PARAM }}}"
 VALUE="{{{ VALUE }}}"
 MASTER_CFG_FILE="{{{ MASTER_CFG_FILE }}}"
+{{% for dir in DROPIN_DIRS[1:] %}}
+sed -i "/^\\s*$PARAM\\s*=/d" {{{ dir }}}/*.conf 2>/dev/null || true
+{{% endfor %}}
 
 # This setup tests if remediation is "tricked" by a commented-out correct value.
 # It sets an active bad value and a commented-out good value.

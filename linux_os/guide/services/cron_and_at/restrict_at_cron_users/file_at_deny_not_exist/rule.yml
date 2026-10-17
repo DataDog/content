@@ -39,6 +39,8 @@ ocil: |-
     stat: cannot stat `/etc/at.deny': No such file or directory
     </pre>
 
+platform: package[at]
+
 template:
     name: file_existence
     vars:

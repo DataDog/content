@@ -3,7 +3,9 @@ documentation_complete: true
 title: 'Verify Permissions on /var/log/wtmp(.*) Files'
 
 description: |-
-    {{{ describe_file_permissions(file="/var/log/(b|w)tmp(.*|-*)", perms="0664") }}}
+    To properly set the permissions of <tt>/var/log/btmp</tt>, <tt>/var/log/wtmp</tt>
+    and their rotated files, run the command:
+    <pre>$ sudo find -P /var/log/ -maxdepth 1 -type f -regextype posix-extended -regex '.*(b|w)tmp((\.|-)[^\/]+)?$' -exec chmod u-xs,g-xs,o-xwt {} \;</pre>
 
 rationale: |-
     The <tt>/var/log/(b|w)tmp(.*|-*)</tt> files contains logs of reports the most recent login of all users
@@ -11,12 +13,20 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88607-7
+    cce@rhel9: CCE-88642-4
+    cce@rhel10: CCE-88679-6
 
 
-ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/(b|w)tmp(.*|-*)", perms="-rw-rw-r--") }}}'
+
+ocil_clause: 'a btmp or wtmp file of /var/log has a mode wider than 0664'
 
 ocil: |-
-    {{{ ocil_file_permissions(file="/var/log/(b|w)tmp(.*|-*)", perms="-rw-rw-r--") }}}
+    To check the permissions of <tt>/var/log/btmp</tt>, <tt>/var/log/wtmp</tt> and their
+    rotated files, run the command:
+    <pre>$ sudo find -P /var/log/ -maxdepth 1 -type f -regextype posix-extended -regex '.*(b|w)tmp((\.|-)[^\/]+)?$' -perm /u+xs,g+xs,o+xwt</pre>
+    It prints each file whose mode is wider than 0664.
 
 template:
     name: file_permissions
@@ -26,4 +36,6 @@ template:
         filemode: '0664'
 
 fixtext: |-
-    {{{ fixtext_file_permissions("/var/log/(b|w)tmp(.*|-*)", "0664") | indent(4) }}}
+    Set the mode of /var/log/btmp, /var/log/wtmp and their rotated files to 0664 or
+    stricter with the command:
+    $ sudo find -P /var/log/ -maxdepth 1 -type f -regextype posix-extended -regex '.*(b|w)tmp((\.|-)[^\/]+)?$' -exec chmod u-xs,g-xs,o-xwt {} \;

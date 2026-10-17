@@ -32,4 +32,5 @@ template:
         packagename: openldap-servers
         packagename@debian12: slapd
         packagename@debian13: slapd
+        packagename@ubuntu2204: slapd
         packagename@ubuntu2404: slapd
