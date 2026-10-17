@@ -5,7 +5,7 @@
 # disruption = low
 - (xccdf-var var_password_pam_{{{ VARIABLE }}})
 
-{{% if 'ol' in families or 'rhel' in product %}}
+{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' %}}
 - name: {{{ rule_title }}} - Find pwquality.conf.d files
   ansible.builtin.find:
     paths: /etc/security/pwquality.conf.d/

@@ -1,4 +1,4 @@
-{{% if "rhel" in families %}}
+{{% if "rhel" in families or product == "almalinux9" %}}
 {{%- set pam_files = ['/etc/pam.d/password-auth', '/etc/pam.d/system-auth'] -%}}
 {{% else %}}
 {{%- set pam_files = ['/etc/pam.d/common-password'] -%}}
