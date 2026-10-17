@@ -7,10 +7,16 @@
 {{{ ansible_instantiate_variables(VARIABLE) }}}
 
 - name: Ensure {{{ PKGNAME }}} is removed
+{{%- if pkg_manager == "apt_get" %}}
+  ansible.builtin.apt:
+    name: "{{{ PKGNAME }}}"
+    state: absent
+    purge: true
+{{%- else %}}
   ansible.builtin.package:
     name: "{{{ PKGNAME }}}"
     state: absent
-  when: {{{ VARIABLE }}} != "{{{ VALUE }}}"
+{{%- endif %}}
 {{% if OPERATION == "pattern match" %}}
   when: {{{ VARIABLE }}} is not regex("{{{ VALUE }}}")
 {{% else %}}
