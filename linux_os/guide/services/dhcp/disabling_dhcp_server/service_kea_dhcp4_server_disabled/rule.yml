@@ -15,6 +15,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel10: CCE-88709-1
     cce@sle16: CCE-96292-8
 
 ocil_clause: |-
@@ -29,6 +30,8 @@ template:
     name: service_disabled
     vars:
         servicename: kea-dhcp4-server
+        servicename@rhel10: kea-dhcp4
         servicename@sle16: kea-dhcp4
         packagename: kea
+        packagename@ubuntu2404: kea-dhcp4-server
         packagename@ubuntu2604: kea-dhcp4-server

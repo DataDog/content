@@ -612,6 +612,8 @@ controls:
           - l2_workstation
       rules:
           - service_autofs_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
           - package_autofs_removed
       status: automated
     - id: 2.1.2
@@ -620,8 +622,10 @@ controls:
           - l1_server
           - l2_workstation
       rules:
-          - package_avahi_removed
           - service_avahi-daemon_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_avahi_removed
       status: automated
     - id: 2.1.3
       title: Ensure dhcp server services are not in use (Automated)
@@ -629,9 +633,11 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_dhcp_removed
           - service_dhcpd_disabled
           - service_dhcpd6_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dhcp_removed
       status: automated
     - id: 2.1.4
       title: Ensure dns server services are not in use (Automated)
@@ -639,6 +645,9 @@ controls:
           - l1_server
           - l1_workstation
       rules:
+          - service_named_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
           - package_bind_removed
       status: automated
     - id: 2.1.5
@@ -647,8 +656,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_dnsmasq_removed
           - service_dnsmasq_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dnsmasq_removed
       status: automated
     - id: 2.1.6
       title: Ensure ftp server services are not in use (Automated)
@@ -656,8 +667,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_vsftpd_removed
           - service_vsftpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_vsftpd_removed
       status: automated
     - id: 2.1.7
       title: Ensure ldap server services are not in use (Automated)
@@ -665,8 +678,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_openldap-servers_removed
           - service_slapd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_openldap-servers_removed
       status: automated
     - id: 2.1.8
       title: Ensure message access server services are not in use (Automated)
@@ -674,8 +689,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_dovecot_removed
           - service_dovecot_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_dovecot_removed
       status: automated
     - id: 2.1.9
       title: Ensure network file system services are not in use (Automated)
@@ -683,8 +700,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_nfs-kernel-server_removed
           - service_nfs_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_nfs-kernel-server_removed
       status: automated
     - id: 2.1.10
       title: Ensure nis server services are not in use (Automated)
@@ -692,8 +711,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_ypserv_removed
           - service_ypserv_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_ypserv_removed
       status: automated
     - id: 2.1.11
       title: Ensure print server services are not in use (Automated)
@@ -701,8 +722,10 @@ controls:
           - l1_server
           - l2_workstation
       rules:
-          - package_cups_removed
           - service_cups_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_cups_removed
       status: automated
     - id: 2.1.12
       title: Ensure rpcbind services are not in use (Automated)
@@ -710,8 +733,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_rpcbind_removed
           - service_rpcbind_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_rpcbind_removed
       status: automated
     - id: 2.1.13
       title: Ensure rsync services are not in use (Automated)
@@ -719,8 +744,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_rsync_removed
           - service_rsyncd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_rsync_removed
       status: automated
     - id: 2.1.14
       title: Ensure samba file server services are not in use (Automated)
@@ -728,8 +755,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_samba_removed
           - service_smb_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_samba_removed
       status: automated
     - id: 2.1.15
       title: Ensure snmp services are not in use (Automated)
@@ -737,8 +766,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_net-snmp_removed
           - service_snmpd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_net-snmp_removed
       status: automated
     - id: 2.1.16
       title: Ensure tftp server services are not in use (Automated)
@@ -746,8 +777,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_tftp-server_removed
           - service_tftp_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_tftp-server_removed
       status: automated
     - id: 2.1.17
       title: Ensure web proxy server services are not in use (Automated)
@@ -755,8 +788,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_squid_removed
           - service_squid_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_squid_removed
       status: automated
     - id: 2.1.18
       title: Ensure web server services are not in use (Automated)
@@ -764,10 +799,12 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_httpd_removed
-          - package_nginx_removed
           - service_httpd_disabled
           - service_nginx_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_httpd_removed
+          - package_nginx_removed
       status: automated
     - id: 2.1.19
       title: Ensure xinetd services are not in use (Automated)
@@ -775,8 +812,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - package_xinetd_removed
           - service_xinetd_disabled
+          - var_service_disabled_mask_optional=true
+      related_rules:
+          - package_xinetd_removed
       status: automated
     - id: 2.1.20
       title: Ensure X window server services are not in use (Automated)
@@ -848,6 +887,7 @@ controls:
           - l1_workstation
       rules:
           - package_ftp_removed
+          - package_tnftp_removed
       status: automated
     - id: 2.3.1.1
       title: Ensure a single time synchronization daemon is in use (Automated)
@@ -1096,6 +1136,7 @@ controls:
           - l1_workstation
       rules:
           - sysctl_net_ipv4_conf_all_forwarding
+          - var_sysctl_ip_forward_counts_for_forwarding=true
       status: automated
     - id: 3.3.1.3
       title: Ensure net.ipv4.conf.default.forwarding is configured (Automated)
@@ -1104,6 +1145,7 @@ controls:
           - l1_workstation
       rules:
           - sysctl_net_ipv4_conf_default_forwarding
+          - var_sysctl_ip_forward_counts_for_forwarding=true
       status: automated
     - id: 3.3.1.4
       title: Ensure net.ipv4.conf.all.send_redirects is configured (Automated)
@@ -1383,7 +1425,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - sshd_use_strong_ciphers
+          - sshd_use_strong_ciphers_cis
       status: automated
     - id: 5.1.7
       title: Ensure sshd ClientAliveInterval and ClientAliveCountMax are configured (Automated)
@@ -1434,8 +1476,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - sshd_strong_kex=cis_ubuntu2204
-          - sshd_use_strong_kex
+          - sshd_use_strong_kex_cis
       status: automated
     - id: 5.1.13
       title: Ensure sshd LoginGraceTime is configured (Automated)
@@ -1452,7 +1493,10 @@ controls:
           - l1_server
           - l1_workstation
       rules:
+          - sshd_set_loglevel_verbose_or_info
+      related_rules:
           - sshd_set_loglevel_info
+          - sshd_set_loglevel_verbose
       status: automated
     - id: 5.1.15
       title: Ensure sshd MACs are configured (Automated)
@@ -1460,8 +1504,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - sshd_strong_macs=cis_ubuntu2204
-          - sshd_use_strong_macs
+          - sshd_use_strong_macs_cis
       status: automated
     - id: 5.1.16
       title: Ensure sshd MaxAuthTries is configured (Automated)
@@ -1644,7 +1687,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - var_accounts_passwords_pam_faillock_deny=4
+          - var_accounts_passwords_pam_faillock_deny=5
           - accounts_passwords_pam_faillock_deny
       status: automated
     - id: 5.3.3.1.2
@@ -1725,6 +1768,7 @@ controls:
       rules:
           - var_password_pam_dictcheck=1
           - accounts_password_pam_dictcheck
+          - var_password_pam_pwquality_default_compliant=true
       status: automated
     - id: 5.3.3.2.7
       title: Ensure password quality checking is enforced (Automated)
@@ -1734,6 +1778,7 @@ controls:
       rules:
           - var_password_pam_enforcing=1
           - accounts_password_pam_enforcing
+          - var_password_pam_pwquality_default_compliant=true
       status: automated
     - id: 5.3.3.2.8
       title: Ensure password quality is enforced for the root user (Automated)
@@ -1901,10 +1946,7 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - accounts_root_path_dirs_no_write
-          - root_path_all_dirs
-          - root_path_no_dot
-          - no_dirs_unowned_by_root
+          - root_path_login_integrity
       status: automated
     - id: 5.4.2.6
       title: Ensure root user umask is configured (Automated)
@@ -1945,7 +1987,7 @@ controls:
           - l1_workstation
       rules:
           - var_accounts_tmout=15_min
-          - accounts_tmout
+          - accounts_tmout_cis
       status: automated
     - id: 5.4.3.3
       title: Ensure default user umask is configured (Automated)
@@ -1954,9 +1996,8 @@ controls:
           - l1_workstation
       rules:
           - var_accounts_user_umask=027
-          - accounts_umask_etc_bashrc
           - accounts_umask_etc_login_defs
-          - accounts_umask_etc_profile
+          - accounts_umask_etc_profile_d
       status: automated
     - id: 6.1.1.1.1
       title: Ensure journald service is active (Automated)
@@ -2532,8 +2573,9 @@ controls:
           - l1_server
           - l1_workstation
       rules:
-          - aide_build_database
           - package_aide_installed
+      related_rules:
+          - aide_build_database
       status: automated
     - id: 6.3.2
       title: Ensure filesystem integrity is regularly checked (Automated)

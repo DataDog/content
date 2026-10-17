@@ -21,6 +21,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88609-3
+    cce@rhel9: CCE-88647-3
+    cce@rhel10: CCE-88681-2
+
 ocil_clause: 'the PATH of a root login shell holds an unsafe entry'
 
 ocil: |-

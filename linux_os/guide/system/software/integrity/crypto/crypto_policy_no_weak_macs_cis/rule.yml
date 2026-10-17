@@ -44,6 +44,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88581-4
+    cce@rhel9: CCE-88624-2
+    cce@rhel10: CCE-88670-5
+
 ocil_clause: 'the system wide crypto policy enables a weak MAC'
 
 ocil: |-

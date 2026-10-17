@@ -21,6 +21,10 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88594-7
+    cce@rhel9: CCE-88626-7
+
 ocil_clause: 'a GRUB2 configuration file is group-owned by another group'
 
 ocil: |-

@@ -20,6 +20,10 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88600-2
+    cce@rhel9: CCE-88631-7
+
 ocil_clause: 'a GRUB2 file of the EFI system partition has a mode greater than 0700'
 
 ocil: |-

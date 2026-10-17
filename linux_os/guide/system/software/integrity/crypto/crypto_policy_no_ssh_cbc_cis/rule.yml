@@ -33,6 +33,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88578-0
+    cce@rhel9: CCE-88622-6
+    cce@rhel10: CCE-88668-9
+
 ocil_clause: 'the system wide crypto policy enables a CBC cipher for SSH'
 
 ocil: |-

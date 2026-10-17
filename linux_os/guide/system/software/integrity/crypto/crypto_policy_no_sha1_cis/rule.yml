@@ -39,6 +39,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88573-1
+    cce@rhel9: CCE-88620-0
+    cce@rhel10: CCE-88667-1
+
 ocil_clause: 'the system wide crypto policy enables SHA-1 hash or signature algorithms'
 
 ocil: |-
