@@ -1,0 +1,79 @@
+{{%- set current_pol = "/etc/crypto-policies/state/CURRENT.pol" %}}
+{{%- set ssh_scope_regex = "(?i)^[ \\t]*cipher@(?:lib|open)ssh(?:-server|-client)?[ \\t]*=" %}}
+
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The resolved system wide crypto policy lists no CBC cipher for SSH", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="The resolved crypto policy exists"
+        test_ref="test_{{{ rule_id }}}_current_pol" />
+{{%- if product == "rhel8" %}}
+      <criteria operator="OR" comment="CBC is disabled globally or in the SSH cipher lines">
+        <criterion comment="The global cipher line lists no CBC cipher"
+          test_ref="test_{{{ rule_id }}}_global_cbc" />
+        <criteria operator="AND" comment="SSH cipher lines exist and list no CBC cipher">
+          <criterion comment="The resolved policy has SSH cipher lines"
+            test_ref="test_{{{ rule_id }}}_ssh_scope" />
+          <criterion comment="No SSH cipher line lists a CBC cipher"
+            test_ref="test_{{{ rule_id }}}_ssh_cbc" />
+        </criteria>
+      </criteria>
+{{%- else %}}
+      <criterion comment="No SSH cipher line lists a CBC cipher"
+        test_ref="test_{{{ rule_id }}}_ssh_cbc" />
+      <criteria operator="OR" comment="SSH cipher lines govern SSH, or the global cipher line lists no CBC cipher">
+        <criterion comment="The resolved policy has SSH cipher lines"
+          test_ref="test_{{{ rule_id }}}_ssh_scope" />
+        <criterion comment="The global cipher line lists no CBC cipher"
+          test_ref="test_{{{ rule_id }}}_global_cbc" />
+      </criteria>
+{{%- endif %}}
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="only_one_exists"
+    comment="The resolved crypto policy exists"
+    id="test_{{{ rule_id }}}_current_pol" version="1">
+    <unix:object object_ref="object_{{{ rule_id }}}_current_pol" />
+  </unix:file_test>
+
+  <unix:file_object id="object_{{{ rule_id }}}_current_pol" version="1">
+    <unix:filepath>{{{ current_pol }}}</unix:filepath>
+  </unix:file_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    comment="The resolved policy has SSH cipher lines"
+    id="test_{{{ rule_id }}}_ssh_scope" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_ssh_scope" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_ssh_scope" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ ssh_scope_regex }}}</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="No SSH cipher line lists a CBC cipher"
+    id="test_{{{ rule_id }}}_ssh_cbc" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_ssh_cbc" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_ssh_cbc" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ ssh_scope_regex }}}[^#\n]*-CBC\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="The global cipher line lists no CBC cipher"
+    id="test_{{{ rule_id }}}_global_cbc" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_global_cbc" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_global_cbc" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*cipher[ \t]*=[^#\n]*-CBC\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

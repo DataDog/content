@@ -1,0 +1,42 @@
+{{%- set current_pol = "/etc/crypto-policies/state/CURRENT.pol" %}}
+{{%- if product in ["rhel8", "rhel10"] %}}
+{{%- set weak_mac_comment = "The global mac line lists no MAC whose name ends in -128" %}}
+{{%- set weak_mac_regex = "(?i)^[ \\t]*mac[ \\t]*=[^#\\n]*-128\\b" %}}
+{{%- else %}}
+{{%- set weak_mac_comment = "No mac line lists a MAC whose name ends in -64" %}}
+{{%- set weak_mac_regex = "(?i)^[ \\t]*mac(?:@[^ \\t=]+)?[ \\t]*=[^#\\n]*-64\\b" %}}
+{{%- endif %}}
+
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The resolved system wide crypto policy disables weak MACs", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="The resolved crypto policy exists"
+        test_ref="test_{{{ rule_id }}}_current_pol" />
+      <criterion comment="{{{ weak_mac_comment }}}"
+        test_ref="test_{{{ rule_id }}}_weak_mac" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="only_one_exists"
+    comment="The resolved crypto policy exists"
+    id="test_{{{ rule_id }}}_current_pol" version="1">
+    <unix:object object_ref="object_{{{ rule_id }}}_current_pol" />
+  </unix:file_test>
+
+  <unix:file_object id="object_{{{ rule_id }}}_current_pol" version="1">
+    <unix:filepath>{{{ current_pol }}}</unix:filepath>
+  </unix:file_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="{{{ weak_mac_comment }}}"
+    id="test_{{{ rule_id }}}_weak_mac" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_weak_mac" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_weak_mac" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ weak_mac_regex }}}</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

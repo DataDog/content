@@ -1,0 +1,57 @@
+documentation_complete: true
+
+title: 'Ensure the System Wide Crypto Policy Disables CBC Ciphers for SSH'
+
+description: |-
+    The system wide crypto policy has to disable the Cipher Block Chaining (CBC)
+    mode ciphers for SSH. The rule reads the resolved policy that
+    <tt>update-crypto-policies</tt> writes to
+    <tt>/etc/crypto-policies/state/CURRENT.pol</tt> when it applies a policy.
+    In that file, the <tt>cipher@libssh</tt>, <tt>cipher@openssh</tt>,
+    <tt>cipher@openssh-client</tt> and <tt>cipher@openssh-server</tt> lines give the
+    ciphers of the SSH back-ends where they differ from the global <tt>cipher</tt> line.
+    The file has to exist, and
+    {{% if product == "rhel8" %}}
+    either its global <tt>cipher</tt> line lists no CBC cipher, or it has SSH cipher
+    lines and none of them lists a CBC cipher.
+    {{% else %}}
+    its SSH cipher lines have to list no CBC cipher. Without SSH cipher lines, the
+    global <tt>cipher</tt> line governs SSH and has to list no CBC cipher.
+    {{% endif %}}
+
+    To disable the CBC ciphers for SSH, add the following line to
+    <tt>/etc/crypto-policies/policies/modules/NO-SSHCBC.pmod</tt>:
+    <pre>cipher@SSH = -*-CBC</pre>
+    Then add the <tt>NO-SSHCBC</tt> subpolicy to the system wide crypto policy,
+    together with the subpolicies already in use, for example:
+    <pre>$ sudo update-crypto-policies --set DEFAULT:NO-SSHCBC</pre>
+
+rationale: |-
+    SSH messages encrypted with a cipher in CBC mode are vulnerable to an attack that
+    recovers up to 32 bits of plaintext from an arbitrary block of ciphertext
+    (CVE-2008-5161).
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88578-0
+    cce@rhel9: CCE-88622-6
+    cce@rhel10: CCE-88668-9
+
+ocil_clause: 'the system wide crypto policy enables a CBC cipher for SSH'
+
+ocil: |-
+    To verify that the resolved system wide crypto policy disables the CBC ciphers for
+    SSH, run the following command:
+    <pre>$ sudo grep -Pi '^\s*cipher(@(lib|open)ssh(-server|-client)?)?\s*=' /etc/crypto-policies/state/CURRENT.pol</pre>
+    {{% if product == "rhel8" %}}
+    Either the <tt>cipher</tt> line should list no cipher ending in <tt>-CBC</tt>, or
+    the command should return <tt>cipher@</tt> lines for SSH and none of them should
+    list a cipher ending in <tt>-CBC</tt>.
+    {{% else %}}
+    If the command returns <tt>cipher@</tt> lines for SSH, none of them should list a
+    cipher ending in <tt>-CBC</tt>. Otherwise the <tt>cipher</tt> line should list no
+    cipher ending in <tt>-CBC</tt>.
+    {{% endif %}}
+
+platform: package[crypto-policies]
