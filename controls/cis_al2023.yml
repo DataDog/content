@@ -1072,6 +1072,7 @@ controls:
       status: automated
       rules:
           - file_at_deny_not_exist
+          - file_at_allow_exists
           - file_groupowner_at_allow
           - file_owner_at_allow
           - file_permissions_at_allow
