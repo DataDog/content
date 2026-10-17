@@ -1,0 +1,44 @@
+documentation_complete: true
+
+title: 'Ensure the Shell Initialization Files Set a Restrictive Umask'
+
+description: |-
+    Every <tt>umask</tt> command that starts a line in <tt>/etc/profile</tt>,
+    <tt>/etc/bashrc</tt>, <tt>/etc/bash.bashrc</tt>, <tt>/etc/profile.d/sh.local</tt>
+    or a file under <tt>/etc/profile.d</tt> whose name ends in <tt>.sh</tt> has to set
+    <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or a more restrictive value,
+    written as three or four octal digits or as an absolute symbolic mode such as
+    <tt>u=rwx,g=rx,o=</tt>:
+    <pre>umask {{{ xccdf_value("var_accounts_user_umask") }}}</pre>
+    A relative symbolic mode such as <tt>g-w</tt> fails, as its result depends on
+    the umask before it.
+    The <tt>UMASK</tt> of <tt>/etc/login.defs</tt> applies until one of these files
+    sets the umask.
+
+rationale: |-
+    A shell initialization file that sets a permissive umask overrides the restrictive
+    default of <tt>/etc/login.defs</tt> for every interactive session, and files created in
+    those sessions become readable or writable by other users.
+
+severity: medium
+
+ocil_clause: 'a shell initialization file sets a less restrictive umask'
+
+ocil: |-
+    Run the following command to list the <tt>umask</tt> commands of the shell
+    initialization files:
+    <pre>$ sudo grep -PHrsi '^\h*umask\h+\S' /etc/profile /etc/bashrc /etc/bash.bashrc /etc/profile.d/</pre>
+    Every value returned for <tt>/etc/profile</tt>, <tt>/etc/bashrc</tt>,
+    <tt>/etc/bash.bashrc</tt>, <tt>/etc/profile.d/sh.local</tt> and the <tt>.sh</tt> files
+    has to be <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or more restrictive,
+    in octal or as an absolute symbolic mode.
+
+fixtext: |-
+    Configure {{{ full_name }}} to set a restrictive umask in the shell initialization files.
+
+    Change every "umask" command in "/etc/profile", "/etc/bashrc", "/etc/bash.bashrc",
+    "/etc/profile.d/sh.local" and "/etc/profile.d/*.sh" that sets a less restrictive value to:
+
+    umask {{{ xccdf_value("var_accounts_user_umask") }}}
+
+platform: package[bash]

@@ -1,0 +1,42 @@
+documentation_complete: true
+
+title: 'Ensure the Default Umask is Set Correctly in /etc/profile.d'
+
+description: |-
+    Login shells run the scripts matching <tt>/etc/profile.d/*.sh</tt> after
+    <tt>/etc/profile</tt>, so a <tt>umask</tt> command in them sets the default
+    umask of the session. At least one of these scripts has to set the umask, and
+    every <tt>umask</tt> command in them has to set
+    <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or a more restrictive
+    value, written as three or four octal digits or as an absolute symbolic mode
+    such as <tt>u=rwx,g=rx,o=</tt>. For example, add the following line to
+    <tt>/etc/profile.d/60-default_umask.sh</tt>:
+    <pre>umask {{{ xccdf_value("var_accounts_user_umask") }}}</pre>
+
+rationale: |-
+    The umask value influences the permissions assigned to files when they are created.
+    A misconfigured umask value could result in files with excessive permissions that can be read or
+    written to by unauthorized users.
+
+severity: medium
+
+ocil_clause: 'no script in /etc/profile.d sets the umask, or one sets a less restrictive value'
+
+ocil: |-
+    Run the following command to list the <tt>umask</tt> commands of the scripts in
+    <tt>/etc/profile.d</tt>:
+    <pre>$ grep -Pi '^\h*umask\h+\S' /etc/profile.d/*.sh</pre>
+    The command has to return at least one line, and every value has to be
+    <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or more restrictive, in octal
+    or as an absolute symbolic mode.
+
+fixtext: |-
+    Configure {{{ full_name }}} to set the default umask in "/etc/profile.d".
+
+    Add the following line to "/etc/profile.d/60-default_umask.sh":
+
+    umask {{{ xccdf_value("var_accounts_user_umask") }}}
+
+    Change every less restrictive "umask" command in "/etc/profile.d/*.sh" to the same value.
+
+platform: package[bash]
