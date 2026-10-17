@@ -17,6 +17,8 @@ ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/at.deny", group="root"
 ocil: |-
     {{{ ocil_file_group_owner(file="/etc/at.deny", group="root") }}}
 
+platform: package[at]
+
 template:
     name: file_groupowner
     vars:

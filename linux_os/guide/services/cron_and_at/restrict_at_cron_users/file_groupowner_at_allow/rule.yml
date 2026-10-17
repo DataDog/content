@@ -30,6 +30,8 @@ ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/at.allow", group="root
 ocil: |-
     {{{ ocil_file_group_owner(file="/etc/at.allow", group="root") }}}
 
+platform: package[at]
+
 template:
     name: file_groupowner
     vars:
