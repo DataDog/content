@@ -1,0 +1,30 @@
+documentation_complete: true
+
+title: 'Configure Access to MOTD Files'
+
+description: |-
+    The files that make up the message of the day, <tt>/etc/motd</tt>,
+    <tt>/run/motd</tt>, <tt>/usr/lib/motd</tt>, the files in
+    <tt>/etc/motd.d</tt>, <tt>/run/motd.d</tt> and <tt>/usr/lib/motd.d</tt>,
+    and the scripts in <tt>/etc/update-motd.d</tt>, must be owned by root,
+    group-owned by root, and have mode 0644 or more restrictive. For a
+    symbolic link, the owner, group and mode of its target count.
+    To set them on a file, run:
+    <pre>$ sudo chown root:root /etc/update-motd.d/00-header
+    $ sudo chmod u-x,go-wx /etc/update-motd.d/00-header</pre>
+    Since <tt>run-parts</tt> runs only executable files, a script in
+    <tt>/etc/update-motd.d</tt> with mode 0644 stops contributing to the
+    message of the day.
+
+rationale: |-
+    Restrictive ownership and permissions prevent unauthorized users from
+    changing the text displayed to users after login.
+
+severity: medium
+
+ocil_clause: 'a MOTD file is not owned by root:root or is more permissive than 0644'
+
+ocil: |-
+    Run the following command:
+    <pre>$ stat -Lc '%n %a %U:%G' /etc/motd /run/motd /usr/lib/motd /etc/motd.d/* /run/motd.d/* /usr/lib/motd.d/* /etc/update-motd.d/* 2>/dev/null</pre>
+    Each file listed must be owned by root:root with mode 0644 or more restrictive.
