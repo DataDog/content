@@ -20,6 +20,7 @@ rules:
 - file_permissions_grub2_cfg
 - file_permissions_user_cfg
 - grub2_admin_username
+- grub2_apparmor_not_disabled
 - grub2_audit_argument
 - grub2_audit_backlog_limit_argument
 - grub2_disable_interactive_boot
