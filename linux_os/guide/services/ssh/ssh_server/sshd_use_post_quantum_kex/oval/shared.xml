@@ -1,0 +1,34 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("No KexAlgorithms directive of the SSH server drops sntrup761x25519-sha512", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="no KexAlgorithms directive in {{{ sshd_main_config_file }}} drops sntrup761x25519-sha512"
+        test_ref="test_{{{ rule_id }}}_main" />
+      <criterion comment="no KexAlgorithms directive in {{{ sshd_config_dir }}} drops sntrup761x25519-sha512"
+        test_ref="test_{{{ rule_id }}}_drop_in" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no KexAlgorithms directive in {{{ sshd_main_config_file }}} drops sntrup761x25519-sha512"
+    id="test_{{{ rule_id }}}_main" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_main" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_main" version="1">
+    <ind:filepath>{{{ sshd_main_config_file }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+(?:(?![+^-])(?!\S*sntrup761x25519-sha512)\S+|-\S*sntrup761x25519-sha512)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no KexAlgorithms directive in {{{ sshd_config_dir }}} drops sntrup761x25519-sha512"
+    id="test_{{{ rule_id }}}_drop_in" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_drop_in" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_drop_in" version="1">
+    <ind:path>{{{ sshd_config_dir }}}</ind:path>
+    <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+(?:(?![+^-])(?!\S*sntrup761x25519-sha512)\S+|-\S*sntrup761x25519-sha512)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>
