@@ -14,6 +14,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel10: CCE-88711-7
+
 ocil_clause: |-
     {{{ ocil_clause_service_disabled(service="kea-dhcp-ddns-server") }}}
 
@@ -26,5 +29,6 @@ template:
     name: service_disabled
     vars:
         servicename: kea-dhcp-ddns-server
+        servicename@rhel10: kea-dhcp-ddns
         packagename: kea
         packagename@ubuntu2604: kea-dhcp-ddns-server
