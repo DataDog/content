@@ -1,4 +1,4 @@
-# platform = multi_platform_rhel,multi_platform_sle,multi_platform_slmicro,multi_platform_ubuntu,multi_platform_debian,multi_platform_fedora
+# platform = multi_platform_al,multi_platform_almalinux,multi_platform_rhel,multi_platform_sle,multi_platform_slmicro,multi_platform_ubuntu,multi_platform_debian,multi_platform_fedora
 
 {{{ bash_instantiate_variables("var_pam_wheel_group_for_su") }}}
 
