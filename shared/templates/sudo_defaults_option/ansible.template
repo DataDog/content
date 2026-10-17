@@ -44,7 +44,7 @@
 - name: Ensure {{{ OPTION }}} is enabled in /etc/sudoers
   ansible.builtin.lineinfile:
     path: /etc/sudoers
-    regexp: '^[\s]*Defaults.*\b{{{ OPTION }}}\b.*$'
+    regexp: '^[\s]*Defaults\s.*\b{{{ OPTION }}}\b.*$'
     line: 'Defaults {{{ OPTION }}}'
     validate: /usr/sbin/visudo -cf %s
 {{% if product in [ 'sle16', 'slmicro6' ] %}}

@@ -975,6 +975,7 @@ When the remediation is applied duplicate occurrences of `key` are removed.
 
 #### sudo_defaults_option
 This template ensures a sudo `Defaults` options is enabled in `/etc/sudoers` or in `/etc/sudoers.d/*`.\
+Like sudo, the check skips the files of `/etc/sudoers.d` whose names contain a `.` or end in `~`.\
 The template can check for options with and without parameters.\
 The remediations add the `Defaults` option  to `/etc/sudoers` file.
 

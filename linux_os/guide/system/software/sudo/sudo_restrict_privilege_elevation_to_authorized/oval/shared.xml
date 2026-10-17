@@ -7,7 +7,8 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_sudoers_cfg_spec_all_{{{ scope }}}" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">{{{ pattern }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>

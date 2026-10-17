@@ -38,7 +38,8 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="root_or_ALL_in_runas_spec" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <!-- The regex matches:
       - The username or group. If root, ignore everything, root can be allowed to do anything.
       - User specs are present in brackets, and if there are no brackets root user is assumed.
@@ -57,7 +58,7 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_no_runas_spec" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <!-- The regex matches:
       - The username or group. If root, ignore everything, root can be allowed to do anything.
       - User specs are present in brackets, and if there are no brackets root user is assumed.
@@ -81,7 +82,7 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_root_or_ALL_in_runas_spec_drop_in" version="1">
-    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/.*$</ind:filepath>
+    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/[^/.]*[^/.~]$</ind:filepath>
     <ind:pattern operation="pattern match">^\s*((?!(root|Defaults)\b)[\w]+)\s*(\w+)\s*=\s*(.*,)?\s*\([\w\s]*\b(root|ALL)\b[\w\s]*\)</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
@@ -93,7 +94,7 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_no_runas_spec_drop_in" version="1">
-    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/.*$</ind:filepath>
+    <ind:filepath operation="pattern match">^(/usr)?/etc/sudoers\.d/[^/.]*[^/.~]$</ind:filepath>
     <ind:pattern operation="pattern match">^\s*((?!(root|Defaults)\b)[\w]+)\s*(\w+)\s*=\s*(.*,)?\s*[^\(\s]</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
