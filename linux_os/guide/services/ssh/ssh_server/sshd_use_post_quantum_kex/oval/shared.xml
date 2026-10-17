@@ -1,0 +1,104 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("No KexAlgorithms directive of the SSH server drops sntrup761x25519-sha512", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="no KexAlgorithms directive in {{{ sshd_main_config_file }}} replaces the default list without sntrup761x25519-sha512"
+        test_ref="test_{{{ rule_id }}}_main" />
+      <criterion comment="no KexAlgorithms directive in {{{ sshd_config_dir }}} replaces the default list without sntrup761x25519-sha512"
+        test_ref="test_{{{ rule_id }}}_drop_in" />
+      <criteria operator="OR">
+        <criterion comment="no KexAlgorithms directive removes algorithms from the default list"
+          test_ref="test_{{{ rule_id }}}_no_removal" />
+        <criterion comment="no pattern of the KexAlgorithms directives that remove algorithms matches sntrup761x25519-sha512@openssh.com"
+          test_ref="test_{{{ rule_id }}}_removal_keeps_pq" />
+      </criteria>
+    </criteria>
+  </definition>
+
+  <!-- The first argument of the directive is the list: a comment after it
+       is left out. -->
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no KexAlgorithms directive in {{{ sshd_main_config_file }}} replaces the default list without sntrup761x25519-sha512"
+    id="test_{{{ rule_id }}}_main" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_main" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_main" version="1">
+    <ind:filepath>{{{ sshd_main_config_file }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+(?![+^-])(?!\S*sntrup761x25519-sha512)\S+</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no KexAlgorithms directive in {{{ sshd_config_dir }}} replaces the default list without sntrup761x25519-sha512"
+    id="test_{{{ rule_id }}}_drop_in" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_drop_in" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_drop_in" version="1">
+    <ind:path>{{{ sshd_config_dir }}}</ind:path>
+    <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+(?![+^-])(?!\S*sntrup761x25519-sha512)\S+</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <!-- The subexpression holds the list after the "-" of a directive that
+       removes algorithms. -->
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_removal_main" version="1">
+    <ind:filepath>{{{ sshd_main_config_file }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+-(\S+)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_removal_drop_in" version="1">
+    <ind:path>{{{ sshd_config_dir }}}</ind:path>
+    <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*kexalgorithms[ \t]+-(\S+)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_removal" version="1">
+    <set>
+      <object_reference>object_{{{ rule_id }}}_removal_main</object_reference>
+      <object_reference>object_{{{ rule_id }}}_removal_drop_in</object_reference>
+    </set>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="no KexAlgorithms directive removes algorithms from the default list"
+    id="test_{{{ rule_id }}}_no_removal" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_removal" />
+  </ind:textfilecontent54_test>
+
+  <!-- OpenSSH matches the patterns of a list that removes algorithms with
+       its wildcards * and ?, and treats a backslash as an ordinary
+       character. -->
+  <local_variable id="var_{{{ rule_id }}}_removal_patterns" datatype="string" version="1"
+    comment="the patterns of the lists that remove algorithms, as regular expressions">
+    <glob_to_regex glob_noescape="true">
+      <split delimiter=",">
+        <object_component item_field="subexpression" object_ref="object_{{{ rule_id }}}_removal" />
+      </split>
+    </glob_to_regex>
+  </local_variable>
+
+  <!-- Every OpenSSH that offers the algorithm names it so. OpenSSH 9.9
+       added sntrup761x25519-sha512 as a second name, and a pattern that
+       removes only that one leaves the algorithm offered. -->
+  <constant_variable id="var_{{{ rule_id }}}_pq_name" datatype="string" version="1"
+    comment="the name of the post-quantum key exchange algorithm">
+    <value>sntrup761x25519-sha512@openssh.com</value>
+  </constant_variable>
+
+  <ind:variable_object id="object_{{{ rule_id }}}_pq_name" version="1">
+    <ind:var_ref>var_{{{ rule_id }}}_pq_name</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_{{{ rule_id }}}_not_removed" version="1">
+    <ind:value datatype="string" operation="pattern match"
+      var_ref="var_{{{ rule_id }}}_removal_patterns" var_check="none satisfy" />
+  </ind:variable_state>
+
+  <ind:variable_test check="all" check_existence="all_exist"
+    comment="no pattern of the KexAlgorithms directives that remove algorithms matches sntrup761x25519-sha512@openssh.com"
+    id="test_{{{ rule_id }}}_removal_keeps_pq" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_pq_name" />
+    <ind:state state_ref="state_{{{ rule_id }}}_not_removed" />
+  </ind:variable_test>
+</def-group>

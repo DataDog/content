@@ -89,6 +89,7 @@ rules:
 - sshd_use_approved_macs
 - sshd_use_approved_macs_ordered_stig
 - sshd_use_directory_configuration
+- sshd_use_post_quantum_kex
 - sshd_use_priv_separation
 - sshd_use_strong_ciphers
 - sshd_use_strong_kex
