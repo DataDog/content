@@ -1,4 +1,4 @@
-{{% if 'ol' in families or 'rhel' in product %}}
+{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' %}}
 {{% set filepath_regex="^/etc/security/pwquality\.conf(\.d/[^/]+\.conf)?$" %}}
 {{% else %}}
 {{% set filepath_regex="^" + pwquality_path + "$" %}}
