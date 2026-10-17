@@ -1,32 +1,52 @@
+{{#-
+  authselect finds a profile as follows: an ID that starts with custom/ names
+  a profile in /etc/authselect, any other ID a profile in
+  /usr/share/authselect/vendor, or in /usr/share/authselect/default when no
+  vendor profile has that name. Check the files where authselect finds the
+  active profile.
+-#}}
+{{%- set modules = ["pwquality", "pwhistory", "faillock", "unix"] -%}}
+{{%- set pam_files = ["system-auth", "password-auth"] -%}}
+{{%- set locations = {"custom": "/etc/authselect/", "vendor": "/usr/share/authselect/vendor/", "default": "/usr/share/authselect/default/"} -%}}
+
+{{%- macro criteria_modules(location) -%}}
+{{%- for file_name in pam_files %}}
+          <criteria operator="AND" comment="All required PAM modules must be present in {{{ file_name }}}">
+  {{%- for module_name in modules %}}
+            <criterion test_ref="test_{{{ rule_id }}}_{{{ location }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}"
+              comment="pam_{{{ module_name }}}.so exists in {{{ file_name }}}"/>
+  {{%- endfor %}}
+          </criteria>
+{{%- endfor %}}
+{{%- endmacro -%}}
+
 <def-group>
-  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+  <definition class="compliance" id="{{{ rule_id }}}" version="2">
     {{{ oval_metadata("Ensure active authselect profile includes pam modules", rule_title=rule_title) }}}
     <criteria operator="AND" comment="Check that authselect is enabled and profile includes required modules">
       <!-- First check that authselect is enabled -->
       <extend_definition comment="authselect must be enabled" definition_ref="enable_authselect" />
 
-      <!-- Check that all required modules exist in system-auth -->
-      <criteria operator="AND" comment="All required PAM modules must be present in system-auth">
-        <criterion test_ref="test_{{{ rule_id }}}_pam_pwquality_system_auth"
-          comment="pam_pwquality.so exists in system-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_pwhistory_system_auth"
-          comment="pam_pwhistory.so exists in system-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_faillock_system_auth"
-          comment="pam_faillock.so exists in system-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_unix_system_auth"
-          comment="pam_unix.so exists in system-auth"/>
-      </criteria>
-
-      <!-- Check that all required modules exist in password-auth -->
-      <criteria operator="AND" comment="All required PAM modules must be present in password-auth">
-        <criterion test_ref="test_{{{ rule_id }}}_pam_pwquality_password_auth"
-          comment="pam_pwquality.so exists in password-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_pwhistory_password_auth"
-          comment="pam_pwhistory.so exists in password-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_faillock_password_auth"
-          comment="pam_faillock.so exists in password-auth"/>
-        <criterion test_ref="test_{{{ rule_id }}}_pam_unix_password_auth"
-          comment="pam_unix.so exists in password-auth"/>
+      <criteria operator="OR" comment="The files of the active profile include the required PAM modules">
+        <criteria operator="AND" comment="A custom profile, found in /etc/authselect">
+          <criterion test_ref="test_{{{ rule_id }}}_profile_is_custom"
+            comment="The profile ID starts with custom/"/>
+          {{{ criteria_modules("custom") }}}
+        </criteria>
+        <criteria operator="AND" comment="A vendor profile, found in /usr/share/authselect/vendor">
+          <criterion test_ref="test_{{{ rule_id }}}_profile_is_custom" negate="true"
+            comment="The profile ID does not start with custom/"/>
+          <criterion test_ref="test_{{{ rule_id }}}_vendor_profile_exists"
+            comment="A vendor profile has the ID"/>
+          {{{ criteria_modules("vendor") }}}
+        </criteria>
+        <criteria operator="AND" comment="A default profile, found in /usr/share/authselect/default">
+          <criterion test_ref="test_{{{ rule_id }}}_profile_is_custom" negate="true"
+            comment="The profile ID does not start with custom/"/>
+          <criterion test_ref="test_{{{ rule_id }}}_vendor_profile_exists" negate="true"
+            comment="No vendor profile has the ID"/>
+          {{{ criteria_modules("default") }}}
+        </criteria>
       </criteria>
     </criteria>
   </definition>
@@ -45,37 +65,60 @@
     </regex_capture>
   </local_variable>
 
-  <!-- Check files in the currently selected authselect profile (custom location only) -->
-{{%- macro oval_pam_module_check(module_name, file_name) -%}}
-  <!-- Construct full file path for custom profile location -->
-  <local_variable id="var_{{{ rule_id }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}_path" datatype="string" comment="Full path to {{{ file_name }}} in current profile" version="1">
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_profile_is_custom" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="Check that the current authselect profile is a custom profile">
+    <ind:object object_ref="obj_{{{ rule_id }}}_authselect_profile" />
+    <ind:state state_ref="ste_{{{ rule_id }}}_profile_is_custom" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_state id="ste_{{{ rule_id }}}_profile_is_custom" version="1">
+    <ind:subexpression operation="pattern match">^custom/</ind:subexpression>
+  </ind:textfilecontent54_state>
+
+  <local_variable id="var_{{{ rule_id }}}_vendor_profile_dir" datatype="string" comment="Directory of a vendor profile with the current profile name" version="1">
     <concat>
-      <literal_component>/etc/authselect/</literal_component>
+      <literal_component>/usr/share/authselect/vendor/</literal_component>
+      <variable_component var_ref="var_{{{ rule_id }}}_authselect_profile" />
+    </concat>
+  </local_variable>
+
+  <unix:file_test id="test_{{{ rule_id }}}_vendor_profile_exists" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="Check that a vendor profile has the current profile name">
+    <unix:object object_ref="obj_{{{ rule_id }}}_vendor_profile_dir" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_{{{ rule_id }}}_vendor_profile_dir" version="1">
+    <unix:path var_ref="var_{{{ rule_id }}}_vendor_profile_dir" />
+    <unix:filename xsi:nil="true" />
+  </unix:file_object>
+
+{{%- for location, prefix in locations.items() %}}
+{{%- for file_name in pam_files %}}
+  <!-- Full path to {{{ file_name }}} of the current profile in {{{ prefix }}} -->
+  <local_variable id="var_{{{ rule_id }}}_{{{ location }}}_{{{ file_name | replace("-", "_") }}}_path" datatype="string" comment="Full path to {{{ file_name }}} of the current profile in {{{ prefix }}}" version="1">
+    <concat>
+      <literal_component>{{{ prefix }}}</literal_component>
       <variable_component var_ref="var_{{{ rule_id }}}_authselect_profile" />
       <literal_component>/{{{ file_name }}}</literal_component>
     </concat>
   </local_variable>
+{{%- for module_name in modules %}}
 
-  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" version="1"
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_{{{ location }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" version="1"
     check="all" check_existence="at_least_one_exists"
-    comment="Check that pam_{{{ module_name }}}.so exists in {{{ file_name }}}">
-    <ind:object object_ref="obj_{{{ rule_id }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" />
+    comment="Check that pam_{{{ module_name }}}.so exists in {{{ file_name }}} of the current profile in {{{ prefix }}}">
+    <ind:object object_ref="obj_{{{ rule_id }}}_{{{ location }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" />
   </ind:textfilecontent54_test>
 
-  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" version="1">
-    <ind:filepath var_ref="var_{{{ rule_id }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}_path" />
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_{{{ location }}}_pam_{{{ module_name }}}_{{{ file_name | replace("-", "_") }}}" version="1">
+    <ind:filepath var_ref="var_{{{ rule_id }}}_{{{ location }}}_{{{ file_name | replace("-", "_") }}}_path" />
     <ind:pattern operation="pattern match">^\s*\S+\s+\S+\s+pam_{{{ module_name }}}\.so</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
-{{%- endmacro -%}}
-
-{{{ oval_pam_module_check("pwquality", "system-auth") }}}
-{{{ oval_pam_module_check("pwhistory", "system-auth") }}}
-{{{ oval_pam_module_check("faillock", "system-auth") }}}
-{{{ oval_pam_module_check("unix", "system-auth") }}}
-{{{ oval_pam_module_check("pwquality", "password-auth") }}}
-{{{ oval_pam_module_check("pwhistory", "password-auth") }}}
-{{{ oval_pam_module_check("faillock", "password-auth") }}}
-{{{ oval_pam_module_check("unix", "password-auth") }}}
+{{%- endfor %}}
+{{%- endfor %}}
+{{%- endfor %}}
 
 </def-group>
