@@ -1,0 +1,75 @@
+{{%- set current_pol = "/etc/crypto-policies/state/CURRENT.pol" %}}
+{{%- set check_scopes = product not in ["rhel8", "rhel10"] %}}
+{{%- set exempt_scopes = ["rpm", "dnssec", "smime", "smime-import", "pkcs12", "pkcs12-import", "nss-smime", "nss-smime-import", "nss-pkcs12", "nss-pkcs12-import"] %}}
+
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The resolved system wide crypto policy lists no SHA-1 hash or signature algorithm and disallows SHA-1 in certificates", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="The resolved crypto policy exists"
+        test_ref="test_{{{ rule_id }}}_current_pol" />
+      <criterion comment="No hash or sign line lists a SHA-1 algorithm"
+        test_ref="test_{{{ rule_id }}}_global" />
+{{%- if check_scopes %}}
+      <criterion comment="Only the legacy interoperability scopes list a SHA-1 hash or signature algorithm"
+        test_ref="test_{{{ rule_id }}}_scoped" />
+{{%- endif %}}
+      <criterion comment="sha1_in_certs is set to 0"
+        test_ref="test_{{{ rule_id }}}_sha1_in_certs" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="only_one_exists"
+    comment="The resolved crypto policy exists"
+    id="test_{{{ rule_id }}}_current_pol" version="1">
+    <unix:object object_ref="object_{{{ rule_id }}}_current_pol" />
+  </unix:file_test>
+
+  <unix:file_object id="object_{{{ rule_id }}}_current_pol" version="1">
+    <unix:filepath>{{{ current_pol }}}</unix:filepath>
+  </unix:file_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="No hash or sign line lists a SHA-1 algorithm"
+    id="test_{{{ rule_id }}}_global" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_global" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_global" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*(?:hash|sign)[ \t]*=[^#\n]*SHA-?1\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- if check_scopes %}}
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="Only the legacy interoperability scopes list a SHA-1 hash or signature algorithm"
+    id="test_{{{ rule_id }}}_scoped" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_scoped" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_scoped" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*(?:hash|sign)@(?!(?:{{{ exempt_scopes | join("|") }}})[ \t]*=)[^ \t=]+[ \t]*=[^#\n]*SHA-?1\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
+
+  <ind:textfilecontent54_test check="all"
+    check_existence="{{% if check_scopes %}}any_exist{{% else %}}at_least_one_exists{{% endif %}}"
+    comment="sha1_in_certs is set to 0"
+    id="test_{{{ rule_id }}}_sha1_in_certs" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_sha1_in_certs" />
+    <ind:state state_ref="state_{{{ rule_id }}}_sha1_in_certs" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_sha1_in_certs" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*sha1_in_certs[ \t]*=[ \t]*([^#\s]*)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_sha1_in_certs" version="1">
+    <ind:subexpression operation="equals">0</ind:subexpression>
+  </ind:textfilecontent54_state>
+</def-group>

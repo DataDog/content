@@ -621,7 +621,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_not_legacy
 
     - id: 1.6.2
       title: Ensure system wide crypto policy disables sha1 hash and signature support (Automated)
@@ -630,6 +630,8 @@ controls:
           - l1_workstation
       status: automated
       rules:
+          - crypto_policy_no_sha1_cis
+      related_rules:
           - configure_custom_crypto_policy_cis
 
     - id: 1.6.3
@@ -639,7 +641,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_no_weak_macs_cis
 
     - id: 1.6.4
       title: Ensure system wide crypto policy disables cbc for ssh (Automated)
@@ -648,7 +650,7 @@ controls:
           - l1_workstation
       status: automated
       rules:
-          - configure_custom_crypto_policy_cis
+          - crypto_policy_no_ssh_cbc_cis
 
     - id: 1.7.1
       title: Ensure /etc/motd is configured (Automated)

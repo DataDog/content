@@ -1,0 +1,113 @@
+{{%- set current_pol = "/etc/crypto-policies/state/CURRENT.pol" %}}
+{{%- set ssh_scope_regex = "(?i)^[ \\t]*cipher@(?:lib|open)ssh(?:-server|-client)?[ \\t]*=" %}}
+
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The resolved system wide crypto policy lists no CBC cipher for SSH", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="The resolved crypto policy exists"
+        test_ref="test_{{{ rule_id }}}_current_pol" />
+{{%- if product == "rhel8" %}}
+      <criteria operator="OR" comment="CBC is disabled globally or in the cipher lines of every SSH back-end">
+        <criterion comment="The global cipher line lists no CBC cipher"
+          test_ref="test_{{{ rule_id }}}_global_cbc" />
+        <criteria operator="AND" comment="SSH cipher lines cover every SSH back-end and list no CBC cipher">
+          <criterion comment="A cipher@libssh line exists"
+            test_ref="test_{{{ rule_id }}}_libssh" />
+          <criterion comment="A cipher@openssh-client or cipher@openssh line exists"
+            test_ref="test_{{{ rule_id }}}_openssh_client" />
+          <criterion comment="A cipher@openssh-server or cipher@openssh line exists"
+            test_ref="test_{{{ rule_id }}}_openssh_server" />
+          <criterion comment="No SSH cipher line lists a CBC cipher"
+            test_ref="test_{{{ rule_id }}}_ssh_cbc" />
+        </criteria>
+      </criteria>
+{{%- else %}}
+      <criterion comment="No SSH cipher line lists a CBC cipher"
+        test_ref="test_{{{ rule_id }}}_ssh_cbc" />
+      <criteria operator="OR" comment="SSH cipher lines cover every SSH back-end, or the global cipher line lists no CBC cipher">
+        <criteria operator="AND" comment="SSH cipher lines cover every SSH back-end">
+          <criterion comment="A cipher@libssh line exists"
+            test_ref="test_{{{ rule_id }}}_libssh" />
+          <criterion comment="A cipher@openssh-client or cipher@openssh line exists"
+            test_ref="test_{{{ rule_id }}}_openssh_client" />
+          <criterion comment="A cipher@openssh-server or cipher@openssh line exists"
+            test_ref="test_{{{ rule_id }}}_openssh_server" />
+        </criteria>
+        <criterion comment="The global cipher line lists no CBC cipher"
+          test_ref="test_{{{ rule_id }}}_global_cbc" />
+      </criteria>
+{{%- endif %}}
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="only_one_exists"
+    comment="The resolved crypto policy exists"
+    id="test_{{{ rule_id }}}_current_pol" version="1">
+    <unix:object object_ref="object_{{{ rule_id }}}_current_pol" />
+  </unix:file_test>
+
+  <unix:file_object id="object_{{{ rule_id }}}_current_pol" version="1">
+    <unix:filepath>{{{ current_pol }}}</unix:filepath>
+  </unix:file_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    comment="A cipher@libssh line exists"
+    id="test_{{{ rule_id }}}_libssh" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_libssh" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_libssh" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*cipher@libssh[ \t]*=</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    comment="A cipher@openssh-client or cipher@openssh line exists"
+    id="test_{{{ rule_id }}}_openssh_client" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_openssh_client" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_openssh_client" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*cipher@openssh(?:-client)?[ \t]*=</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    comment="A cipher@openssh-server or cipher@openssh line exists"
+    id="test_{{{ rule_id }}}_openssh_server" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_openssh_server" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_openssh_server" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*cipher@openssh(?:-server)?[ \t]*=</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="No SSH cipher line lists a CBC cipher"
+    id="test_{{{ rule_id }}}_ssh_cbc" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_ssh_cbc" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_ssh_cbc" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ ssh_scope_regex }}}[^#\n]*-CBC\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist"
+    comment="The global cipher line lists no CBC cipher"
+    id="test_{{{ rule_id }}}_global_cbc" version="1">
+    <ind:object object_ref="object_{{{ rule_id }}}_global_cbc" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_global_cbc" version="1">
+    <ind:filepath>{{{ current_pol }}}</ind:filepath>
+    <ind:pattern operation="pattern match">(?i)^[ \t]*cipher[ \t]*=[^#\n]*-CBC\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>
