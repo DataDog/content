@@ -15,6 +15,7 @@ rules:
 - encrypt_partitions
 - ensure_iptables_are_flushed
 - file_groupownership_home_directories
+- file_permission_user_dot_files
 - file_permission_user_init_files
 - file_permission_user_init_files_root
 - file_permissions_home_directories

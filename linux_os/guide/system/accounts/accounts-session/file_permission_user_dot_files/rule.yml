@@ -1,0 +1,37 @@
+documentation_complete: true
+
+title: 'Ensure User Dot Files Have Mode 0644 or Less Permissive'
+
+description: |-
+    The dot files in the home directories of interactive users, other than
+    <tt>.bash_history</tt> and <tt>.netrc</tt>, should have mode <tt>0644</tt> or less
+    permissive: no execute bit, and no write bit for the group or others.
+    <tt>.bash_history</tt> and <tt>.netrc</tt> have their own, stricter rules.
+    To set the mode of a dot file, run the following command:
+    <pre>$ sudo chmod u-x,go-wx /home/<i>USER</i>/<i>.FILE</i></pre>
+
+rationale: |-
+    A dot file that others can write lets them change the environment, the
+    commands or the startup of the user's sessions.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-87563-3
+    cce@rhel9: CCE-87564-1
+    cce@rhel10: CCE-87568-2
+
+ocil_clause: 'a dot file has a mode more permissive than 0644'
+
+ocil: |-
+    To list the dot files of the interactive users that are more permissive than
+    0644, run the following command:
+    <pre>$ sudo find /home/*/ -maxdepth 1 -type f -name '.*' ! -name .bash_history ! -name .netrc -perm /7133</pre>
+    The command should return no output.
+
+fixtext: |-
+    Remove the execute bits, and the write bits of the group and others, from the dot files of the interactive users:
+
+    $ sudo chmod u-x,go-wx /home/USER/.FILE
+
+platform: system_with_kernel
