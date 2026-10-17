@@ -1249,7 +1249,7 @@ For more details on configuring kernel arguments in bootable container images, p
 
 #}}
 {{%- macro aide_string() -%}}
-{{%- if 'rhel' not in product and 'ubuntu' not in product and 'ol' not in families and product not in ['fedora'] -%}}
+{{%- if 'rhel' not in product and 'almalinux' not in product and 'ubuntu' not in product and 'ol' not in families and product not in ['al2023', 'fedora'] -%}}
 {{%- if product in ['sle16'] -%}}
 p+i+n+u+g+s+b+acl+selinux+sha512
 {{%- else -%}}
@@ -1262,13 +1262,31 @@ p+i+n+u+g+s+b+acl+xattrs+sha512
 
 
 {{#
+    The directories of the audit tools in the AIDE configuration, separated
+    by spaces. The CIS Amazon Linux 2023 Benchmark names the tools under
+    /sbin, a link to /usr/sbin there, and AIDE 0.18 of Amazon Linux 2023
+    records the link itself and takes the files from /usr/sbin, so the
+    configuration names them under both directories.
+#}}
+{{%- macro aide_audit_dirs() -%}}
+{{%- if product == 'al2023' -%}}
+/usr/sbin /sbin
+{{%- else -%}}
+/usr/sbin
+{{%- endif -%}}
+{{%- endmacro -%}}
+
+
+{{#
     Lists the files need for the rule aide_check_audit_tools with the AIDE string
 
 #}}
 {{%- macro aide_config_file_lines() -%}}
     {{% for binary in aide_audit_binaries -%}}
-    /usr/sbin/{{{ binary }}} {{{ aide_string() }}}
+    {{% for dir in aide_audit_dirs().split() -%}}
+    {{{ dir }}}/{{{ binary }}} {{{ aide_string() }}}
     {{% endfor %}}
+    {{%- endfor %}}
 {{% endmacro %}}
 
 
