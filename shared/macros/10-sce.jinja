@@ -75,3 +75,70 @@ exit "${XCCDF_RESULT_PASS}"
 {{% macro find_directories(find_parameters, fail_message, exclude_directories="", skip_rpm_owned_files=False) %}}
 {{{ find_command(find_parameters, fail_message, exclude_directories, skip_rpm_owned_files, find_type="-type d") }}}
 {{% endmacro %}}
+
+{{#
+  Macro to check that the SSH server offers none of the given algorithms.
+  It reads the effective list from sshd -T. On RHEL 8 the sshd unit passes
+  CRYPTO_POLICY from /etc/crypto-policies/back-ends/opensshserver.config
+  and OPTIONS from /etc/sysconfig/sshd to sshd on the command line, and the
+  check passes them to sshd -T the same way. It returns fail when sshd -T
+  prints no list for the keyword, and not applicable when sshd -T stops
+  for want of the privilege separation directory: on Ubuntu, ssh.socket
+  starts the service, which creates /run/sshd, on the first connection.
+
+  :param keyword: The sshd -T keyword: ciphers, kexalgorithms or macs
+  :param algorithms: Comma-separated algorithms the server must not offer
+#}}
+{{% macro sshd_algorithms_not_offered(keyword, algorithms) %}}
+denied="{{{ algorithms }}}"
+
+options=()
+backend=/etc/crypto-policies/back-ends/opensshserver.config
+if grep -qs '^CRYPTO_POLICY=' "$backend"; then
+    OPTIONS=
+    CRYPTO_POLICY=
+    . "$backend"
+    if [ -r /etc/sysconfig/sshd ]; then
+        . /etc/sysconfig/sshd
+    fi
+    # Split as the sshd unit does. bash 4.4 writes a here-string to a
+    # file in /tmp, which is read-only in a scanned root.
+    set -f
+    # shellcheck disable=SC2206
+    options=($OPTIONS $CRYPTO_POLICY)
+    set +f
+fi
+
+out=$(/usr/sbin/sshd -T "${options[@]}" 2>&1)
+case $out in
+*"Missing privilege separation directory"*)
+    echo "sshd -T needs the privilege separation directory, which the sshd service creates when it starts."
+    exit "$XCCDF_RESULT_NOT_APPLICABLE"
+    ;;
+esac
+offered=$(printf '%s\n' "$out" | awk '$1 == "{{{ keyword }}}" { print tolower($2); exit }')
+if [ -z "$offered" ]; then
+    echo "sshd -T printed no {{{ keyword }}} line."
+    exit "$XCCDF_RESULT_FAIL"
+fi
+
+found=
+set -f
+IFS=,
+# shellcheck disable=SC2206
+list=($denied)
+unset IFS
+set +f
+for alg in "${list[@]}"; do
+    case ",$offered," in
+    *",$alg,"*)
+        found="$found $alg"
+        ;;
+    esac
+done
+if [ -n "$found" ]; then
+    echo "sshd offers prohibited {{{ keyword }}}:$found"
+    exit "$XCCDF_RESULT_FAIL"
+fi
+exit "$XCCDF_RESULT_PASS"
+{{% endmacro %}}
