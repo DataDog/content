@@ -1,0 +1,40 @@
+# platform = multi_platform_al
+# reboot = false
+# strategy = configure
+# complexity = low
+# disruption = low
+{{{ ansible_instantiate_variables("var_multiple_time_servers") }}}
+
+- name: "Find the files of /etc/chrony.d with server or pool entries"
+  ansible.builtin.find:
+    paths: /etc/chrony.d
+    recurse: true
+    hidden: true
+    contains: '^\s*(server|pool)\s+[^#\s]'
+  register: chrony_d_sources
+
+- name: "Add remote time servers to /etc/chrony.d/50-time-servers.conf"
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.d/50-time-servers.conf
+    line: 'server {{ item }} iburst'
+    state: present
+    create: true
+    mode: '0644'
+  loop: '{{ var_multiple_time_servers.split(",") }}'
+  when: chrony_d_sources.matched == 0
+
+- name: "Check that chrony reads the .conf files of /etc/chrony.d"
+  ansible.builtin.command:
+    cmd: grep -Pqs '^\s*confdir(\s+\S+)*\s+/etc/chrony\.d/?(\s|$)|^\s*include\s+/etc/chrony\.d/\*(\.conf)?\s*$' {{{ chrony_conf_path }}}
+  register: chrony_conf_reads_chrony_d
+  changed_when: false
+  failed_when: false
+
+- name: "Make chrony read the .conf files of /etc/chrony.d"
+  ansible.builtin.lineinfile:
+    path: {{{ chrony_conf_path }}}
+    line: confdir /etc/chrony.d
+    state: present
+    create: true
+    mode: '0644'
+  when: chrony_conf_reads_chrony_d.rc != 0
