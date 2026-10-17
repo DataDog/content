@@ -1,0 +1,25 @@
+documentation_complete: true
+
+title: 'Verify Permissions on the DNF Log Files'
+
+description: |-
+    {{{ describe_file_permissions(file="/var/log/dnf.* /var/log/hawkey.log* /var/log/yum.log*", perms="0644") }}}
+
+rationale: |-
+    The <tt>/var/log/dnf.*</tt>, <tt>/var/log/hawkey.log</tt> and <tt>/var/log/yum.log</tt>
+    files record the packages the package manager installs and removes, and should only be
+    modified by authorized personnel.
+
+severity: medium
+
+ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/dnf.*", perms="-rw-r--r--") }}}'
+
+ocil: |-
+    {{{ ocil_file_permissions(file="/var/log/dnf.*", perms="-rw-r--r--") }}}
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /var/log/
+        file_regex: ^(.*/)?(dnf[0-9]*\.|hawkey\.log|yum\.log)[^/]*$
+        filemode: '0644'

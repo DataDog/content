@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'Masking Optional for Disabled Services'
+
+description: |-
+    Whether a service whose units are neither enabled nor active counts as
+    disabled, masked or not. CIS Benchmarks accept such a service. By
+    default, a disabled service must also be masked.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
