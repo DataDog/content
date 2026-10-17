@@ -98,6 +98,7 @@ file_groupowner_sshd_config
 file_groupowner_user_cfg
 file_groupownership_sshd_private_key
 file_groupownership_sshd_pub_key
+file_owner_at_allow
 file_owner_backup_etc_group
 file_owner_backup_etc_gshadow
 file_owner_backup_etc_passwd
@@ -120,6 +121,7 @@ file_owner_etc_shells
 file_owner_grub2_cfg
 file_owner_sshd_config
 file_owner_user_cfg
+file_ownership_home_directories
 file_ownership_sshd_private_key
 file_ownership_sshd_pub_key
 file_permission_user_init_files
@@ -156,6 +158,7 @@ firewalld_loopback_traffic_trusted
 gid_passwd_group_same
 gnome_gdm_disable_xdmcp
 group_unique_id
+group_unique_name
 groups_no_zero_gid_except_root
 grub2_enable_selinux
 grub2_password
