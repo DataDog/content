@@ -6,7 +6,14 @@
 
 {{% for package in PACKAGES %}}
 - name: "{{{ rule_title }}}: Ensure {{{ package }}} is removed"
+{{%- if pkg_manager == "apt_get" %}}
+  ansible.builtin.apt:
+    name: "{{{ package }}}"
+    state: absent
+    purge: true
+{{%- else %}}
   ansible.builtin.package:
     name: "{{{ package }}}"
     state: absent
+{{%- endif %}}
 {{% endfor %}}
