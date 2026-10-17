@@ -37,19 +37,20 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_test_sudoers_targetpw_config" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults !targetpw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_object id="object_test_sudoers_rootpw_config" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults !rootpw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_object id="object_test_sudoers_runaspw_config" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults !runaspw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
@@ -70,19 +71,19 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_object id="object_test_sudoers_targetpw_not_defined" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults targetpw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_object id="object_test_sudoers_rootpw_not_defined" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults rootpw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_object id="object_test_sudoers_runaspw_not_defined" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/.*)?$</ind:filepath>
+    <ind:filepath operation="pattern match">^/etc/sudoers(\.d/[^/.]*[^/.~])?$</ind:filepath>
     <ind:pattern operation="pattern match">^Defaults runaspw$\r?\n</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>

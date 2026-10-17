@@ -5,6 +5,6 @@
 echo 'Defaults !targetpw' >> /etc/sudoers
 echo 'Defaults !rootpw' >> /etc/sudoers
 echo 'Defaults !runaspw' >> /etc/sudoers
-echo 'Defaults !targetpw' >> /etc/sudoers.d/00-complianceascode.conf
-echo 'Defaults !rootpw' >> /etc/sudoers.d/00-complianceascode.conf
-echo 'Defaults !runaspw' >> /etc/sudoers.d/00-complianceascode.conf
+echo 'Defaults !targetpw' >> /etc/sudoers.d/00-complianceascode
+echo 'Defaults !rootpw' >> /etc/sudoers.d/00-complianceascode
+echo 'Defaults !runaspw' >> /etc/sudoers.d/00-complianceascode
