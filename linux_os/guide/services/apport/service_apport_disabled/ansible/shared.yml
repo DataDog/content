@@ -1,0 +1,31 @@
+# platform = multi_platform_debian,multi_platform_ubuntu
+# reboot = false
+# strategy = disable
+# complexity = low
+# disruption = low
+
+- name: "{{{ rule_title }}} - Set enabled=0 in /etc/default/apport"
+  ansible.builtin.lineinfile:
+    path: /etc/default/apport
+    regexp: '(?i)^\s*enabled\s*='
+    line: enabled=0
+    create: true
+    mode: '0644'
+
+- name: "{{{ rule_title }}} - Set every enabled line of /etc/default/apport to 0"
+  ansible.builtin.replace:
+    path: /etc/default/apport
+    regexp: '(?i)^[ \t]*enabled[ \t]*=.*$'
+    replace: enabled=0
+
+- name: "{{{ rule_title }}} - Collect systemd Services Present in the System"
+  ansible.builtin.service_facts:
+  check_mode: false
+
+- name: "{{{ rule_title }}} - Stop and Mask apport.service"
+  ansible.builtin.systemd:
+    name: apport.service
+    state: stopped
+    enabled: false
+    masked: true
+  when: '"apport.service" in ansible_facts.services'
