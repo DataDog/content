@@ -12,21 +12,34 @@
 {{{ lineinfile_absent("/etc/sudoers", "^\s*@includedir\s*/usr/etc/sudoers\.d", sed_path_separator="#", rule_id=rule_id) }}}
 {{% endif %}}
 
-if grep -Px '^[\s]*Defaults.*timestamp_timeout[\s]*=.*' /etc/sudoers.d/*; then
-    find /etc/sudoers.d/ -type f -exec sed -Ei "/^[[:blank:]]*Defaults.*timestamp_timeout[[:blank:]]*=.*/d" {} \;
-fi
+for f in /etc/sudoers.d/*; do
+    [ -f "$f" ] || continue
+    grep -qP '^[\s]*Defaults.*timestamp_timeout[\s]*=' "$f" || continue
+    # A Defaults entry for some users, hosts, commands or runas users gets
+    # the required value and keeps its other options
+    sed -Ei "/^[[:blank:]]*Defaults[^[:blank:]]/ s/(timestamp_timeout[[:blank:]]*=)[[:blank:]]*\"?[-+]?[0-9.]+\"?/\1${var_sudo_timestamp_timeout}/" "$f"
+    # An entry for all users loses timestamp_timeout, which /etc/sudoers sets
+    # once below, and keeps its other options
+    sed -Ei -e '/^[[:blank:]]*Defaults[[:blank:]]/ s/[[:blank:]]*,[[:blank:]]*timestamp_timeout[[:blank:]]*=[[:blank:]]*[^,#[:blank:]]*//g' \
+        -e '/^[[:blank:]]*Defaults[[:blank:]]/ s/^([[:blank:]]*Defaults[[:blank:]]+)timestamp_timeout[[:blank:]]*=[[:blank:]]*[^,#[:blank:]]*[[:blank:]]*,[[:blank:]]*/\1/' \
+        -e '/^[[:blank:]]*Defaults[[:blank:]]+timestamp_timeout[[:blank:]]*=[^,#]*(#.*)?$/d' "$f"
+done
 
 if /usr/sbin/visudo -qcf /etc/sudoers; then
     cp /etc/sudoers /etc/sudoers.bak
     chmod 0440 /etc/sudoers.bak
-    if ! grep -P '^[\s]*Defaults.*timestamp_timeout[\s]*=[\s]*[-]?\w+.*$' /etc/sudoers; then
-        # sudoers file doesn't define Option timestamp_timeout
+    # Set every timestamp_timeout value, signed, fractional or quoted, to the required one
+    sed -Ei "s/(^[[:blank:]]*Defaults.*timestamp_timeout[[:blank:]]*=)[[:blank:]]*\"?[-+]?[0-9.]+\"?/\1${var_sudo_timestamp_timeout}/" /etc/sudoers
+    # Keep one Defaults entry for all users: take timestamp_timeout out of
+    # every entry, drop the entries left empty, and add it back below
+    if [ "$(grep -cP '^[\s]*Defaults[\s]+(.*[\s,])?timestamp_timeout[\s]*=' /etc/sudoers)" -gt 1 ]; then
+        sed -Ei -e '/^[[:blank:]]*Defaults[[:blank:]]/ s/[[:blank:]]*,[[:blank:]]*timestamp_timeout[[:blank:]]*=[[:blank:]]*[^,#[:blank:]]*//g' \
+            -e '/^[[:blank:]]*Defaults[[:blank:]]/ s/^([[:blank:]]*Defaults[[:blank:]]+)timestamp_timeout[[:blank:]]*=[[:blank:]]*[^,#[:blank:]]*[[:blank:]]*,[[:blank:]]*/\1/' \
+            -e '/^[[:blank:]]*Defaults[[:blank:]]+timestamp_timeout[[:blank:]]*=[^,#]*(#.*)?$/d' /etc/sudoers
+    fi
+    if ! grep -qP '^[\s]*Defaults[\s]+(.*[\s,])?timestamp_timeout[\s]*=' /etc/sudoers; then
+        # sudoers file doesn't define Option timestamp_timeout for all users
         echo "Defaults timestamp_timeout=${var_sudo_timestamp_timeout}" >> /etc/sudoers
-    else
-        # sudoers file defines Option timestamp_timeout, remediate wrong values if present
-        if grep -qP "^[\s]*Defaults\s.*\btimestamp_timeout[\s]*=[\s]*(?!${var_sudo_timestamp_timeout}\b)[-]?\w+\b.*$" /etc/sudoers; then
-            sed -Ei "s/(^[[:blank:]]*Defaults.*timestamp_timeout[[:blank:]]*=)[[:blank:]]*[-]?\w+(.*$)/\1${var_sudo_timestamp_timeout}\2/" /etc/sudoers
-        fi
     fi
 
     # Check validity of sudoers and cleanup bak

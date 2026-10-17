@@ -17,8 +17,9 @@
 {{% if VARIABLE_NAME %}}<ind:state state_ref="state_{{{ OPTION }}}_sudoers" />{{% endif %}}
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_{{{ OPTION }}}_sudoers" version="1">
-    <ind:filepath operation="pattern match">^/etc/sudoers(|\.d/.*)$</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*Defaults\b[^!\n]*\b{{{ OPTION_REGEX }}}.*$</ind:pattern>
+    <!-- sudo skips the files of /etc/sudoers.d whose names contain a "." or end in "~" -->
+    <ind:filepath operation="pattern match">^/etc/sudoers(|\.d/[^/.]*[^/.~])$</ind:filepath>
+    <ind:pattern operation="pattern match">^[\s]*Defaults[ \t]+[^!\n]*\b{{{ OPTION_REGEX }}}.*$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal" >1</ind:instance>
   </ind:textfilecontent54_object>
 
