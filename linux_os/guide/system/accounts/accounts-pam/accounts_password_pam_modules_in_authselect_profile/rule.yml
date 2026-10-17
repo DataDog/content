@@ -11,6 +11,11 @@ description: |-
     The default profiles include: <tt>local</tt>, <tt>sssd</tt>, and <tt>winbind</tt>. These profiles can be customized
     to follow site specific requirements.
 
+    authselect reads a custom profile, whose ID starts with <tt>custom/</tt>, in
+    <tt>/etc/authselect</tt>, and any other profile in <tt>/usr/share/authselect/vendor</tt>,
+    or in <tt>/usr/share/authselect/default</tt> when no vendor profile has its ID.
+    The files of the active profile are checked where authselect reads them.
+
 rationale: |-
     A custom profile is required to customize many of the PAM options.
     Modifications made to a default profile may be overwritten during an update.
@@ -32,6 +37,9 @@ ocil: |-
     <pre># grep -P '\b(pam_pwquality\.so|pam_pwhistory\.so|pam_faillock\.so|pam_unix\.so)\b' /etc/authselect/"$(head -1 /etc/authselect/authselect.conf)"/{system,password}-auth</pre>
 
     The output should show entries for all four modules in both system-auth and password-auth files.
+    For a profile whose ID does not start with <tt>custom/</tt>, run the command on the files in
+    <tt>/usr/share/authselect/vendor/<i>ID</i></tt>, or in <tt>/usr/share/authselect/default/<i>ID</i></tt>
+    when the vendor directory does not exist.
 
 fixtext: |-
     Ensure that the active authselect profile includes all required PAM modules.

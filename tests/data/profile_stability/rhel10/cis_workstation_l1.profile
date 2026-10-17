@@ -30,7 +30,6 @@ accounts_password_warn_age_login_defs
 accounts_passwords_pam_faillock_deny
 accounts_passwords_pam_faillock_unlock_time_with_zero
 accounts_root_gid_zero
-accounts_root_path_dirs_no_write
 accounts_set_post_pw_existing
 accounts_tmout
 accounts_umask_etc_bashrc
@@ -247,7 +246,7 @@ partition_for_dev_shm
 partition_for_tmp
 permissions_local_var_log
 postfix_network_listening_disabled
-root_path_no_dot
+root_path_login_integrity
 rsyslog_filecreatemode
 rsyslog_files_groupownership
 rsyslog_files_ownership
