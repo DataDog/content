@@ -34,6 +34,8 @@ args:
     pkgname: bind
   chrony:
     pkgname: chrony
+  crypto-policies:
+    pkgname: crypto-policies
   dnf:
     {{% if product == "fedora" %}}
     pkgname: dnf5

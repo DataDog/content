@@ -1,0 +1,68 @@
+documentation_complete: true
+
+title: 'Ensure the System Wide Crypto Policy Disables SHA-1 Hash and Signature Support'
+
+{{% set exempt_scopes = ["rpm", "dnssec", "smime", "smime-import", "pkcs12", "pkcs12-import", "nss-smime", "nss-smime-import", "nss-pkcs12", "nss-pkcs12-import"] %}}
+
+description: |-
+    The system wide crypto policy has to remove SHA-1 from the hash and
+    signature algorithms. The rule reads the resolved policy that
+    <tt>update-crypto-policies</tt> writes to
+    <tt>/etc/crypto-policies/state/CURRENT.pol</tt> when it applies a policy.
+    That file has to exist, and in it:
+    <ul>
+    <li>the <tt>hash</tt> and <tt>sign</tt> lines list no SHA-1 algorithm,</li>
+    {{% if product in ["rhel8", "rhel10"] %}}
+    <li>the <tt>sha1_in_certs</tt> line is set to <tt>0</tt>.</li>
+    {{% else %}}
+    <li>the scoped <tt>hash@</tt> and <tt>sign@</tt> lines list a SHA-1 algorithm
+    only for the legacy interoperability scopes
+    {{% for scope in exempt_scopes %}}<tt>{{{ scope }}}</tt>{{% if not loop.last %}}, {{% endif %}}{{% endfor %}},</li>
+    <li>the <tt>sha1_in_certs</tt> line, where present, is set to <tt>0</tt>.</li>
+    {{% endif %}}
+    </ul>
+    To disable SHA-1, add the <tt>NO-SHA1</tt> subpolicy to the system wide
+    crypto policy, together with the subpolicies already in use, for example:
+    <pre>$ sudo update-crypto-policies --set DEFAULT:NO-SHA1</pre>
+    If the system provides no <tt>NO-SHA1</tt> subpolicy in
+    <tt>/usr/share/crypto-policies/policies/modules</tt>, first create
+    <tt>/etc/crypto-policies/policies/modules/NO-SHA1.pmod</tt> with the following lines:
+    <pre>hash = -SHA1
+    sign = -*-SHA1
+    sha1_in_certs = 0</pre>
+
+rationale: |-
+    The SHA-1 hash function is vulnerable to collision attacks, in which an attacker
+    produces two different inputs with the same hash. A collision lets an attacker forge
+    a signature or a certificate made with SHA-1. The rule leaves the mac lines as they
+    are: HMAC-SHA1 relies on properties of SHA-1 that collision attacks leave intact.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88573-1
+    cce@rhel9: CCE-88620-0
+    cce@rhel10: CCE-88667-1
+
+ocil_clause: 'the system wide crypto policy enables SHA-1 hash or signature algorithms'
+
+ocil: |-
+    To verify that the resolved system wide crypto policy disables SHA-1, run the
+    following command:
+    <pre>$ sudo grep -Pi '^\s*(hash|sign)\s*=.*SHA-?1\b' /etc/crypto-policies/state/CURRENT.pol</pre>
+    The command should return no output.
+    {{% if product not in ["rhel8", "rhel10"] %}}
+    Run the following command to list the scoped directives that enable SHA-1:
+    <pre>$ sudo grep -Pi '^\s*(hash|sign)@\S+\s*=.*SHA-?1\b' /etc/crypto-policies/state/CURRENT.pol</pre>
+    Every line it returns should belong to one of the scopes
+    {{% for scope in exempt_scopes %}}<tt>{{{ scope }}}</tt>{{% if not loop.last %}}, {{% endif %}}{{% endfor %}}.
+    {{% endif %}}
+    Run the following command to check SHA-1 signatures in certificates:
+    <pre>$ sudo grep -Pi '^\s*sha1_in_certs\s*=' /etc/crypto-policies/state/CURRENT.pol</pre>
+    {{% if product in ["rhel8", "rhel10"] %}}
+    The command should return <tt>sha1_in_certs = 0</tt>.
+    {{% else %}}
+    The command should return <tt>sha1_in_certs = 0</tt> or no output.
+    {{% endif %}}
+
+platform: package[crypto-policies]

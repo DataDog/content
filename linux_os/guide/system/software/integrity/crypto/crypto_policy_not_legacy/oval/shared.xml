@@ -56,7 +56,7 @@ id="object_{{{ rule_id }}}_crypto_policies_config_file_modified_time" version="1
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_state id="state_{{{ rule_id }}}" version="1">
-    <ind:subexpression operation="not equal">LEGACY</ind:subexpression>
+    <ind:subexpression operation="pattern match">^(?i)(?!LEGACY\b)</ind:subexpression>
   </ind:textfilecontent54_state>
 
     <ind:textfilecontent54_test id="test_{{{ rule_id }}}_current"
@@ -73,7 +73,7 @@ id="object_{{{ rule_id }}}_crypto_policies_config_file_modified_time" version="1
   </ind:textfilecontent54_object>
 
   <ind:textfilecontent54_state id="state_{{{ rule_id }}}_current" version="1">
-    <ind:subexpression operation="not equal">LEGACY</ind:subexpression>
+    <ind:subexpression operation="pattern match">^(?i)(?!LEGACY\b)</ind:subexpression>
   </ind:textfilecontent54_state>
 
   <unix:file_test check="all" check_existence="all_exist" comment="Check if /etc/crypto-policies/back-ends/nss.config exists" id="test_{{{ rule_id }}}_crypto_policy_nss_config" version="1">
