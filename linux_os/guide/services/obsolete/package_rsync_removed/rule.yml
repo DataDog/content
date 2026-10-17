@@ -1,4 +1,4 @@
-{{% if 'rhel' in product or product in ['almalinux9', 'ol8','ol9', 'hummingbird'] -%}}
+{{% if 'rhel' in product or product in ['al2023', 'almalinux9', 'ol8','ol9', 'hummingbird'] -%}}
 {{% set pkg='rsync-daemon' %}}
 {{% else %}}
 {{% set pkg='rsync' %}}

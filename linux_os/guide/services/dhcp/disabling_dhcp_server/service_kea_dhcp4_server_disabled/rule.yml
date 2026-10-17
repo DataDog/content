@@ -1,11 +1,17 @@
 documentation_complete: true
 
+{{% if product in ["rhel10", "sle16"] %}}
+{{% set kea_service = "kea-dhcp4" %}}
+{{% else %}}
+{{% set kea_service = "kea-dhcp4-server" %}}
+{{% endif %}}
+
 title: 'Disable kea-dhcp4-server Service'
 
 description: |-
-    The <tt>kea-dhcp4-server</tt> service should be disabled on
+    The <tt>{{{ kea_service }}}</tt> service should be disabled on
     any system that does not need to act as a DHCPv4 server.
-    {{{ describe_service_disable(service="kea-dhcp4-server") }}}
+    {{{ describe_service_disable(service=kea_service) }}}
 
 rationale: |-
     Unmanaged or unintentionally activated DHCP servers may provide faulty information
@@ -15,13 +21,14 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel10: CCE-88709-1
     cce@sle16: CCE-96292-8
 
 ocil_clause: |-
-    {{{ ocil_clause_service_disabled(service="kea-dhcp4-server") }}}
+    {{{ ocil_clause_service_disabled(service=kea_service) }}}
 
 ocil: |-
-    {{{ ocil_service_disabled(service="kea-dhcp4-server") }}}
+    {{{ ocil_service_disabled(service=kea_service) }}}
 
 platform: system_with_kernel
 
@@ -29,6 +36,7 @@ template:
     name: service_disabled
     vars:
         servicename: kea-dhcp4-server
+        servicename@rhel10: kea-dhcp4
         servicename@sle16: kea-dhcp4
         packagename: kea
         packagename@ubuntu2604: kea-dhcp4-server

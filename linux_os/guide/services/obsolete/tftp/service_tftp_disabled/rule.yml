@@ -25,6 +25,8 @@ severity: high
 
 identifiers:
     cce@rhel8: CCE-82435-9
+    cce@rhel9: CCE-88655-6
+    cce@rhel10: CCE-88698-6
     cce@sle15: CCE-92606-3
     cce@sle16: CCE-96034-4
     cce@slmicro6: CCE-94983-4

@@ -36,7 +36,7 @@ ocil: |-
 
 fixtext: '{{{ fixtext_service_disabled("nftables") }}}'
 
-{{%- if 'ubuntu' in product  %}}
+{{%- if 'ubuntu' in product or product in ['almalinux9', 'rhel9'] %}}
 platform: system_with_kernel and package[nftables]
 {{%- else %}}
 platform: system_with_kernel and package[nftables] and package[firewalld]

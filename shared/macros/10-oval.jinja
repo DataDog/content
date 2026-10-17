@@ -259,9 +259,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type filename_regex: str
 :param id_stem: The first suffix of tests, objects etc. that ensures uniqueness of the particular OVAL entity ID. Defaults to the rule ID.
 :type id_stem: str
+:param path_var_ref: If specified together with `filename_regex`, the ID of an OVAL variable that holds the directories to search, in place of `path_or_filepath`.
+:type path_var_ref: str
 
 #}}
-{{%- macro oval_line_in_file_object(path_or_filepath='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, filename_regex='', id_stem='', rule_id=None) -%}}
+{{%- macro oval_line_in_file_object(path_or_filepath='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, filename_regex='', id_stem='', rule_id=None, path_var_ref='') -%}}
 {{%- set id_stem = id_stem or rule_id -%}}
 {{%- set suffix_id = "" -%}}
 {{%- if multi_value -%}}
@@ -297,7 +299,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 {{%- endif %}}
 <ind:textfilecontent54_object id="obj_{{{ id_stem }}}{{{ suffix_id }}}" version="1">
 {{%- if filename_regex %}}
+  {{%- if path_var_ref %}}
+  <ind:path var_ref="{{{ path_var_ref }}}" var_check="at least one" />
+  {{%- else %}}
   <ind:path>{{{ path_or_filepath }}}</ind:path>
+  {{%- endif %}}
   <ind:filename operation="pattern match">{{{ filename_regex }}}</ind:filename>
 {{%- else %}}
   <ind:filepath>{{{ path_or_filepath }}}</ind:filepath>
@@ -362,8 +368,8 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 {{%- endmacro %}}
 
 
-{{%- macro oval_line_in_directory_object(path='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, rule_id=None) -%}}
-{{{- oval_line_in_file_object(path_or_filepath=path, section=section, prefix_regex=prefix_regex, parameter=parameter, separator_regex=separator_regex, missing_parameter_pass=missing_parameter_pass, multi_value=multi_value, filename_regex=".*\.conf$", id_stem=rule_id ~ "_config_dir", rule_id=rule_id) -}}}
+{{%- macro oval_line_in_directory_object(path='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, rule_id=None, path_var_ref='') -%}}
+{{{- oval_line_in_file_object(path_or_filepath=path, section=section, prefix_regex=prefix_regex, parameter=parameter, separator_regex=separator_regex, missing_parameter_pass=missing_parameter_pass, multi_value=multi_value, filename_regex=".*\.conf$", id_stem=rule_id ~ "_config_dir", rule_id=rule_id, path_var_ref=path_var_ref) -}}}
 {{%- endmacro %}}
 
 
@@ -600,9 +606,18 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type multi_value: bool
 :param missing_config_file_fail: If set, the check will fail if the configuration file doesn't exist in the system.
 :type missing_config_file_fail: bool
+:param dropin_dirs: If set, the dropin directories to search, in place of dropin_dir.
+:type dropin_dirs: list
 #}}
 
-{{%- macro oval_check_dropin_file(path, dropin_dir, section='', parameter='', value='', application='', no_quotes=false, missing_parameter_pass=false, multi_value=false, missing_config_file_fail=false, prefix_regex='^[ \\t]*', separator_regex='=', rule_id=None, rule_title=None) %}}
+{{%- macro oval_check_dropin_file(path, dropin_dir, section='', parameter='', value='', application='', no_quotes=false, missing_parameter_pass=false, multi_value=false, missing_config_file_fail=false, prefix_regex='^[ \\t]*', separator_regex='=', rule_id=None, rule_title=None, dropin_dirs=[]) %}}
+{{%- if dropin_dirs %}}
+{{%- set dropin_dirs_var = "var_" ~ rule_id ~ "_dropin_dirs" %}}
+{{%- set dropin_desc = dropin_dirs|join(", ") %}}
+{{%- else %}}
+{{%- set dropin_dirs_var = "" %}}
+{{%- set dropin_desc = dropin_dir %}}
+{{%- endif %}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("Ensure '" + parameter + "' is configured with value '" + value | replace("(?i)", "") | replace("(?-i)", "") + ("' in section '" + section if section else "") + "' in " + path, rule_title=rule_title) }}}
@@ -618,14 +633,18 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
             {{{- oval_line_in_file_criterion(path, parameter, missing_parameter_pass, rule_id=rule_id) }}}
         </criteria>
         <criteria comment="Check files in the dropin directory" operator="OR">
-            {{{ oval_line_in_directory_criterion(dropin_dir, parameter, rule_id=rule_id) }}}
-            {{{ oval_line_in_directory_criterion(dropin_dir, parameter, missing_parameter_pass, rule_id=rule_id) }}}
+            {{{ oval_line_in_directory_criterion(dropin_desc, parameter, rule_id=rule_id) }}}
+            {{{ oval_line_in_directory_criterion(dropin_desc, parameter, missing_parameter_pass, rule_id=rule_id) }}}
         </criteria>
+    </criteria>
     {{%- else %}}
     <criteria comment="{{{ application }}} is configured correctly"
     operator="OR">
-        {{{- oval_line_in_file_criterion(path, parameter, rule_id=rule_id) }}}
-        {{{ oval_line_in_directory_criterion(dropin_dir, parameter, rule_id=rule_id) }}}
+        {{{ oval_line_in_directory_criterion(dropin_desc, parameter, rule_id=rule_id) }}}
+        <criteria comment="No dropin sets {{{ parameter }}}, so the main config file decides" operator="AND">
+            {{{- oval_line_in_file_criterion(path, parameter, rule_id=rule_id) }}}
+            {{{ oval_line_in_directory_criterion(dropin_desc, parameter, true, rule_id=rule_id) }}}
+        </criteria>
     </criteria>
     {{%- endif %}}
     {{%- if missing_config_file_fail %}}
@@ -642,14 +661,22 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
   {{{ oval_line_in_file_test(path, parameter, rule_id=rule_id) }}}
   {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id) }}}
   {{{ oval_line_in_file_state(value, multi_value, quotes, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_test(dropin_dir, parameter, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id) }}}
+  {{{ oval_line_in_directory_test(dropin_desc, parameter, rule_id=rule_id) }}}
+  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var) }}}
   {{{ oval_line_in_directory_state(value, multi_value, quotes, rule_id=rule_id) }}}
+  {{{ oval_line_in_directory_test(dropin_desc, parameter, true, rule_id=rule_id) }}}
+  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var) }}}
   {{%- if missing_parameter_pass %}}
   {{{ oval_line_in_file_test(path, parameter, missing_parameter_pass, rule_id=rule_id) }}}
   {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, missing_parameter_pass, multi_value, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_test(dropin_dir, parameter, missing_parameter_pass, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, missing_parameter_pass, multi_value, rule_id=rule_id) }}}
+  {{%- endif %}}
+  {{%- if dropin_dirs %}}
+  <constant_variable id="{{{ dropin_dirs_var }}}" datatype="string" version="1"
+    comment="dropin directories of {{{ path }}}">
+  {{%- for dir in dropin_dirs %}}
+    <value>{{{ dir }}}</value>
+  {{%- endfor %}}
+  </constant_variable>
   {{%- endif %}}
   {{%- if missing_config_file_fail %}}
   {{{ oval_config_file_exists_test(path, rule_id=rule_id) }}}
@@ -1666,8 +1693,10 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
   oval_test_service_disabled_tests macro.
 
   :param name: Name of the service to be checked
+  :param mask_optional_var: Name of a boolean XCCDF variable. When it is true,
+      a service whose units are neither enabled nor active passes unmasked.
 #}}
-{{%- macro oval_test_service_disabled_criteria(name='', rule_id=None) -%}}
+{{%- macro oval_test_service_disabled_criteria(name='', rule_id=None, mask_optional_var='') -%}}
 {{%- if init_system == "systemd" %}}
   {{%- if target_oval_version >= [5, 11] %}}
   {{# we are using systemd and our target OVAL version does support the systemd related tests #}}
@@ -1678,6 +1707,16 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
           <criterion test_ref="test_service_loadstate_is_masked_{{{ rule_id }}}_{{{ name }}}"
             comment="Property LoadState of service {{{ name }}} is masked"/>
         </criteria>
+        {{%- if mask_optional_var %}}
+        <criteria operator="AND" comment="service {{{ name }}} is neither enabled nor active, and masking is optional">
+          <criterion test_ref="test_service_mask_optional_{{{ rule_id }}}_{{{ name }}}"
+            comment="{{{ mask_optional_var }}} is true"/>
+          <criterion test_ref="test_service_not_running_{{{ rule_id }}}_{{{ name }}}"
+            comment="{{{ name }}} is not running"/>
+          <criterion test_ref="test_service_not_enabled_{{{ rule_id }}}_{{{ name }}}"
+            comment="Property UnitFileState of service {{{ name }}} is not enabled"/>
+        </criteria>
+        {{%- endif %}}
         <criterion test_ref="test_service_not_found_{{{ rule_id }}}_{{{ name }}}"
           comment="{{{ name }}} is not found"/>
       </criteria>
@@ -1699,8 +1738,10 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
   macro.
 
   :param name: Name of the service to be checked
+  :param mask_optional_var: Name of a boolean XCCDF variable. When it is true,
+      a service whose units are neither enabled nor active passes unmasked.
 #}}
-{{%- macro oval_test_service_disabled_tests(name='', rule_id=None) -%}}
+{{%- macro oval_test_service_disabled_tests(name='', rule_id=None, mask_optional_var='') -%}}
 {{%- if init_system == "systemd" %}}
   {{%- if target_oval_version >= [5, 11] %}}
   {{# we are using systemd and our target OVAL version does support the systemd related tests #}}
@@ -1756,6 +1797,46 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
       version="1">
       <linux:value>not-found</linux:value>
     </linux:systemdunitproperty_state>
+
+    {{%- if mask_optional_var %}}
+
+    <ind:variable_test id="test_service_mask_optional_{{{ rule_id }}}_{{{ name }}}"
+      check="all" check_existence="all_exist"
+      comment="{{{ mask_optional_var }}} is true" version="1">
+      <ind:object object_ref="obj_service_mask_optional_{{{ rule_id }}}_{{{ name }}}"/>
+      <ind:state state_ref="state_service_mask_optional_{{{ rule_id }}}_{{{ name }}}"/>
+    </ind:variable_test>
+
+    <ind:variable_object id="obj_service_mask_optional_{{{ rule_id }}}_{{{ name }}}" version="1">
+      <ind:var_ref>{{{ mask_optional_var }}}</ind:var_ref>
+    </ind:variable_object>
+
+    <ind:variable_state id="state_service_mask_optional_{{{ rule_id }}}_{{{ name }}}" version="1">
+      <ind:value datatype="boolean">true</ind:value>
+    </ind:variable_state>
+
+    <external_variable id="{{{ mask_optional_var }}}" datatype="boolean" version="1"
+      comment="masking is optional for disabled services"/>
+
+    <linux:systemdunitproperty_test check="none satisfy" check_existence="any_exist"
+      id="test_service_not_enabled_{{{ rule_id }}}_{{{ name }}}"
+      comment="Test that the property UnitFileState of service {{{ name }}} is not enabled"
+      version="1">
+      <linux:object object_ref="obj_service_unitfilestate_{{{ rule_id }}}_{{{ name }}}"/>
+      <linux:state state_ref="state_service_unitfilestate_enabled_{{{ rule_id }}}_{{{ name }}}"/>
+    </linux:systemdunitproperty_test>
+
+    <linux:systemdunitproperty_object id="obj_service_unitfilestate_{{{ rule_id }}}_{{{ name }}}"
+      comment="Retrieve the UnitFileState property of {{{ name }}}" version="1">
+      <linux:unit operation="pattern match">^{{{ name }}}\.(service|socket)$</linux:unit>
+      <linux:property>UnitFileState</linux:property>
+    </linux:systemdunitproperty_object>
+
+    <linux:systemdunitproperty_state id="state_service_unitfilestate_enabled_{{{ rule_id }}}_{{{ name }}}"
+      comment="UnitFileState is enabled or enabled-runtime" version="1">
+      <linux:value operation="pattern match">^enabled</linux:value>
+    </linux:systemdunitproperty_state>
+    {{%- endif %}}
 
   {{%- else %}}
   {{# fallback if we are using systemd but can't use the new systemd features of OVAL 5.11 #}}

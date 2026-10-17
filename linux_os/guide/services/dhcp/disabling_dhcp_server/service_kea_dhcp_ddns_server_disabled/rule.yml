@@ -1,11 +1,17 @@
 documentation_complete: true
 
+{{% if product in ["rhel10"] %}}
+{{% set kea_service = "kea-dhcp-ddns" %}}
+{{% else %}}
+{{% set kea_service = "kea-dhcp-ddns-server" %}}
+{{% endif %}}
+
 title: 'Disable kea-dhcp-ddns-server Service'
 
 description: |-
-    The <tt>kea-dhcp-ddns-server</tt> service should be disabled on
+    The <tt>{{{ kea_service }}}</tt> service should be disabled on
     any system that does not need to act as a DHCP Dynamic DNS update server.
-    {{{ describe_service_disable(service="kea-dhcp-ddns-server") }}}
+    {{{ describe_service_disable(service=kea_service) }}}
 
 rationale: |-
     Unmanaged or unintentionally activated DHCP servers may provide faulty information
@@ -14,11 +20,14 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel10: CCE-88711-7
+
 ocil_clause: |-
-    {{{ ocil_clause_service_disabled(service="kea-dhcp-ddns-server") }}}
+    {{{ ocil_clause_service_disabled(service=kea_service) }}}
 
 ocil: |-
-    {{{ ocil_service_disabled(service="kea-dhcp-ddns-server") }}}
+    {{{ ocil_service_disabled(service=kea_service) }}}
 
 platform: system_with_kernel
 
@@ -26,5 +35,6 @@ template:
     name: service_disabled
     vars:
         servicename: kea-dhcp-ddns-server
+        servicename@rhel10: kea-dhcp-ddns
         packagename: kea
         packagename@ubuntu2604: kea-dhcp-ddns-server

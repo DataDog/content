@@ -11,6 +11,11 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel8: CCE-88602-8
+    cce@rhel9: CCE-88634-1
+    cce@rhel10: CCE-88675-4
+
 
 
 ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/cloud-init.log", perms="-rw-r--r--") }}}'
