@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10
+# platform = AlmaLinux OS 9,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10
 # packages = grub2,grubby
 
 # Remove any existing arg from /etc/default/grub

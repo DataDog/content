@@ -1,0 +1,45 @@
+documentation_complete: true
+
+title: 'Verify User Ownership of the GRUB2 Configuration Files'
+
+description: |-
+    The GRUB2 configuration files in <tt>{{{ grub2_boot_path }}}</tt> and in
+    <tt>/boot/efi/EFI</tt>, with their subdirectories, which are the files whose
+    names start with <tt>grub</tt>, such as <tt>grub.cfg</tt> and
+    <tt>grubenv</tt>, and the files named <tt>user.cfg</tt>, should be owned by
+    the <tt>root</tt> user.
+    To set the owner of the files in <tt>{{{ grub2_boot_path }}}</tt>, run the
+    command:
+    <pre>$ sudo find {{{ grub2_boot_path }}} -type f \( -name 'grub*' -o -name user.cfg \) -exec chown root {} +</pre>
+    The EFI system partition is a FAT file system, which takes the owner of its
+    files from the <tt>uid</tt> mount option: set <tt>uid=0</tt> on the
+    <tt>/boot/efi</tt> entry in <tt>/etc/fstab</tt>.
+
+rationale: |-
+    Only root should be able to modify the boot parameters.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88597-0
+    cce@rhel9: CCE-88629-1
+
+ocil_clause: 'a GRUB2 configuration file is owned by another user'
+
+ocil: |-
+    Run the following command to list the GRUB2 configuration files owned by
+    another user than <tt>root</tt>:
+    <pre>$ sudo find {{{ grub2_boot_path }}} /boot/efi/EFI -type f \( -name 'grub*' -o -name user.cfg \) ! -user root</pre>
+    The command should return nothing.
+
+platform: not container
+
+template:
+    name: file_owner
+    vars:
+        filepath:
+            - {{{ grub2_boot_path }}}/
+            - /boot/efi/EFI/
+        file_regex: '^(.*/)?(grub[^/]*|user\.cfg)$'
+        recursive: 'true'
+        uid_or_name: '0'

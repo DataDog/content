@@ -357,19 +357,10 @@ controls:
           - l1_server
       status: automated
       rules:
-          - file_groupowner_grub2_cfg
-          - file_owner_grub2_cfg
-          - file_permissions_grub2_cfg
-          - file_groupowner_user_cfg
-          - file_owner_user_cfg
-          - file_permissions_user_cfg
-      related_rules:
-          - file_groupowner_efi_grub2_cfg
-          - file_owner_efi_grub2_cfg
-          - file_permissions_efi_grub2_cfg
-          - file_groupowner_efi_user_cfg
-          - file_owner_efi_user_cfg
-          - file_permissions_efi_user_cfg
+          - file_permissions_grub2_config_files
+          - file_permissions_efi_grub2_config_files
+          - file_owner_grub2_config_files
+          - file_groupowner_grub2_config_files
 
     - id: 1.5.1
       title: Ensure address space layout randomization (ASLR) is enabled (Automated)
@@ -2159,8 +2150,7 @@ controls:
           - l1_server
       status: automated
       rules:
-          - accounts_root_path_dirs_no_write
-          - root_path_no_dot
+          - root_path_login_integrity
 
     - id: 6.2.9
       title: Ensure root is the only UID 0 account (Automated)
