@@ -1,0 +1,35 @@
+documentation_complete: true
+
+
+title: 'Verify Permissions on /etc/cron.deny file'
+
+{{% set target_perms_octal="0640" %}}
+{{% set target_perms="-rw-r-----" %}}
+
+description: |-
+    If <tt>/etc/cron.deny</tt> exists, it must have permissions <tt>{{{ target_perms_octal }}}</tt>
+    or more restrictive.
+
+    {{{ describe_file_permissions(file="/etc/cron.deny", perms=target_perms_octal) }}}
+
+rationale: |-
+    If the permissions of the cron.deny file are not set to {{{ target_perms_octal }}} or more restrictive,
+    the possibility exists for an unauthorized user to view or edit sensitive information.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88598-8
+    cce@rhel9: CCE-88630-9
+    cce@rhel10: CCE-88673-9
+
+ocil_clause: '{{{ ocil_clause_file_permissions(file="/etc/cron.deny", perms=target_perms) }}}'
+
+ocil: |-
+    {{{ ocil_file_permissions(file="/etc/cron.deny", perms=target_perms) }}}
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /etc/cron.deny
+        filemode: "{{{ target_perms_octal }}}"
