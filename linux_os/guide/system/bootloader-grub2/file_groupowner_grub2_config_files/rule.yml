@@ -1,0 +1,46 @@
+documentation_complete: true
+
+title: 'Verify Group Ownership of the GRUB2 Configuration Files'
+
+description: |-
+    The GRUB2 configuration files in <tt>{{{ grub2_boot_path }}}</tt> and in
+    <tt>/boot/efi/EFI</tt>, with their subdirectories, which are the files whose
+    names start with <tt>grub</tt>, such as <tt>grub.cfg</tt> and
+    <tt>grubenv</tt>, and the files named <tt>user.cfg</tt>, should be
+    group-owned by the <tt>root</tt> group.
+    To set the group owner of the files in <tt>{{{ grub2_boot_path }}}</tt>, run
+    the command:
+    <pre>$ sudo find {{{ grub2_boot_path }}} -type f \( -name 'grub*' -o -name user.cfg \) -exec chgrp root {} +</pre>
+    The EFI system partition is a FAT file system, which takes the group of its
+    files from the <tt>gid</tt> mount option: set <tt>gid=0</tt> on the
+    <tt>/boot/efi</tt> entry in <tt>/etc/fstab</tt>.
+
+rationale: |-
+    The <tt>root</tt> group is a highly-privileged group, and only root should
+    be able to modify the boot parameters.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88594-7
+    cce@rhel9: CCE-88626-7
+
+ocil_clause: 'a GRUB2 configuration file is group-owned by another group'
+
+ocil: |-
+    Run the following command to list the GRUB2 configuration files group-owned
+    by another group than <tt>root</tt>:
+    <pre>$ sudo find {{{ grub2_boot_path }}} /boot/efi/EFI -type f \( -name 'grub*' -o -name user.cfg \) ! -group root</pre>
+    The command should return nothing.
+
+platform: not container
+
+template:
+    name: file_groupowner
+    vars:
+        filepath:
+            - {{{ grub2_boot_path }}}/
+            - /boot/efi/EFI/
+        file_regex: '^(.*/)?(grub[^/]*|user\.cfg)$'
+        recursive: 'true'
+        gid_or_name: '0'
