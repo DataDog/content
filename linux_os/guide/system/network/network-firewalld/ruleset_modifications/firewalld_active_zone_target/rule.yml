@@ -1,0 +1,49 @@
+documentation_complete: true
+
+title: 'Ensure the Active firewalld Zones Do Not Accept All Traffic'
+
+description: |-
+    Every <tt>firewalld</tt> zone that is active on an interface other than the
+    loopback interface or a virtual bridge (<tt>virbr*</tt>) should have a target
+    other than <tt>ACCEPT</tt>, and the same target in the permanent configuration
+    as in the running one. At least one such zone should be active.
+
+    To set the target of a zone, run the following commands:
+    <pre>$ sudo firewall-cmd --permanent --zone=<i>ZONE</i> --set-target=DROP
+    $ sudo firewall-cmd --reload</pre>
+
+rationale: |-
+    A zone with the <tt>ACCEPT</tt> target lets every packet through to the
+    interfaces it holds, whatever services and ports the zone lists, and a target
+    set only in the running configuration is lost at the next reload.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-86997-4
+    cce@rhel9: CCE-86998-2
+    cce@rhel10: CCE-87000-6
+
+ocil_clause: 'an active zone has the ACCEPT target or a target that differs from its permanent one, or no zone is active'
+
+ocil: |-
+    List the active zones and their interfaces:
+    <pre>$ sudo firewall-cmd --get-active-zones</pre>
+    For each active zone that holds an interface other than <tt>lo</tt> or a
+    <tt>virbr</tt> bridge, compare its running and permanent targets:
+    <pre>$ sudo firewall-cmd --zone=<i>ZONE</i> --list-all | grep target
+    $ sudo firewall-cmd --permanent --zone=<i>ZONE</i> --get-target</pre>
+    Both should show the same target, and neither should be <tt>ACCEPT</tt>.
+
+fixtext: |-
+    Set a target other than ACCEPT on each active zone, in the permanent configuration:
+
+    $ sudo firewall-cmd --permanent --zone=ZONE --set-target=DROP
+    $ sudo firewall-cmd --reload
+
+warnings:
+    - general: |-
+        This rule does not come with a remediation. The target to use (default,
+        DROP or REJECT) depends on the services the site exposes through the zone.
+
+platform: package[firewalld]
