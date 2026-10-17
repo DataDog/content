@@ -2,6 +2,9 @@ product: almalinux9
 full_name: AlmaLinux OS 9
 type: platform
 
+families:
+  - rhel-like
+
 major_version_ordinal: 9
 
 benchmark_id: ALMALINUX-9
@@ -30,3 +33,11 @@ pkg_release: "61e69f29"
 
 reference_uris:
   cis: 'https://www.cisecurity.org/benchmark/almalinuxos_linux/'
+
+sshd_distributed_config: "true"
+
+dconf_gdm_dir: "distro.d"
+
+journald_conf_dir_path: /etc/systemd/journald.conf.d
+
+sysctl_remediate_drop_in_file: true
