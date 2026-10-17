@@ -69,61 +69,48 @@
     - chrony_confdir_paths.stdout_lines | default([]) | length > 0
     - (chrony_sourcedir_paths.stdout_lines | default([]) | length == 0 or chrony_sourcedir_has_servers.rc != 0)
 
+- name: "Select the sourcedir paths outside /run, a tmpfs that starts empty at boot"
+  ansible.builtin.set_fact:
+    chrony_persistent_sourcedirs: "{{ chrony_sourcedir_paths.stdout_lines | default([]) | reject('match', '/(var/)?run/') | list }}"
+
+- name: "Select 60-cis.sources in the first of these sourcedirs, or else the main chrony configuration"
+  ansible.builtin.set_fact:
+    chrony_servers_file: "{{ chrony_persistent_sourcedirs[0] ~ '/60-cis.sources' if chrony_persistent_sourcedirs | length > 0 else '{{{ chrony_conf_path }}}' }}"
+
 - name: "Create sourcedir directory if needed"
   ansible.builtin.file:
-    path: "{{ chrony_sourcedir_paths.stdout_lines[0] }}"
-    state: directory
-    mode: '0755'
-  when:
-    - chrony_conf_has_servers.rc != 0
-    - chrony_sourcedir_paths.stdout_lines | default([]) | length > 0
-    - chrony_sourcedir_has_servers.rc != 0
-
-- name: "Add remote time servers to sourcedir .sources file"
-  ansible.builtin.lineinfile:
-    path: "{{ chrony_sourcedir_paths.stdout_lines[0] }}/ntp-servers.sources"
-    line: 'server {{ item }}'
-    state: present
-    create: true
-    mode: '0644'
-  loop: '{{ var_multiple_time_servers.split(",") }}'
-  when:
-    - chrony_conf_has_servers.rc != 0
-    - chrony_sourcedir_paths.stdout_lines | default([]) | length > 0
-    - chrony_sourcedir_has_servers.rc != 0
-
-- name: "Create confdir directory if needed"
-  ansible.builtin.file:
-    path: "{{ chrony_confdir_paths.stdout_lines[0] }}"
+    path: "{{ chrony_persistent_sourcedirs[0] }}"
     state: directory
     mode: '0755'
   when:
     - chrony_conf_has_servers.rc != 0
     - (chrony_sourcedir_paths.stdout_lines | default([]) | length == 0 or chrony_sourcedir_has_servers.rc != 0)
-    - chrony_confdir_paths.stdout_lines | default([]) | length > 0
-    - chrony_confdir_has_servers.rc != 0
+    - (chrony_confdir_paths.stdout_lines | default([]) | length == 0 or chrony_confdir_has_servers.rc != 0)
+    - chrony_persistent_sourcedirs | length > 0
 
-- name: "Add remote time servers to confdir .conf file"
+- name: "Check if the file for remote time servers exists"
+  ansible.builtin.stat:
+    path: "{{ chrony_servers_file }}"
+  register: chrony_servers_file_stat
+
+- name: "Comment out server entries that name none of the remote time servers"
+  ansible.builtin.replace:
+    path: "{{ chrony_servers_file }}"
+    regexp: '^[ \t]*server(?=[ \t])(?![ \t]+(?:{{ var_multiple_time_servers.split(",") | map("regex_escape") | join("|") }})(?:[ \t]|$))'
+    replace: '# server'
+  when:
+    - chrony_conf_has_servers.rc != 0
+    - (chrony_sourcedir_paths.stdout_lines | default([]) | length == 0 or chrony_sourcedir_has_servers.rc != 0)
+    - (chrony_confdir_paths.stdout_lines | default([]) | length == 0 or chrony_confdir_has_servers.rc != 0)
+    - chrony_servers_file_stat.stat.exists
+
+- name: "Add remote time servers to 60-cis.sources or the main chrony configuration"
   ansible.builtin.lineinfile:
-    path: "{{ chrony_confdir_paths.stdout_lines[0] }}/ntp-servers.conf"
+    path: "{{ chrony_servers_file }}"
     line: 'server {{ item }}'
     state: present
     create: true
     mode: '0644'
-  loop: '{{ var_multiple_time_servers.split(",") }}'
-  when:
-    - chrony_conf_has_servers.rc != 0
-    - (chrony_sourcedir_paths.stdout_lines | default([]) | length == 0 or chrony_sourcedir_has_servers.rc != 0)
-    - chrony_confdir_paths.stdout_lines | default([]) | length > 0
-    - chrony_confdir_has_servers.rc != 0
-
-- name: "Add remote time servers to main chrony configuration"
-  ansible.builtin.lineinfile:
-    path: {{{ chrony_conf_path }}}
-    line: 'server {{ item }}'
-    state: present
-    create: true
-    mode: 0644
   loop: '{{ var_multiple_time_servers.split(",") }}'
   when:
     - chrony_conf_has_servers.rc != 0

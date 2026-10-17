@@ -1,9 +1,0 @@
-#!/bin/bash
-# packages = chrony
-# platform = multi_platform_ubuntu
-# variables = var_multiple_time_servers=0.pool.ntp.org,1.pool.ntp.org
-
-rm -rf /etc/chrony/conf.d
-rm -rf /etc/chrony/sources.d
-
-echo "server 0xpool-ntp-org" > {{{ chrony_conf_path }}}
