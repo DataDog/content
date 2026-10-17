@@ -1,0 +1,41 @@
+documentation_complete: true
+
+title: 'Disable SSH MACs Prohibited by CIS'
+
+description: |-
+    The SSH server must not offer the MAC algorithms that the CIS benchmark
+    of the distribution lists as weak:
+    <pre>{{{ sshd_cis_weak_macs() }}}</pre>
+    Where a system-wide crypto policy governs the SSH server, remove them
+    through the policy. Elsewhere, a subtractive list ahead of any other
+    <tt>MACs</tt> line in the SSH server configuration removes them from the
+    defaults:
+    <pre>MACs -{{{ sshd_cis_weak_macs() }}}</pre>
+    The check reads the list that <tt>sshd -T</tt> prints, which reflects the
+    defaults, the crypto policy and the configuration files.
+
+rationale: |-
+    MACs based on MD5 or RIPEMD-160, MACs truncated to 96 bits and the 64-bit
+    UMAC give weaker integrity protection than the SHA-2 MACs, and an
+    attacker in a man-in-the-middle position can exploit them in downgrade
+    attacks.
+
+severity: medium
+
+identifiers:
+    cce@rhel8: CCE-88616-8
+    cce@rhel9: CCE-88659-8
+    cce@rhel10: CCE-88706-7
+
+platform: package[openssh-server]
+
+ocil_clause: 'the effective SSH MAC list contains a prohibited algorithm'
+
+ocil: |-
+    Print the MACs that the SSH server offers:
+    {{%- if product == "rhel8" %}}
+    <pre>$ sudo bash -c '. /etc/crypto-policies/back-ends/opensshserver.config; . /etc/sysconfig/sshd; sshd -T $OPTIONS $CRYPTO_POLICY' | grep '^macs '</pre>
+    {{%- else %}}
+    <pre>$ sudo sshd -T | grep '^macs '</pre>
+    {{%- endif %}}
+    The list must not contain any of the algorithms above.
