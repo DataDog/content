@@ -138,7 +138,7 @@ file_ownership_home_directories
 file_ownership_sshd_private_key
 file_ownership_sshd_pub_key
 file_permission_user_bash_history
-file_permission_user_init_files
+file_permission_user_dot_files
 file_permissions_at_allow
 file_permissions_backup_etc_group
 file_permissions_backup_etc_gshadow
@@ -377,5 +377,4 @@ var_sshd_set_keepalive=1
 var_sshd_set_login_grace_time=60
 var_sshd_set_maxstartups=10:30:60
 var_sudo_timestamp_timeout=15_minutes
-var_user_initialization_files_regex=all_dotfiles
 wireless_disable_interfaces
