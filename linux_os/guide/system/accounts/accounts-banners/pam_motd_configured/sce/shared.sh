@@ -2,9 +2,13 @@
 # platform = Ubuntu 24.04,Ubuntu 26.04
 # check-import = stdout
 
+# Follow the CIS audit: every readable file that a pam_motd entry of sshd,
+# login, su or gdm-password names with motd= must hold no \v, \r, \m or \s
+# escape and no word naming the operating system.
 result=$XCCDF_RESULT_PASS
-found_entry=false
 os_id=$(awk -F= '$1 == "ID" { gsub(/^"|"$/, "", $2); print $2; exit }' /etc/os-release 2>/dev/null)
+unsafe='(\\[vrms])'
+[[ -n "$os_id" ]] && unsafe="(\\\\[vrms]|\\b${os_id}\\b)"
 
 for service in sshd login su gdm-password; do
     if [[ -f "/etc/pam.d/$service" ]]; then
@@ -16,29 +20,16 @@ for service in sshd login su gdm-password; do
     fi
 
     while IFS= read -r line; do
-        found_entry=true
-        motd_path=$(grep -oP '\bmotd=\K("[^"]+"|'"'"'[^'"'"']+'"'"'|\S+)' <<< "$line" | head -n 1)
-        motd_path=${motd_path#\"}; motd_path=${motd_path%\"}
-        motd_path=${motd_path#\'}; motd_path=${motd_path%\'}
-
-        if [[ -z "$motd_path" || ! -r "$motd_path" ]]; then
-            echo "$pam_file: pam_motd does not reference a readable explicit motd path."
-            result=$XCCDF_RESULT_FAIL
-            continue
-        fi
-
-        unsafe='(\\[vrms]|Ubuntu|Debian|GNU/Linux)'
-        [[ -n "$os_id" ]] && unsafe="(\\\\[vrms]|Ubuntu|Debian|GNU/Linux|${os_id})"
-        if grep -Piq "$unsafe" "$motd_path"; then
-            echo "$motd_path contains operating-system information or a prohibited escape sequence."
-            result=$XCCDF_RESULT_FAIL
-        fi
-    done < <(grep -Pi '^\h*session\h+(required|optional)\h+pam_motd\.so\b' "$pam_file" 2>/dev/null)
+        while IFS= read -r motd_path; do
+            motd_path=${motd_path#\"}; motd_path=${motd_path%\"}
+            motd_path=${motd_path#\'}; motd_path=${motd_path%\'}
+            [[ -r "$motd_path" ]] || continue
+            if grep -Piq -- "$unsafe" "$motd_path"; then
+                echo "$motd_path, named in $pam_file, contains operating-system information or a prohibited escape sequence."
+                result=$XCCDF_RESULT_FAIL
+            fi
+        done < <(grep -oP '\bmotd=\K"[^"]+"|\bmotd=\K'"'"'[^'"'"']+'"'"'|\bmotd=\K\S+' <<< "$line")
+    done < <(grep -Pi '^\h*session\h+(required|optional)\h+pam_motd\.so\b.*\bmotd=' "$pam_file" 2>/dev/null)
 done
-
-if [[ "$found_entry" != true ]]; then
-    echo 'No active pam_motd entry with an explicit message file was found.'
-    result=$XCCDF_RESULT_FAIL
-fi
 
 exit "$result"

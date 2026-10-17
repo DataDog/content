@@ -2,30 +2,22 @@
 # platform = Ubuntu 24.04,Ubuntu 26.04
 # check-import = stdout
 
+# Follow the CIS audit: every existing file that a line of /etc/pam.d names
+# with motd=, a commented line included, must be owned by root:root with
+# mode 0644 or more restrictive. The value of motd= is a colon-separated
+# list of files (pam_motd(8)).
 result=$XCCDF_RESULT_PASS
-found_path=false
 
 while IFS= read -r motd_path; do
     motd_path=${motd_path#\"}; motd_path=${motd_path%\"}
     motd_path=${motd_path#\'}; motd_path=${motd_path%\'}
-    found_path=true
-
-    if [[ ! -e "$motd_path" ]]; then
-        echo "$motd_path does not exist."
-        result=$XCCDF_RESULT_FAIL
-        continue
-    fi
+    [[ -e "$motd_path" ]] || continue
 
     read -r mode uid gid < <(stat -Lc '%a %u %g' "$motd_path")
     if (( 8#$mode & 0133 )) || [[ "$uid" != 0 || "$gid" != 0 ]]; then
-        echo "$motd_path has mode $mode and owner $uid:$gid; expected root:root and 0644 or more restrictive."
+        echo "$motd_path has mode $mode and owner $uid:$gid, where root:root and 0644 or more restrictive are expected."
         result=$XCCDF_RESULT_FAIL
     fi
-done < <(grep -hPoi '^\h*session\h+(required|optional)\h+pam_motd\.so\b.*\bmotd=\K("[^"]+"|'"'"'[^'"'"']+'"'"'|\S+)' /etc/pam.d/* 2>/dev/null | sort -u)
-
-if [[ "$found_path" != true ]]; then
-    echo 'No explicit pam_motd message path was found in /etc/pam.d.'
-    result=$XCCDF_RESULT_FAIL
-fi
+done < <(grep -hPo '\bmotd=\K("[^"]+"|'"'"'[^'"'"']+'"'"'|\S+)' /etc/pam.d/* 2>/dev/null | tr ':' '\n' | sort -u)
 
 exit "$result"
