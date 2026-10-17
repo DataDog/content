@@ -1,0 +1,36 @@
+documentation_complete: true
+
+title: 'Ensure MOTD Files Do Not Disclose System Information'
+
+description: |-
+    The message of the day shown after login comes from the files
+    <tt>/etc/motd</tt>, <tt>/run/motd</tt> and <tt>/usr/lib/motd</tt>,
+    from the files in <tt>/etc/motd.d</tt>, <tt>/run/motd.d</tt> and
+    <tt>/usr/lib/motd.d</tt>, and from the scripts in <tt>/etc/update-motd.d</tt>.
+    None of these files may contain the escape sequences <tt>\m</tt>,
+    <tt>\r</tt>, <tt>\s</tt> or <tt>\v</tt>, or the operating system
+    identifier, the <tt>ID</tt> of <tt>/etc/os-release</tt>, as a word in
+    any letter case.
+    Edit each file that does to follow the local site policy, or remove the
+    file if it is not used, for example:
+    <pre>$ sudo rm /etc/update-motd.d/10-help-text</pre>
+
+rationale: |-
+    Warning messages inform users who are attempting to login to the system of their legal
+    status regarding the system and must include the name of the organization that owns
+    the system and any monitoring policies that are in place. Displaying OS and patch level
+    information in login banners also has the side effect of providing detailed system
+    information to attackers attempting to target specific exploits of a system. Authorized
+    users can easily get this information by running the <tt>uname -a</tt> command once they
+    have logged in.
+
+severity: medium
+
+platform: system_with_kernel
+
+ocil_clause: 'a MOTD file contains system information'
+
+ocil: |-
+    Run the following command:
+    <pre>$ grep -Psi -- "(\\\v|\\\r|\\\m|\\\s|\b$(grep ^ID= /etc/os-release | cut -d= -f2 | sed -e 's/"//g')\b)" /etc/motd /run/motd /usr/lib/motd /etc/motd.d/* /run/motd.d/* /usr/lib/motd.d/* /etc/update-motd.d/*</pre>
+    Nothing should be returned.
