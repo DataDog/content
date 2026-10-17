@@ -138,8 +138,37 @@
                     test_ref="test_{{{ rule_id }}}_static_pkg_correct" />
         {{% endif %}}
       </criteria>
+{{% if ALTERNATIVE_SYSCTLVAR %}}
+      <criteria operator="AND"
+                comment="{{{ ALTERNATIVE_SYSCTLVAR }}} set in the system configuration, which also sets {{{ SYSCTLVAR }}}">
+        <criterion comment="{{{ ALTERNATIVE_VARIABLE }}} lets {{{ ALTERNATIVE_SYSCTLVAR }}} count"
+                   test_ref="test_{{{ rule_id }}}_static_alternative_counts" />
+        <extend_definition comment="{{{ ALTERNATIVE_SYSCTLVAR }}} configuration setting check"
+                           definition_ref="sysctl_{{{ ALTERNATIVE_SYSCTLID }}}_static" />
+      </criteria>
+{{% endif %}}
     </criteria>
   </definition>
+{{% if ALTERNATIVE_SYSCTLVAR %}}
+
+  <ind:variable_test id="test_{{{ rule_id }}}_static_alternative_counts" version="1"
+                     check="all" check_existence="all_exist"
+                     comment="{{{ ALTERNATIVE_VARIABLE }}} lets {{{ ALTERNATIVE_SYSCTLVAR }}} count">
+    <ind:object object_ref="obj_{{{ rule_id }}}_static_alternative_counts" />
+    <ind:state state_ref="state_{{{ rule_id }}}_static_alternative_counts" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_{{{ rule_id }}}_static_alternative_counts" version="1">
+    <ind:var_ref>{{{ ALTERNATIVE_VARIABLE }}}</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_{{{ rule_id }}}_static_alternative_counts" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+
+  <external_variable id="{{{ ALTERNATIVE_VARIABLE }}}" datatype="boolean" version="1"
+                     comment="whether {{{ ALTERNATIVE_SYSCTLVAR }}} counts for the settings it sets" />
+{{% endif %}}
 
   <ind:textfilecontent54_test id="test_{{{ rule_id }}}_static_user_missing" version="1"
                               check="all" check_existence="none_exist"

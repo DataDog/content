@@ -1,0 +1,21 @@
+documentation_complete: true
+
+title: 'net.ipv4.ip_forward Counts for the IPv4 Forwarding Settings'
+
+description: |-
+    Whether net.ipv4.ip_forward set to 0 in the sysctl configuration also
+    satisfies the net.ipv4.conf.all.forwarding and
+    net.ipv4.conf.default.forwarding settings. The kernel applies
+    net.ipv4.ip_forward to all interfaces and to the default, and the CIS
+    Benchmarks let a system that sets it skip those two recommendations.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
