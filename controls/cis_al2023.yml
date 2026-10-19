@@ -1601,8 +1601,13 @@ controls:
       levels:
           - l1_server
       status: automated
+      notes: |-
+          rsyslog_files_groupownership requires the group root. The audit also accepts adm
+          and the owner's primary group, so the control leaves that rule out.
       rules:
-          - rsyslog_files_groupownership
+          - file_permissions_var_log_lastlog
+          - file_permissions_var_log_wbtmp
+          - permissions_local_var_log
           - rsyslog_files_ownership
           - rsyslog_files_permissions
 
