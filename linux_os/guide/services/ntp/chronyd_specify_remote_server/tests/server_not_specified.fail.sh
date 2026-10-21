@@ -4,5 +4,6 @@
 
 rm -rf /etc/chrony/conf.d
 rm -rf /etc/chrony/sources.d
+rm -rf /etc/chrony.d
 
 echo "server " > {{{ chrony_conf_path }}}

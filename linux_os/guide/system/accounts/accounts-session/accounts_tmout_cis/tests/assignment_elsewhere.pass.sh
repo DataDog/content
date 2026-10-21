@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = Amazon Linux 2023,Red Hat Enterprise Linux 7
+# platform = Amazon Linux 2023
 # variables = var_accounts_tmout=900
 
 for f in /etc/bashrc /etc/bash.bashrc /etc/profile /etc/profile.d/*.sh /etc/profile.d/sh.local; do

@@ -107,10 +107,12 @@ def main():
         raise RuntimeError("No Benchmark found!")
 
     for namespace, benchmark in benchmarks:
-        if args[1] not in ("cs9", "cs10", "amzn2") and not args[1].startswith("centos"):
+        if options.amzn:
+            ssg.build_derivatives.profile_handling(
+                benchmark, namespace, ssg.constants.AMZN_PROFILES)
+        elif args[1] not in ("cs9", "cs10") and not args[1].startswith("centos"):
             # In all CentOS and CentOS Streams, profiles are kept because they are systems
-            # intended to test content that will get into RHEL. Amazon Linux 2
-            # keeps them because it is built from RHEL 7, as Amazon packages it.
+            # intended to test content that will get into RHEL.
             ssg.build_derivatives.profile_handling(benchmark, namespace)
         if not ssg.build_derivatives.add_cpes(benchmark, namespace, mapping):
             import pprint

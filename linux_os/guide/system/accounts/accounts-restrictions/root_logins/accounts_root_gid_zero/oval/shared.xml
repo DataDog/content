@@ -5,6 +5,12 @@
       <criterion comment="tests that the root account's gid is equal to 0" test_ref="test_{{{rule_id}}}" />
       {{% if 'ubuntu' in product or ('rhel' in product and product != 'rhel7') or 'almalinux' in product or 'fedora' in product %}}
       <criterion comment="no other users have primary group ID 0" test_ref="test_{{{rule_id}}}_no_other_gid_0" />
+      {{% elif product == "rhel7" %}}
+      {{#- The CIS RHEL 7 audit reads the group of root alone, the Amazon Linux 2 one the other accounts too. #}}
+      <criteria operator="OR">
+        <extend_definition comment="the system is not Amazon Linux 2" definition_ref="installed_OS_is_amzn2" negate="true" />
+        <criterion comment="no other users have primary group ID 0" test_ref="test_{{{rule_id}}}_no_other_gid_0" />
+      </criteria>
       {{% endif %}}
     </criteria>
   </definition>
@@ -24,7 +30,7 @@
     <ind:subexpression operation="equals" datatype="int">0</ind:subexpression>
   </ind:textfilecontent54_state>
 
-  {{% if 'ubuntu' in product or ('rhel' in product and product != 'rhel7') or 'almalinux' in product or 'fedora' in product %}}
+  {{% if 'ubuntu' in product or 'rhel' in product or 'almalinux' in product or 'fedora' in product %}}
   <!-- Test for other users with GID 0 (excluding sync, shutdown, halt, operator) -->
   <ind:textfilecontent54_test id="test_{{{rule_id}}}_no_other_gid_0" check="all" check_existence="none_exist" comment="test that there are no other accounts with GID 0 except root" version="1">
     <ind:object object_ref="object_{{{rule_id}}}_no_other_gid_0" />
