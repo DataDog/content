@@ -24,8 +24,10 @@ XCCDF12_NS = ssg.constants.XCCDF12_NS
 oval_ns = ssg.constants.oval_namespace
 
 CENTOS_NOTICE_ELEMENT = ssg.xml.ElementTree.fromstring(ssg.constants.CENTOS_NOTICE)
+AMZN_NOTICE_ELEMENT = ssg.xml.ElementTree.fromstring(ssg.constants.AMZN_NOTICE)
 
 CENTOS_WARNING = 'centos_warning'
+AMZN_WARNING = 'amzn_warning'
 
 
 def parse_args():
@@ -33,6 +35,8 @@ def parse_args():
     parser = OptionParser(usage=usage)
     parser.add_option("--enable-centos", dest="centos", default=False,
                       action="store_true", help="Enable CentOS")
+    parser.add_option("--enable-amzn", dest="amzn", default=False,
+                      action="store_true", help="Enable Amazon Linux 2")
     parser.add_option("-i", "--input", dest="input_content", default=False,
                       action="store",
                       help="INPUT can be XCCDF or Source data stream")
@@ -50,6 +54,13 @@ def parse_args():
     )
 
     (options, args) = parser.parse_args()
+
+    if options.centos and options.amzn:
+        sys.stderr.write(
+            "Cannot enable two derivative OS(s) at the same time\n"
+        )
+        parser.print_help()
+        sys.exit(1)
 
     if not options.output and not options.input_content:
         parser.print_help()
@@ -71,6 +82,14 @@ def main():
         notice = CENTOS_NOTICE_ELEMENT
         warning = CENTOS_WARNING
         derivative = "CentOS"
+        rhel = "Red Hat Enterprise Linux"
+
+    if options.amzn:
+        mapping = ssg.constants.RHEL_AMZN_CPE_MAPPING
+        notice = AMZN_NOTICE_ELEMENT
+        warning = AMZN_WARNING
+        derivative = "Amazon Linux 2"
+        rhel = "Red Hat Enterprise Linux 7"
 
     tree = ssg.xml.open_xml(options.input_content)
     root = tree.getroot()
@@ -88,9 +107,10 @@ def main():
         raise RuntimeError("No Benchmark found!")
 
     for namespace, benchmark in benchmarks:
-        if args[1] not in ("cs9", "cs10") and not args[1].startswith("centos"):
+        if args[1] not in ("cs9", "cs10", "amzn2") and not args[1].startswith("centos"):
             # In all CentOS and CentOS Streams, profiles are kept because they are systems
-            # intended to test content that will get into RHEL
+            # intended to test content that will get into RHEL. Amazon Linux 2
+            # keeps them because it is built from RHEL 7, as Amazon packages it.
             ssg.build_derivatives.profile_handling(benchmark, namespace)
         if not ssg.build_derivatives.add_cpes(benchmark, namespace, mapping):
             import pprint
@@ -108,7 +128,10 @@ def main():
                 "notice to affected XCCDF Benchmark '%s'." % (benchmark)
             )
 
-    ssg.build_derivatives.replace_platform(root, oval_ns, derivative)
+    ssg.build_derivatives.replace_platform(root, oval_ns, derivative, rhel)
+    if options.amzn:
+        # As the scap-security-guide package of Amazon Linux 2 does with sed.
+        ssg.build_derivatives.rename_product(root, XCCDF12_NS, rhel, derivative)
     oval_def_id = ssg.build_derivatives.add_cpe_item_to_dictionary(
         root, args[0], args[1], options.id_name, options.cpe_items_dir
     )
