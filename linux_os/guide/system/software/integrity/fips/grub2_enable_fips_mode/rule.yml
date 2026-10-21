@@ -46,6 +46,7 @@ severity: high
 platform: grub2 and system_with_kernel and not osbuild
 
 identifiers:
+    cce@rhel7: CCE-80359-3
     cce@rhel10: CCE-86191-4
 
 references:

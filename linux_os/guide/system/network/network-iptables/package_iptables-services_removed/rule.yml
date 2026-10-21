@@ -18,6 +18,7 @@ severity: medium
 platform: package[iptables]
 
 identifiers:
+    cce@rhel7: CCE-86678-0
     cce@rhel8: CCE-86679-8
 
 {{{ complete_ocil_entry_package_removed("iptables-services") }}}

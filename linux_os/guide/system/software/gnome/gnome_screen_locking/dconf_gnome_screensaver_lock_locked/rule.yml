@@ -18,6 +18,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-80563-0
     cce@rhel8: CCE-87261-4
     cce@rhel9: CCE-90150-4
     cce@rhel10: CCE-87356-2

@@ -23,6 +23,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-80110-0
     cce@rhel8: CCE-80775-0
     cce@rhel9: CCE-86510-5
     cce@rhel10: CCE-87170-7
