@@ -12,6 +12,9 @@ rationale: |-
 
 severity: low
 
+identifiers:
+    cce@rhel7: CCE-82924-2
+
 references:
     srg: SRG-OS-000095-GPOS-00049
 

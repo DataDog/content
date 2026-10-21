@@ -19,6 +19,9 @@ rationale: |-
 
 severity: unknown
 
+identifiers:
+    cce@rhel7: CCE-80280-1
+
 ocil_clause: 'it is not'
 
 ocil: |-

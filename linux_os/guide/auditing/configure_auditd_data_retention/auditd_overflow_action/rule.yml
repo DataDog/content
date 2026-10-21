@@ -1,4 +1,4 @@
-{{%- if product in ["ol7"] %}}
+{{%- if product in ["rhel7", "ol7"] %}}
   {{%- set auditd_conf_path = audisp_conf_path + "/audispd.conf" %}}
 {{%- else %}}
   {{%- set auditd_conf_path = audisp_conf_path + "/auditd.conf" %}}
@@ -21,6 +21,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-88073-2
     cce@rhel8: CCE-85889-4
     cce@rhel9: CCE-87901-5
     cce@rhel10: CCE-87003-0
