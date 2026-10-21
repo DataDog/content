@@ -2,7 +2,7 @@ documentation_complete: true
 
 title: 'Set Interactive Session Timeout for CIS Benchmark'
 
-{{% if product == "al2023" %}}
+{{% if product in ["al2023", "rhel7"] %}}
 {{% set tmout_files = "/etc/bashrc /etc/profile /etc/profile.d/*.sh" %}}
 {{% elif product in ["rhel9", "almalinux9"] %}}
 {{% set tmout_files = "/etc/*bashrc /etc/profile /etc/profile.d/*.sh /etc/profile.d/sh.local /usr/etc/profile.d/*.sh /usr/etc/profile.d/sh.local" %}}
@@ -13,7 +13,7 @@ title: 'Set Interactive Session Timeout for CIS Benchmark'
 description: |-
     The <tt>TMOUT</tt> variable sets the number of seconds after which an idle
     interactive shell exits.
-    {{% if product == "al2023" %}}
+    {{% if product in ["al2023", "rhel7"] %}}
     The CIS Benchmark requires one of the files <tt>{{{ tmout_files }}}</tt> to set
     <tt>TMOUT</tt> to a value from 1 to {{{ xccdf_value("var_accounts_tmout") }}} and
     to mark it read only and exported with the <tt>readonly</tt> and <tt>export</tt>
@@ -53,7 +53,7 @@ ocil_clause: 'TMOUT is unset, out of range, or not marked read only and exported
 ocil: |-
     Run the following command to list the <tt>TMOUT</tt> settings:
     <pre>$ sudo grep -s TMOUT {{{ tmout_files }}}</pre>
-    {{% if product == "al2023" %}}
+    {{% if product in ["al2023", "rhel7"] %}}
     One file has to set <tt>TMOUT</tt> to a value from 1 to
     {{{ xccdf_value("var_accounts_tmout") }}} and contain <tt>readonly TMOUT</tt> and
     <tt>export TMOUT</tt>, and no file may set <tt>TMOUT</tt> to 0 or to a value above

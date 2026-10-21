@@ -1,6 +1,8 @@
 {{# The regular expression filters away accounts with no passwords and locked passwords (passwords are located in the 2nd field of /etc/shadow entries). #}}
+{{#- The CIS RHEL 7 audit fails a user with a password whose INACTIVE field is empty or -1, which never disables the account. #}}
+{{%- set regex_empty = "^(?:[^:]*:)(?:\\$[^:]*:)(?:[^:]*:){4}(?:\\s*|-\\d+):(?:[^:]*:)(?:[^:]*)$" if product == "rhel7" else none %}}
 {{{ test_etc_shadow_password_variable(
     regex="^(?:[^:]*:)(?:[^\!\*:]*:)(?:[^:]*:){4}(\d+):(?:[^:]*:)(?:[^:]*)$",
     external_variable_id="var_account_disable_post_pw_expiration",
     operation="less than or equal",
-    description="Set existing passwords a period of inactivity before they been locked", rule_id=rule_id, rule_title=rule_title) }}}
+    description="Set existing passwords a period of inactivity before they been locked", rule_id=rule_id, rule_title=rule_title, regex_empty=regex_empty) }}}

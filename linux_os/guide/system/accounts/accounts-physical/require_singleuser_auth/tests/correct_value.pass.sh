@@ -1,5 +1,9 @@
 #!/bin/bash
+{{% if product == "rhel7" %}}
+# platform = Not Applicable
+{{% else %}}
 # platform = multi_platform_fedora,multi_platform_rhel,multi_platform_ol
+{{% endif %}}
 
 service_file="/usr/lib/systemd/system/rescue.service"
 sulogin="/usr/lib/systemd/systemd-sulogin-shell"

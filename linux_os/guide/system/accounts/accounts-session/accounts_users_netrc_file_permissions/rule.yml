@@ -9,6 +9,9 @@ description: |-
 
     This rule ensures every .netrc file or directory under the home directory related
     to an interactive user is not group or world accessible
+{{%- if product == "rhel7" %}}
+    and not executable by its owner, which is mode 0600 or more restrictive
+{{%- endif %}}
 
 rationale: |-
     .netrc files may contain unencrypted passwords that may be used to attack other systems.

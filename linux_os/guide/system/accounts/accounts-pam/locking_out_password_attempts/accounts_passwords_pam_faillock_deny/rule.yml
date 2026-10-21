@@ -8,10 +8,17 @@ description: |-
     using <tt>pam_faillock.so</tt>.
     pam_faillock.so module requires multiple entries in pam files. These entries must be carefully
     defined to work as expected.
+{{%- if product == "rhel7" %}}
+    Ensure that the <tt>pam_faillock.so</tt> preauth and authfail lines of
+    <tt>/etc/pam.d/system-auth</tt> and <tt>/etc/pam.d/password-auth</tt> carry the option
+    <tt>deny=&lt;count&gt;</tt>, where count should be less than or equal to
+    {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}} and greater than 0.
+{{%- else %}}
     Ensure that the file <tt>/etc/security/faillock.conf</tt> contains the following entry:
     <tt>deny = &lt;count&gt;</tt>
     Where count should be less than or equal to
     {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}} and greater than 0.
+{{%- endif %}}
     {{% if 'ubuntu' not in product and 'debian' not in product %}}
     In order to avoid errors when manually editing these files, it is
     recommended to use the appropriate tools, such as <tt>authselect</tt> or <tt>authconfig</tt>,
@@ -62,19 +69,28 @@ ocil_clause: |-
 ocil: |-
     Verify {{{ full_name }}} is configured to lock an account after {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}}
     unsuccessful logon attempts with the command:
-
+{{% if product == "rhel7" %}}
+    <pre>$ grep pam_faillock /etc/pam.d/system-auth /etc/pam.d/password-auth</pre>
+    The preauth and authfail lines of each file should show
+    <tt>deny={{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}}</tt> or less.
+{{% else %}}
     <pre>$ grep 'deny =' /etc/security/faillock.conf</pre>
     deny = {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}}.
-
+{{% endif %}}
 fixtext: |-
     Configure {{{ full_name }}} to lock an account when {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}}
     unsuccessful logon attempts occur. First enable the feature using the following command:
+{{% if product == "rhel7" %}}
+    $ sudo authconfig --enablefaillock --update
 
+    Then add deny={{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}} to the pam_faillock.so preauth and authfail lines
+    of /etc/pam.d/system-auth and /etc/pam.d/password-auth.
+{{% else %}}
     $ sudo authselect enable-feature with-faillock
 
     Then edit the <tt>/etc/security/faillock.conf</tt> file as follows:
     deny = {{{ xccdf_value("var_accounts_passwords_pam_faillock_deny") }}}
-
+{{% endif %}}
 warnings:
     - general: |-
         If the system relies on <tt>authselect</tt> tool to manage PAM settings, the remediation

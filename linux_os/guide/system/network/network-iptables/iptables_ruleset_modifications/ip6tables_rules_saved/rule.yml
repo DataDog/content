@@ -1,0 +1,34 @@
+documentation_complete: true
+
+title: 'Ensure ip6tables Rules are Saved'
+
+description: |-
+    The <tt>ip6tables</tt> service loads <tt>/etc/sysconfig/ip6tables</tt> at
+    boot. That file must hold the complete rule set of the running
+    <tt>filter</tt> table, as <tt>ip6tables-save</tt> writes it. After
+    reviewing the running rules, save them:
+    <pre># service ip6tables save</pre>
+    The rule passes when IPv6 is disabled.
+
+rationale: |-
+    Rules that are not saved are lost when the system reboots, and the
+    firewall comes up with whatever the file holds.
+
+severity: medium
+
+platform: firewall_applicable[iptables] and ipv6[enabled]
+
+ocil_clause: 'the running ip6tables rules differ from the saved ones'
+
+ocil: |-
+    Compare the running <tt>filter</tt> table with the one in
+    <tt>/etc/sysconfig/ip6tables</tt>:
+    <pre># ip6tables-save -t filter</pre>
+    <pre># cat /etc/sysconfig/ip6tables</pre>
+    Apart from comments and packet counters, the policies and rules
+    must be the same.
+
+warnings:
+    - general: |-
+        The check compares the rules as <tt>ip6tables-save</tt> writes them,
+        so a file edited by hand fails until <tt>service ip6tables save</tt> rewrites it.

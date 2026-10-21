@@ -3,8 +3,13 @@ documentation_complete: true
 title: 'Verify All Account Password Hashes are Shadowed'
 
 description: |-
+{{%- if product == "rhel7" %}}
+    If the second field of any account in <tt>/etc/passwd</tt> holds anything but
+    an <tt>x</tt>, such as a password hash, the cause of this misconfiguration should be
+{{%- else %}}
     If any password hashes are stored in <tt>/etc/passwd</tt> (in the second field,
     instead of an <tt>x</tt> or <tt>*</tt>), the cause of this misconfiguration should be
+{{%- endif %}}
     investigated. The account should have its password reset and the hash should be
     properly stored, or the account should be deleted entirely.
 

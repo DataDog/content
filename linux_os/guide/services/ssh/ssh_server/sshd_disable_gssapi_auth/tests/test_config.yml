@@ -1,0 +1,1 @@
+deny_templated_scenarios: {{{ '[comment.fail.sh, line_not_there.fail.sh]' if product == "rhel7" else '[]' }}}
