@@ -20,6 +20,7 @@ severity: medium
 
 identifiers:
     cce@rhcos4: CCE-82550-5
+    cce@rhel7: CCE-27287-2
     cce@rhel8: CCE-80855-0
     cce@rhel9: CCE-83594-2
     cce@rhel10: CCE-90014-2
@@ -56,6 +57,9 @@ ocil: |-
     {{% if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16"] or product.startswith('slmicro') or 'ol' in families or 'rhel' in product -%}}
         ExecStart and /usr/lib/systemd/systemd-sulogin-shell.
         <pre>ExecStart=-/usr/lib/systemd/systemd-sulogin-shell rescue</pre>
+    {{%- elif product in ["rhel7"] -%}}
+        ExecStart and /usr/sbin/sulogin.
+        <pre>ExecStart=-/bin/sh -c "/usr/sbin/sulogin; /usr/bin/systemctl --fail --no-block default"</pre>
     {{%- else -%}}
         ExecStart and /sbin/sulogin.
         <pre>ExecStart=-/bin/sh -c "/sbin/sulogin; /usr/bin/systemctl --fail --no-block default"</pre>
@@ -95,7 +99,9 @@ fixtext: |-
 
     Ensure that there are following two lines  in <tt>/etc/systemd/system/rescue.service.d/10-remediation.conf</tt>:
     <pre>ExecStart=
-    {{% if product in ["fedora", "sle12", "sle15", "sle16"] or product.startswith('slmicro') or 'ol' in families or 'rhel' in product -%}}
+    {{% if product in ["rhel7"] -%}}
+    ExecStart=-/bin/sh -c "/usr/sbin/sulogin; /usr/bin/systemctl --fail --no-block default"</pre>
+    {{%- elif product in ["fedora", "sle12", "sle15", "sle16"] or product.startswith('slmicro') or 'ol' in families or 'rhel' in product -%}}
     ExecStart=-/usr/lib/systemd/systemd-sulogin-shell rescue</pre>
     {{%- else -%}}
     ExecStart=-/bin/sh -c "/sbin/sulogin; /usr/bin/systemctl --fail --no-block default"</pre>

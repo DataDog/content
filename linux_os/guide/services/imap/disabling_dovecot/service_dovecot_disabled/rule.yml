@@ -12,6 +12,7 @@ rationale: |-
 severity: unknown
 
 identifiers:
+    cce@rhel7: CCE-80294-2
     cce@rhel8: CCE-82760-0
     cce@rhel9: CCE-84242-7
     cce@rhel10: CCE-88684-6

@@ -2,7 +2,7 @@
 {{% set smartcard_packages = ['pam_pkcs11', 'mozilla-nss', 'mozilla-nss-tools', 'pcsc-ccid', 'pcsc-lite', 'pcsc-tools', 'opensc', 'coolkey'] %}}
 {{% elif product in ["sle15"] %}}
 {{% set smartcard_packages = ['pam_pkcs11', 'mozilla-nss', 'mozilla-nss-tools', 'pcsc-ccid', 'pcsc-lite', 'pcsc-tools', 'opensc'] %}}
-{{% elif product in ["ol7"] %}}
+{{% elif product in ["rhel7", "ol7"] %}}
 {{% set smartcard_packages = ['pam_pkcs11'] %}}
 {{% elif 'ubuntu' in product %}}
 {{% set smartcard_packages = ['libpam-pkcs11'] %}}
@@ -40,6 +40,7 @@ severity: medium
 platform: not_s390x_arch
 
 identifiers:
+    cce@rhel7: CCE-80519-2
     cce@rhel8: CCE-84029-8
     cce@rhel9: CCE-83596-7
     cce@rhel10: CCE-86642-6
@@ -76,6 +77,7 @@ template:
         pkgname@fedora: pkcs11-provider
         pkgname@ol7: pam_pkcs11
         pkgname@ol10: pkcs11-provider
+        pkgname@rhel7: pam_pkcs11
         pkgname@rhel10: pkcs11-provider
         pkgname@ubuntu2204: libpam-pkcs11
         pkgname@ubuntu2404: libpam-pkcs11

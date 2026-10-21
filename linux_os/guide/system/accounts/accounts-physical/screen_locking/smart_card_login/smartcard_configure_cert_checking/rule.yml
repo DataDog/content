@@ -26,6 +26,7 @@ platforms:
     - not_s390x_arch
 
 identifiers:
+    cce@rhel7: CCE-80520-0
     cce@rhel8: CCE-82475-5
     cce@sle12: CCE-83178-4
     cce@sle15: CCE-83293-1

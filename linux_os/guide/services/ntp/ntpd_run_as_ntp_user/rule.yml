@@ -23,6 +23,9 @@ severity: medium
 
 platform: package[ntp]
 
+identifiers:
+    cce@rhel7: CCE-84295-5
+
 references:
     cis@sle12: 2.2.1.4
 

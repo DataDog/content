@@ -48,6 +48,8 @@ description: |-
         {{{ weblink(link="https://documentation.suse.com/sle-micro/6.0/html/Micro-deployment-raw-images/index.html#deployment-jeos-firstboot") }}}
     {{% elif 'ubuntu' in product %}}
         {{{ weblink(link="https://help.ubuntu.com/community/Full_Disk_Encryption_Howto_2019") }}}
+    {{% elif product == "rhel7" %}}
+        {{{ weblink(link="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-encryption") }}}
     {{% elif product == "fedora" %}}
         {{{ weblink(link="https://docs.fedoraproject.org/en-US/quick-docs/encrypting-drives-using-LUKS/") }}}
     {{% else %}}
@@ -63,6 +65,7 @@ severity: high
 
 identifiers:
     cce@rhcos4: CCE-89503-7
+    cce@rhel7: CCE-27128-8
     cce@rhel8: CCE-80789-1
     cce@rhel9: CCE-90849-1
     cce@rhel10: CCE-89165-5

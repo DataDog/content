@@ -25,6 +25,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel7: CCE-80542-4
+
 references:
     nist: SC-5,SC-5(1),SC-5(2),SC-5(3)(a),CM-6(a)
     srg: SRG-OS-000420-GPOS-00186

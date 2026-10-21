@@ -4,7 +4,7 @@
              ",ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256" ~
              ",diffie-hellman-group14-sha256,diffie-hellman-group16-sha512" ~
              ",diffie-hellman-group18-sha512'" %}}
-{{% elif product in ['ol7'] %}}
+{{% elif product in ['ol7', 'rhel7'] %}}
 {{% set path=sshd_main_config_file %}}
 {{% set conf="KexAlgorithms ecdh-sha1-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521" ~
              ",diffie-hellman-group-exchange-sha256"  %}}
@@ -36,6 +36,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-86061-9
     cce@rhel8: CCE-86059-3
     cce@sle12: CCE-92336-7
     cce@sle15: CCE-92505-7

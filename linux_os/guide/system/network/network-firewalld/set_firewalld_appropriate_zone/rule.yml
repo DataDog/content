@@ -17,6 +17,7 @@ severity: medium
 platform: package[firewalld]
 
 identifiers:
+    cce@rhel7: CCE-86109-6
     cce@rhel8: CCE-86111-2
     cce@rhel9: CCE-90607-3
     cce@rhel10: CCE-88271-2
