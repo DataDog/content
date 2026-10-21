@@ -45,6 +45,7 @@ template:
         pkgname@sle12: openldap2-client
         pkgname@sle15: openldap2-client
         pkgname@slmicro5: openldap2-client
+        pkgname@ubuntu2004: ldap-utils
         pkgname@ubuntu2204: ldap-utils
         pkgname@ubuntu2404: ldap-utils
         pkgname@ubuntu2604: ldap-utils

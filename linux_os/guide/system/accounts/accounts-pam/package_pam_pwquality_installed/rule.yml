@@ -31,6 +31,7 @@ identifiers:
 
 references:
     srg: SRG-OS-000480-GPOS-00225
+    stigid@ubuntu2004: UBTU-20-010057
 
 {{{ complete_ocil_entry_package_installed(package=package) }}}
 
@@ -38,6 +39,7 @@ template:
     name: package_installed
     vars:
         pkgname: libpwquality
+        pkgname@ubuntu2004: libpam-pwquality
         pkgname@ubuntu2204: libpam-pwquality
         pkgname@ubuntu2404: libpam-pwquality
         pkgname@ubuntu2604: libpam-pwquality

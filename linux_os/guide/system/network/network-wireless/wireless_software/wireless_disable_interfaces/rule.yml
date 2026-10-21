@@ -61,6 +61,7 @@ references:
     stigid@ol7: OL07-00-041010
     stigid@ol8: OL08-00-040110
     stigid@sle12: SLES-12-030450
+    stigid@ubuntu2004: UBTU-20-010455
 
 ocil_clause: 'a wireless interface is configured and has not been documented and approved by the Information System Security Officer (ISSO)'
 

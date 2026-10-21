@@ -37,6 +37,7 @@ references:
     nist: IA-11,CM-6(a)
     nist-csf: PR.AC-1,PR.AC-7
     srg: SRG-OS-000373-GPOS-00156
+    stigid@ubuntu2004: UBTU-20-010014
 
 ocil_clause: 'nopasswd and/or !authenticate is enabled in sudo'
 

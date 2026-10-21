@@ -79,7 +79,7 @@ args:
       pkgname: snmp
     {{% endif %}}
   networkmanager:
-    {{% if product in ["ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}
+    {{% if product in ["ubuntu2004", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}
     pkgname: network-manager
     {{% else %}}
     pkgname: NetworkManager

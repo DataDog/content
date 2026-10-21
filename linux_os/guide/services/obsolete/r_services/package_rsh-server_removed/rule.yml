@@ -34,6 +34,7 @@ references:
     nist-csf: PR.AC-3,PR.IP-1,PR.PT-3,PR.PT-4
     srg: SRG-OS-000095-GPOS-00049
     stigid@ol7: OL07-00-020000
+    stigid@ubuntu2004: UBTU-20-010406
 
 {{{ complete_ocil_entry_package_removed("rsh-server") }}}
 

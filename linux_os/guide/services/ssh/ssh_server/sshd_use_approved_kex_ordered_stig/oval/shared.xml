@@ -6,7 +6,7 @@
              "diffie-hellman-group14-sha256","diffie-hellman-group16-sha512",
              "diffie-hellman-group18-sha512"] %}}
 {{% set sufix_conf="(\s.*)?'" %}}
-{{% elif product in ['ol7', 'sle12', 'sle15', 'slmicro5', 'slmicro6'] %}}
+{{% elif product in ['ol7', 'sle12', 'sle15', 'slmicro5', 'slmicro6', 'ubuntu2004'] %}}
 {{% set sshd_main_config = sshd_main_config_file %}}
 {{% set sshd_drop_in_dir = sshd_config_dir %}}
 {{% set prefix_conf="^\s*KexAlgorithms\s*" %}}

@@ -51,6 +51,7 @@ template:
         pkgname@debian12: isc-dhcp-server
         pkgname@rhel8: dhcp-server
         pkgname@rhel9: dhcp-server
+        pkgname@ubuntu2004: isc-dhcp-server
         pkgname@ubuntu2204: isc-dhcp-server
         pkgname@ubuntu2404: isc-dhcp-server
         pkgname@ubuntu2604: isc-dhcp-server

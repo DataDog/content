@@ -44,6 +44,7 @@ template:
         pkgname: avahi
         pkgname@debian12: avahi-daemon
         pkgname@debian13: avahi-daemon
+        pkgname@ubuntu2004: avahi-daemon
         pkgname@ubuntu2204: avahi-daemon
         pkgname@ubuntu2404: avahi-daemon
         pkgname@ubuntu2604: avahi-daemon

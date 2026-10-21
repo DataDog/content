@@ -40,3 +40,13 @@ overrides:
     - /usr/sbin/audisp-remote
     - /usr/sbin/audispd-zos-remote
 {{% endif %}}
+{{% if product == 'ubuntu2004' %}}
+  audit_binaries:
+    - /sbin/auditctl
+    - /sbin/aureport
+    - /sbin/ausearch
+    - /sbin/autrace
+    - /sbin/auditd
+    - /sbin/audispd
+    - /sbin/augenrules
+{{% endif %}}
