@@ -63,5 +63,6 @@ template:
         pkgname: xorg-x11-server-common
         pkgname@debian12: xserver-common
         pkgname@debian13: xserver-common
+        pkgname@ubuntu2004: xserver-xorg
         pkgname@ubuntu2204: xserver-common
         pkgname@ubuntu2404: xserver-common
