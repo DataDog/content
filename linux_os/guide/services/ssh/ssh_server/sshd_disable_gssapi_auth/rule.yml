@@ -59,3 +59,6 @@ template:
 {{%- if product == "rhel7" %}}
         missing_parameter_pass: 'true'
 {{%- endif %}}
+{{%- if product == "ubuntu2004" %}}
+        missing_parameter_pass_variable: var_sshd_default_compliant
+{{%- endif %}}

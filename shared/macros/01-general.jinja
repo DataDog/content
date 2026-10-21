@@ -1263,10 +1263,11 @@ p+i+n+u+g+s+b+acl+xattrs+sha512
 
 {{#
     The directory of the audit tools in the AIDE configuration. The CIS
-    Amazon Linux 2023 Benchmark names them under /sbin.
+    Amazon Linux 2023 Benchmark, the CIS Ubuntu 20.04 Benchmark and the
+    Ubuntu 20.04 STIG name them under /sbin.
 #}}
 {{%- macro aide_audit_dir() -%}}
-{{%- if product == 'al2023' -%}}
+{{%- if product in ['al2023', 'ubuntu2004'] -%}}
 /sbin
 {{%- else -%}}
 /usr/sbin
