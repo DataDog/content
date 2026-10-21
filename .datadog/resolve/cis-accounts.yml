@@ -1,0 +1,14 @@
+# Conflicts of cis-accounts when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+shared/templates/accounts_password/bash.template:
+  - "{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product %}}"
+shared/templates/accounts_password/ansible.template:
+  - "{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product %}}"
+shared/templates/accounts_password/oval.template:
+  - "{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product %}}"
+shared/templates/accounts_password/tests/conflicting_values_directory.fail.sh:
+  - "# platform = Oracle Linux 8,Oracle Linux 9,multi_platform_almalinux,multi_platform_rhel,multi_platform_ubuntu"
+shared/templates/accounts_password/tests/correct_value_directory.pass.sh:
+  - "# platform = Oracle Linux 8,Oracle Linux 9,multi_platform_almalinux,multi_platform_rhel,multi_platform_ubuntu"
+shared/references/cce-redhat-avail.txt:
+  - ''
