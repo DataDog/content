@@ -6,11 +6,19 @@ description: |-
     The SSH server must not offer the key exchange algorithms that the CIS
     benchmarks list as weak:
     <pre>{{{ sshd_cis_weak_kex() }}}</pre>
+{{%- if product == "rhel7" %}}
+    The OpenSSH 7.4 of RHEL 7 rejects a list that removes algorithms from the
+    defaults. Set the allowed key exchange algorithms in a
+    <tt>KexAlgorithms</tt> line ahead of any other in the SSH server
+    configuration, as the benchmark does:
+    <pre>KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256</pre>
+{{%- else %}}
     Where a system-wide crypto policy governs the SSH server, remove them
     through the policy. Elsewhere, a subtractive list ahead of any other
     <tt>KexAlgorithms</tt> line in the SSH server configuration removes them
     from the defaults:
     <pre>KexAlgorithms -{{{ sshd_cis_weak_kex() }}}</pre>
+{{%- endif %}}
     The check reads the list that <tt>sshd -T</tt> prints, which reflects the
     defaults, the crypto policy and the configuration files.
 

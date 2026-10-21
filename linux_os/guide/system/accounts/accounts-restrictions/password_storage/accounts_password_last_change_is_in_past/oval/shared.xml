@@ -10,12 +10,26 @@
   </definition>
 
   <unix:shadow_state id="state_accounts_password_all_chage_past_has_no_password" version="1">
+{{#- The CIS RHEL 7 audit reads the users whose password field starts with a character other than !, *, x or X, and passes a user whose password never changed. #}}
+{{%- if product == "rhel7" %}}
+    <unix:password operation="pattern match">^(?:[!*xX].*)?$</unix:password>
+{{%- else %}}
     <unix:password operation="pattern match">^(!|!!|!\*|\*|!locked)$</unix:password>
+{{%- endif %}}
   </unix:shadow_state>
+{{%- if product == "rhel7" %}}
+
+  <unix:shadow_state id="state_accounts_password_last_change_is_in_past_never_changed" version="1">
+    <unix:chg_lst datatype="int" operation="less than">0</unix:chg_lst>
+  </unix:shadow_state>
+{{%- endif %}}
 
   <unix:shadow_object id="object_accounts_password_last_change_is_in_past" version="1">
     <unix:username operation="pattern match">.*</unix:username>
     <filter action="exclude">state_accounts_password_all_chage_past_has_no_password</filter>
+{{%- if product == "rhel7" %}}
+    <filter action="exclude">state_accounts_password_last_change_is_in_past_never_changed</filter>
+{{%- endif %}}
   </unix:shadow_object>
 
   <local_variable id="var_accounts_password_last_change_is_in_past_time_in_secs" version="1"

@@ -1,5 +1,8 @@
 #!/bin/bash
 # packages = audit
+{{% if product == "rhel7" %}}
+# platform = Not Applicable
+{{% endif %}}
 
 {{% if audit_watches_style == "modern" %}}
 echo "-a always,exit -F arch=b32 -F path=/etc/sudoers -F perm=wa -F key=actions" >> /etc/audit/rules.d/actions.rules

@@ -1,4 +1,8 @@
 #!/bin/bash
+{{#- On RHEL 7 the dictcheck remediation removes the option, which libpwquality 1.2.3 rejects. #}}
+{{%- if product == "rhel7" and VARIABLE == "dictcheck" %}}
+# platform = Not Applicable
+{{%- endif %}}
 # variables = var_password_pam_{{{ VARIABLE }}}={{{ TEST_VAR_VALUE }}}
 
 {{% if product in ["sle15", "sle16"] %}}
