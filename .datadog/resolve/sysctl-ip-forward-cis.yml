@@ -1,0 +1,18 @@
+# Conflicts of sysctl-ip-forward-cis when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+tests/data/profile_stability/rhel10/cis.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel10/cis_server_l1.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel10/cis_workstation_l1.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel10/cis_workstation_l2.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel8/cis.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel8/cis_server_l1.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel8/cis_workstation_l1.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
+tests/data/profile_stability/rhel8/cis_workstation_l2.profile:
+  - var_sysctl_ip_forward_counts_for_forwarding=true
