@@ -7,7 +7,7 @@ import collections
 
 
 SSG_PROJECT_NAME = "SCAP Security Guide Project"
-SSG_BENCHMARK_LATEST_URI = "https://github.com/ComplianceAsCode/content/releases/latest"
+SSG_BENCHMARK_LATEST_URI = "https://github.com/DataDog/content/releases/latest"
 
 SSG_REF_URIS = {
     'anssi': 'https://cyber.gouv.fr/sites/default/files/document/linux_configuration-en-v2.pdf',
@@ -104,7 +104,7 @@ cui_ns = 'https://nvlpubs.nist.gov/nistpubs/SpecialPublications/800-171r3/NIST.S
 stig_refs = 'https://www.cyber.mil/stigs/'
 disa_cciuri = "https://www.cyber.mil/stigs/cci/"
 ssg_version_uri = \
-    "https://github.com/ComplianceAsCode/content/releases/latest"
+    "https://github.com/DataDog/content/releases/latest"
 OSCAP_VENDOR = "org.ssgproject"
 OSCAP_DS_STRING = "xccdf_%s.content_benchmark_" % OSCAP_VENDOR
 OSCAP_BENCHMARK = "xccdf_%s.content_benchmark_" % OSCAP_VENDOR
