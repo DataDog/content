@@ -19,6 +19,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-80224-9
     cce@rhel8: CCE-80895-6
     cce@rhel9: CCE-90801-2
     cce@rhel10: CCE-90051-4
@@ -48,7 +49,9 @@ ocil: |-
     If configured properly, output should be <pre>no</pre> or <pre>delayed</pre>.
 
 # yamllint disable rule:key-duplicates
-{{% if product == "ol7" %}}
+{{% if product == "rhel7" %}}
+platform: os_linux[rhel]<7.4
+{{% elif product == "ol7" %}}
 platform: os_linux[ol]<7.4
 {{% elif product == "sle12" %}}
 platform: package[openssh]<7.4
