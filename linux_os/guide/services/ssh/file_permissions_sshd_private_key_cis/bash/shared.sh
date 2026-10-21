@@ -5,6 +5,9 @@
 # disruption = low
 
 {{% set dedicated_ssh_groupname = groups.get("dedicated_ssh_keyowner", {}).get("name") %}}
+{{%- if product == "ubuntu2004" %}}
+{{%- set dedicated_ssh_groupname = "ssh" %}}
+{{%- endif %}}
 
 for keyfile in /etc/ssh/*_key; do
     test -f "$keyfile" || continue
