@@ -1,5 +1,5 @@
 #!/bin/bash
-{{%- if product == "rhel7" %}}
+{{%- if product in ["rhel7", "ubuntu2004"] %}}
 # platform = Not Applicable
 {{%- else %}}
 # platform = multi_platform_all
