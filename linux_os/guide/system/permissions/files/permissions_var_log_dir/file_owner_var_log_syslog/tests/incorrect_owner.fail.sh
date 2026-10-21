@@ -1,5 +1,6 @@
 #!/bin/bash
 # platform = multi_platform_ubuntu
+# packages = rsyslog
 
 id syslog &>/dev/null || useradd syslog
 if [ ! -f /var/log/syslog ]; then

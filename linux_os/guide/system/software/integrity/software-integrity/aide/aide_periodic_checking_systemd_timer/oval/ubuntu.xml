@@ -7,7 +7,7 @@
       <extend_definition comment="Aide is installed" definition_ref="package_aide_installed"/>
       <criteria operator="AND">
         <criterion test_ref="tst_{{{ rule_id }}}_aidecheck-service_static"
-          comment="systemd aidecheck.service static"/>
+          comment="systemd aidecheck.service {{{ 'static or enabled' if product == 'ubuntu2004' else 'static' }}}"/>
         <criterion test_ref="tst_{{{ rule_id }}}_aidecheck-timer_enabled"
           comment="systemd aidecheck.timer enabled"/>
         <criterion test_ref="tst_{{{ rule_id }}}_aidecheck-timer_active"
@@ -29,7 +29,11 @@
     <linux:property>ActiveState</linux:property>
   </linux:systemdunitproperty_object>
   <linux:systemdunitproperty_state id="ste_{{{ rule_id }}}_aide_is_static" version="1">
+{{%- if product == "ubuntu2004" %}}
+    <linux:value operation="pattern match">^(static|enabled)$</linux:value>
+{{%- else %}}
     <linux:value>static</linux:value>
+{{%- endif %}}
   </linux:systemdunitproperty_state>
   <linux:systemdunitproperty_state id="ste_{{{ rule_id }}}_aide_is_enabled" version="1">
     <linux:value>enabled</linux:value>
@@ -39,7 +43,7 @@
   </linux:systemdunitproperty_state>
 
   <linux:systemdunitproperty_test check="all" id="tst_{{{ rule_id }}}_aidecheck-service_static" version="1"
-    comment="systemd aidecheck.service static">
+    comment="systemd aidecheck.service {{{ 'static or enabled' if product == 'ubuntu2004' else 'static' }}}">
     <linux:object object_ref="obj_{{{ rule_id }}}_aidecheck-service_unitfilestate" />
     <linux:state state_ref="ste_{{{ rule_id }}}_aide_is_static" />
   </linux:systemdunitproperty_test>

@@ -26,6 +26,8 @@ severity: medium
 
 {{% if product == "rhel7" %}}
 platform: firewall_applicable[iptables]
+{{% elif product == "ubuntu2004" %}}
+platform: deb_firewall_applicable[iptables]
 {{% else %}}
 platform: not package[nftables] and not package[ufw] and package[iptables]
 {{% endif %}}
