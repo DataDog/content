@@ -6,6 +6,7 @@
 SOURCES_DIR="/etc/chrony/sources.d"
 rm -rf /etc/chrony/conf.d
 rm -rf $SOURCES_DIR
+rm -rf /etc/chrony.d
 
 # Create main conf with commented sourcedir
 
