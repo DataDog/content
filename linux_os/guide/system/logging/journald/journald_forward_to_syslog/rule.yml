@@ -71,6 +71,6 @@ template:
         no_quotes: 'true'
 {{% endif -%}}
 
-{{% if product in ['rhel8', 'rhel10'] or 'ubuntu' in product %}}
+{{% if product in ['rhel7', 'rhel8', 'rhel10'] or 'ubuntu' in product %}}
 platform: not service_disabled[rsyslog]
 {{% endif %}}

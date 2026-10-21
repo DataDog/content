@@ -1,0 +1,8 @@
+name: "cpe:/a:firewall-applicable-{arg}"
+title: "The guidance for the {arg} firewall utility applies: {arg} is in use, or no firewall utility is"
+template:
+  name: platform_firewall_applicable
+args:
+  firewalld: {}
+  nftables: {}
+  iptables: {}

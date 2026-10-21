@@ -21,8 +21,18 @@
   <unix:file_object id="object_accounts_users_home_netrc_file_permissions" version="1">
     <unix:path var_ref="var_accounts_users_home_netrc_file_permissions_dirs"
                var_check="at least one"/>
+{{%- if product == "rhel7" %}}
+    <unix:filename operation="pattern match">^\.netrc$</unix:filename>
+{{%- else %}}
     <unix:filename operation="pattern match">\.netrc</unix:filename>
+{{%- endif %}}
   </unix:file_object>
+{{%- if product == "rhel7" %}}
+
+  <unix:file_state id="state_accounts_users_home_netrc_file_permissions_uexec" version="1">
+    <unix:uexec datatype="boolean">false</unix:uexec>
+  </unix:file_state>
+{{%- endif %}}
 
   <unix:file_state id="state_accounts_users_home_netrc_file_permissions_gread" version="1">
     <unix:gread datatype="boolean">false</unix:gread>
@@ -46,6 +56,9 @@
   <unix:file_test id="test_accounts_users_home_netrc_file_permissions" check="all" version="1"
       check_existence="any_exist" comment=".netrc files are not group or world accessible">
     <unix:object object_ref="object_accounts_users_home_netrc_file_permissions"/>
+{{%- if product == "rhel7" %}}
+    <unix:state state_ref="state_accounts_users_home_netrc_file_permissions_uexec" />
+{{%- endif %}}
     <unix:state state_ref="state_accounts_users_home_netrc_file_permissions_gread" />
     <unix:state state_ref="state_accounts_users_home_netrc_file_permissions_gwrite" />
     <unix:state state_ref="state_accounts_users_home_netrc_file_permissions_gexec" />
