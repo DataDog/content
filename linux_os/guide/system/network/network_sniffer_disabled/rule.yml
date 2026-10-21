@@ -26,6 +26,7 @@ severity: medium
 platform: machine  # The oscap interface probe doesn't support offline mode
 
 identifiers:
+    cce@rhel7: CCE-80174-6
     cce@rhel8: CCE-82283-3
     cce@rhel9: CCE-83996-9
     cce@rhel10: CCE-88985-7

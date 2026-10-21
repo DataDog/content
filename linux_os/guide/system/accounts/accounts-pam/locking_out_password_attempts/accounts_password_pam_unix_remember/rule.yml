@@ -20,6 +20,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-82030-8
     cce@rhel8: CCE-80666-1
     cce@rhel9: CCE-83584-3
     cce@rhel10: CCE-87288-7
@@ -46,7 +47,7 @@ ocil: |-
     The output should show the following at the end of the line:
     <pre>remember={{{ xccdf_value("var_password_pam_unix_remember") }}}</pre>
 
-    {{% if product not in ["ol7"] %}}
+    {{% if product not in ["ol7", "rhel7"] %}}
     In newer systems, the <tt>pam_pwhistory</tt> PAM module options can also be set in
     "{{{ pwhistory_path }}}" file. Use the following command to verify:
     <pre>$ grep remember {{{ pwhistory_path }}}
@@ -68,7 +69,7 @@ fixtext: |-
     <pre>password requisite pam_pwhistory.so <i>...existing_options...</i> remember={{{ xccdf_value("var_password_pam_unix_remember") }}}</pre>
     </li>
     </ul>
-    {{% if product not in ["ol7"] %}}
+    {{% if product not in ["ol7", "rhel7"] %}}
     If the <tt>pam_pwhistory.so</tt> module is used and the <tt>{{{ pwhistory_path }}}</tt>
     file is present in the system, use it to set the "remember" option:
     <pre>remember = {{{ xccdf_value("var_password_pam_remember") }}}</pre>

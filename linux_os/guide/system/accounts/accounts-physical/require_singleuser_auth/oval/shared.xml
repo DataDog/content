@@ -13,7 +13,7 @@
         <criterion comment="authentication for single user mode is configured in the override file"
         test_ref="test_require_rescue_service_override" />
       </criteria>
-      {{%- if 'ol' not in families  and 'rhel' not in product and "fedora" != product-%}}
+      {{%- if ('ol' not in families  and 'rhel' not in product and "fedora" != product) or product == "rhel7" -%}}
         {{%- if product in ["sle15", "sle16", "slmicro6"]  -%}}
             <criteria operator="OR">
                 <criterion test_ref="test_require_rescue_service_runlevel1" />
@@ -30,7 +30,7 @@
 
   <ind:textfilecontent54_test check="all" check_existence="all_exist"
     comment="Tests that
-    {{% if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or 'rhel' in product -%}}
+    {{% if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or ('rhel' in product and product != "rhel7") -%}}
     /usr/lib/systemd/systemd-sulogin-shell
     {{%- else -%}}
     /sbin/sulogin
@@ -51,7 +51,7 @@
 
   <ind:textfilecontent54_test check="all" check_existence="all_exist"
     comment="Tests that
-    {{%- if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or 'rhel' in product -%}}
+    {{%- if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or ('rhel' in product and product != "rhel7") -%}}
     /usr/lib/systemd/systemd-sulogin-shell
     {{%- else -%}}
     /sbin/sulogin
@@ -73,7 +73,7 @@
 
 
   <ind:textfilecontent54_state id="state_require_rescue_service" version="1">
-    {{%- if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or 'rhel' in product -%}}
+    {{%- if product in ["fedora", "rhcos4", "sle12", "sle15", "sle16", "slmicro5", "slmicro6"] or 'ol' in families or ('rhel' in product and product != "rhel7") -%}}
     <ind:subexpression datatype="string" operation="pattern match">.*/usr/lib/systemd/systemd-sulogin-shell[ ]+rescue</ind:subexpression>
     {{%- else -%}}
     <ind:subexpression datatype="string" operation="pattern match">/bin/sh[\s]+-c[\s]+\"(/usr)?/sbin/sulogin;[\s]+/usr/bin/systemctl[\s]+--fail[\s]+--no-block[\s]+default\"</ind:subexpression>
@@ -87,7 +87,7 @@
   </ind:textfilecontent54_test>
 
 
-  {{%- if product not in ["ol8"] and 'rhel' not in product -%}}
+  {{%- if (product not in ["ol8"] and 'rhel' not in product) or product == "rhel7" -%}}
   <ind:textfilecontent54_test check="all" check_existence="all_exist"
     comment="Tests that the systemd rescue.service is in the runlevel1.target"
     id="test_require_rescue_service_runlevel1" version="1">

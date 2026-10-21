@@ -20,6 +20,9 @@ rationale: |-
 
 severity: medium
 
+identifiers:
+    cce@rhel7: CCE-86062-7
+
 references:
     srg: SRG-OS-000073-GPOS-00041
     stigid@ol7: OL07-00-010199
