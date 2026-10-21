@@ -127,6 +127,7 @@ rules:
 - file_permissions_var_log_dnf
 - file_permissions_var_log_gdm
 - file_permissions_var_log_gdm3
+- file_permissions_var_log_journal
 - file_permissions_var_log_lastlog
 - file_permissions_var_log_localmessages
 - file_permissions_var_log_messages
@@ -191,6 +192,7 @@ rules:
 - partition_for_var_tmp
 - permissions_local_audit_binaries
 - permissions_local_var_log
+- permissions_local_var_log_0644
 - permissions_local_var_log_audit
 - root_permissions_syslibrary_files
 - run_chkstat

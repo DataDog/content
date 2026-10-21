@@ -55,6 +55,7 @@ template:
         value: yes
         no_quotes: 'true'
         missing_config_file_fail: 'false'
+        missing_parameter_pass_definition@rhel7: installed_OS_is_amzn2
         vendor_dropin_dirs@almalinux9: 'true'
         vendor_dropin_dirs@rhel8: 'true'
         vendor_dropin_dirs@rhel9: 'true'
