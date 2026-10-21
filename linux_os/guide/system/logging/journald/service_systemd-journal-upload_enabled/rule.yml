@@ -39,8 +39,13 @@ fixtext: |-
     {{{ fixtext_service_enabled("systemd-journal-upload") }}}
 
 srg_requirement: '{{{ srg_requirement_service_enabled("systemd-journal-upload") }}}'
+{{%- if product == "ubuntu2004" %}}
+
+platform: machine and package[systemd-journal-remote] and service_disabled[rsyslog]
+{{%- else %}}
 
 platform: machine and package[systemd-journal-remote]
+{{%- endif %}}
 
 template:
     name: service_enabled

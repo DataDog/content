@@ -37,6 +37,7 @@ template:
     vars:
         servicename: smb
         servicename@debian13: smbd
+        servicename@ubuntu2004: smbd
         servicename@ubuntu2204: smbd
         servicename@ubuntu2404: smbd
         servicename@ubuntu2604: smbd

@@ -45,6 +45,9 @@
       id="{{{ rule_id }}}_test_file_ownership_var_log_root_only" state_operator="OR" version="1">
     <unix:object object_ref="object_file_ownership_var_log" />
     <unix:state state_ref="state_file_ownership_root_var_log_auth_log"/>
+    {{%- if product == "ubuntu2004" %}}
+    <unix:state state_ref="{{{ rule_id }}}_state_owner_is_system_user_root_only"/>
+    {{%- endif %}}
   </unix:file_test>
 
   <unix:file_test check_existence="any_exist" check="all" comment="/var/log/* owner is root|syslog"
@@ -179,4 +182,16 @@
   <local_variable id="{{{ rule_id }}}_var_system_uids" comment="UIDs of users with invalid shells" datatype="int" version="1">
     <object_component item_field="subexpression" object_ref="{{{ rule_id }}}_object_system_users" />
   </local_variable>
+{{%- if product == "ubuntu2004" %}}
+
+  <!-- The test of root alone gets its own state and variable: OpenSCAP
+       1.4.5 reports the shared ones as error for a file the test of
+       root and syslog has already evaluated without a syslog user. -->
+  <unix:file_state id="{{{ rule_id }}}_state_owner_is_system_user_root_only" version="1">
+    <unix:user_id datatype="int" operation="equals" var_ref="{{{ rule_id }}}_var_system_uids_root_only" var_check="at least one" />
+  </unix:file_state>
+  <local_variable id="{{{ rule_id }}}_var_system_uids_root_only" comment="UIDs of users with invalid shells" datatype="int" version="1">
+    <object_component item_field="subexpression" object_ref="{{{ rule_id }}}_object_system_users" />
+  </local_variable>
+{{%- endif %}}
 </def-group>

@@ -19,9 +19,13 @@ ocil_clause: 'the service is not enabled'
 ocil: |-
     {{{ ocil_service_enabled(service="ufw") }}}
 
+{{% if product == "ubuntu2004" -%}}
+platform: system_with_kernel and deb_firewall_applicable[ufw]
+{{%- else -%}}
 platform: system_with_kernel and package[ufw]
+{{%- endif %}}
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: service_enabled_guard_var
     vars:
