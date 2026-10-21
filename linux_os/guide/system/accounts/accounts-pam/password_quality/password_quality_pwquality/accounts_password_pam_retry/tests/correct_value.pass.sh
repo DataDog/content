@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = multi_platform_ol,Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ubuntu
+# platform = multi_platform_ol,Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ubuntu,Red Hat Enterprise Linux 7
 # variables = var_password_pam_retry=3
 {{% if 'ol' in families %}}
 # packages = authselect

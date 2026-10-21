@@ -1,4 +1,4 @@
-# platform = Oracle Linux 7,multi_platform_sle,multi_platform_slmicro
+# platform = Oracle Linux 7,multi_platform_sle,multi_platform_slmicro,Red Hat Enterprise Linux 7
 # reboot = false
 # strategy = restrict
 # complexity = low

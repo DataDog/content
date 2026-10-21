@@ -356,7 +356,7 @@ Describe allowing access to a service in firewalld.
     If you would like to omit a non-zero return value and an error message, you may want to add a different line instead
     (both <code>/bin/true</code> and <code>/bin/false</code> are allowed by OVAL and will be accepted by the scan):
     <pre>install {{{ module }}} /bin/true</pre>
-    {{% if "ol" in families or product in ["rhel8"] %}}
+    {{% if "ol" in families or product in ["rhel7", "rhel8"] %}}
     To configure the system to prevent the <code>{{{ module }}}</code> from being used,
     add the following line to file <code>/etc/modprobe.d/{{{ module }}}.conf</code>:
     <pre>blacklist {{{ module }}}</pre>
@@ -1177,7 +1177,7 @@ Operator see
 
 #}}
 {{%- macro describe_grub2_argument(arg_name_value) -%}}
-{{%- if product in ["fedora", "ol7", "ol8", "ol9", "rhel8", "rhel9", "rhel10"] or 'ubuntu' in product -%}}
+{{%- if product in ["fedora", "ol7", "ol8", "ol9", "rhel7", "rhel8", "rhel9", "rhel10"] or 'ubuntu' in product -%}}
 To ensure that <tt>{{{ arg_name_value }}}</tt> is added as a kernel command line
 argument to newly installed kernels, add <tt>{{{ arg_name_value }}}</tt> to the
 default Grub2 command line for Linux operating systems. Modify the line within
@@ -1441,7 +1441,7 @@ Create a rule description for rules using the `audit_rules_privileged_commands` 
 #}}
 
 {{% macro describe_arpc(path) %}}
-{{%- if product in ["almalinux9", "debian12", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "slmicro5", "slmicro6", "ubuntu2204", "ubuntu2404"] %}}
+{{%- if product in ["almalinux9", "debian12", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "slmicro5", "slmicro6", "ubuntu2204", "ubuntu2404"] %}}
   {{%- set perm_x="-F perm=x " %}}
 {{%- endif -%}}
 {{%- if product in ["fedora", "rhel10"] -%}}

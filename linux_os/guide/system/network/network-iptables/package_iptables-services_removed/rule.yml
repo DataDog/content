@@ -20,6 +20,7 @@ platform: package[iptables]
 {{% endif %}}
 
 identifiers:
+    cce@rhel7: CCE-86678-0
     cce@rhel8: CCE-86679-8
     cce@rhel9: CCE-90425-0
 

@@ -21,6 +21,9 @@ options:
     ignore: ignore
     ol8: syslog|single|halt
     rhel8: syslog|single|halt
+{{% if product == "rhel7" %}}
+    cis_rhel7: syslog|single|halt
+{{% endif %}}
     cis_rhel8: syslog|single|halt
     cis_rhel9: syslog|single|halt
     cis_rhel10: syslog|single|halt

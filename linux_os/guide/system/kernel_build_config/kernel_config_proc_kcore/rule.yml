@@ -17,6 +17,7 @@ warnings:
 severity: low
 
 identifiers:
+    cce@rhel7: CCE-87104-6
     cce@rhel8: CCE-87105-3
     cce@rhel9: CCE-87106-1
     cce@rhel10: CCE-88511-1

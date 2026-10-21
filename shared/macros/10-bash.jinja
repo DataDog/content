@@ -1610,7 +1610,7 @@ if ! grep -qsrP '^\s*\[domain\/[^]]*]' "{{{ sssd_conf }}}" "{{{ sssd_conf_dir }}
     cat >> "{{{ sssd_conf }}}" << EOF
 
 [domain/default]
-{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel8', 'rhel9']) -%}}
+{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel7', 'rhel8', 'rhel9']) -%}}
 id_provider = proxy
 proxy_lib_name = files
 local_auth_policy = only
@@ -1626,7 +1626,7 @@ fi
     Install sssd-proxy package on products that use proxy id_provider for default domain
 #}}
 {{% macro bash_install_sssd_proxy() -%}}
-{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel8', 'rhel9']) %}}
+{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel7', 'rhel8', 'rhel9']) %}}
 {{{ bash_package_install("sssd-proxy") }}}
 {{% endif %}}
 {{%- endmacro %}}
@@ -2115,7 +2115,7 @@ Part of the grub2_bootloader_argument template.
 
 #}}
 {{% macro grub2_bootloader_argument_remediation(arg_name, arg_name_value) %}}
-{{% if 'ubuntu' in product or 'debian' in product or product in ['ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
+{{% if 'ubuntu' in product or 'debian' in product or product in ['rhel7', 'ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
 {{{ update_etc_default_grub_manually(arg_name, arg_name_value) }}}
 {{% endif -%}}
 {{{ grub_command("add", arg_name_value) }}}
@@ -2146,7 +2146,7 @@ Part of the grub2_bootloader_argument_absent template.
 
 #}}
 {{% macro grub2_bootloader_argument_absent_remediation(arg_name) %}}
-{{% if 'ubuntu' in product or product in ['ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
+{{% if 'ubuntu' in product or product in ['rhel7', 'ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
 {{{ update_etc_default_grub_manually_absent(arg_name) }}}
 {{% endif -%}}
 {{{ grub_command("remove", arg_name) }}}

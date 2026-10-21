@@ -40,6 +40,7 @@ severity: medium
 
 identifiers:
     cce@rhcos4: CCE-82563-8
+    cce@rhel7: CCE-27389-6
     cce@rhel8: CCE-80692-7
     cce@rhel9: CCE-83817-7
     cce@rhel10: CCE-89370-1

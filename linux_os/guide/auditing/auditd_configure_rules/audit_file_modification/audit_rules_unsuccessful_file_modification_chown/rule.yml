@@ -31,6 +31,7 @@ platforms:
 
 identifiers:
     cce@rhcos4: CCE-82620-6
+    cce@rhel7: CCE-81082-0
     cce@rhel8: CCE-80984-8
 
 references:

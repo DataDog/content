@@ -20,6 +20,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-83809-4
     cce@rhel8: CCE-83810-2
     cce@rhel10: CCE-90743-6
     cce@sle12: CCE-91493-7
@@ -37,4 +38,5 @@ template:
     name: sudo_defaults_option
     vars:
         option: ignore_dot
+        default_is_enabled@rhel7: "true"
         default_is_enabled@rhel8: "true"

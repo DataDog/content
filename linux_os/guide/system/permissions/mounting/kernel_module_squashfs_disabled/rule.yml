@@ -22,6 +22,7 @@ platform: system_with_kernel
 
 identifiers:
     cce@rhcos4: CCE-82717-0
+    cce@rhel7: CCE-80142-3
     cce@rhel8: CCE-83498-6
     cce@rhel9: CCE-83855-7
     cce@rhel10: CCE-88216-7

@@ -33,6 +33,7 @@ warnings:
 severity: high
 
 identifiers:
+    cce@rhel7: CCE-82371-6
     cce@rhel8: CCE-80947-5
     cce@rhel9: CCE-83453-1
     cce@rhel10: CCE-89725-6

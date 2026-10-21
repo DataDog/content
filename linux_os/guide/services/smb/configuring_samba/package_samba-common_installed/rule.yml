@@ -11,6 +11,9 @@ rationale: 'If the samba-common package is not installed, samba cannot be config
 
 severity: medium
 
+identifiers:
+    cce@rhel7: CCE-80360-1
+
 {{{ complete_ocil_entry_package_installed("samba-common") }}}
 
 template:

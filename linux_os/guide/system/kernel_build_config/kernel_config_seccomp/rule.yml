@@ -20,6 +20,7 @@ warnings:
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-86449-6
     cce@rhel8: CCE-86450-4
     cce@rhel9: CCE-86451-2
     cce@rhel10: CCE-87403-2

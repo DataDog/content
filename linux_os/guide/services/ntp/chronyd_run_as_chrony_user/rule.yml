@@ -38,6 +38,7 @@ severity: medium
 platform: package[chrony]
 
 identifiers:
+    cce@rhel7: CCE-82878-0
     cce@rhel8: CCE-82879-8
     cce@rhel9: CCE-84108-0
     cce@rhel10: CCE-89296-8

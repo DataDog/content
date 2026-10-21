@@ -26,6 +26,7 @@ severity: medium
 platform: package[nftables] and service_disabled[firewalld] and service_disabled[ufw]
 
 identifiers:
+    cce@rhel7: CCE-86462-9
     cce@sle15: CCE-92507-3
     cce@slmicro5: CCE-93981-9
 

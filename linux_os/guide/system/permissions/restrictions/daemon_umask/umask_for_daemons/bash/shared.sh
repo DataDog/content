@@ -1,4 +1,4 @@
-# platform = Red Hat Enterprise Linux 8
+# platform = Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 7
 
 {{{ bash_instantiate_variables("var_umask_for_daemons") }}}
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ol,multi_platform_almalinux
+# platform = Red Hat Virtualization 4,multi_platform_fedora,multi_platform_ol,multi_platform_almalinux,Red Hat Enterprise Linux 7
 
 pam_file="/etc/pam.d/system-auth"
 

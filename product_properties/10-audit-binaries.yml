@@ -19,6 +19,15 @@ default:
     - /sbin/audispd-zos-remote
     {{% endif %}}
 overrides:
+{{% if product == 'rhel7' %}}
+  audit_binaries:
+    - /sbin/auditctl
+    - /sbin/aureport
+    - /sbin/ausearch
+    - /sbin/autrace
+    - /sbin/auditd
+    - /sbin/augenrules
+{{% endif %}}
 {{% if product == 'sle15' %}}
   audit_binaries:
     - /usr/sbin/auditctl

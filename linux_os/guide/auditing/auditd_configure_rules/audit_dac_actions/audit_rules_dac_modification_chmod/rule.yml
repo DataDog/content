@@ -31,6 +31,7 @@ platforms:
 
 identifiers:
     cce@rhcos4: CCE-82556-2
+    cce@rhel7: CCE-27339-1
     cce@rhel8: CCE-80685-1
     cce@rhel9: CCE-83830-0
     cce@rhel10: CCE-90466-4

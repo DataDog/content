@@ -20,6 +20,7 @@ rationale: 'IP tunneling mechanisms can be used to bypass network filtering.'
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-80171-2
     cce@rhel8: CCE-80836-0
     cce@rhel9: CCE-90319-5
     cce@rhel10: CCE-87382-8

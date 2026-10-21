@@ -18,6 +18,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-86090-8
     cce@rhel8: CCE-86518-8
     cce@rhel9: CCE-86768-9
     cce@rhel10: CCE-87009-7
@@ -31,7 +32,7 @@ references:
     cis@sle15: 5.2.15
     pcidss: Req-2.3
 
-{{%- if 'rhel' in families %}}
+{{%- if 'rhel' in families and product != 'rhel7' %}}
 warnings:
     - functionality: |-
         This rule is a legacy rule and it is recommended to use system-wide cryptographic policies. 

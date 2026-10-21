@@ -1,6 +1,6 @@
 #!/bin/bash
 # packages = sssd
-# platform = multi_platform_fedora,Oracle Linux 7,Red Hat Virtualization 4,multi_platform_ubuntu
+# platform = multi_platform_fedora,Oracle Linux 7,Red Hat Enterprise Linux 7,Red Hat Virtualization 4,multi_platform_ubuntu
 
 SSSD_FILE="/etc/sssd/sssd.conf"
 {{{ bash_ensure_ini_config("$SSSD_FILE", "pam", "pam_cert_auth", "True") }}}
