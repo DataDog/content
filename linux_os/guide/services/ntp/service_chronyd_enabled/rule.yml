@@ -40,7 +40,7 @@ fixtext: '{{{ fixtext_service_enabled(service="chronyd") }}}'
 
 srg_requirement: '{{{ srg_requirement_service_enabled(service="chronyd") }}}'
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: service_enabled_guard_var
     vars:
@@ -54,6 +54,7 @@ template:
     vars:
         packagename: chrony
         servicename: chronyd
+        servicename@ubuntu2004: chrony
         servicename@ubuntu2204: chrony
         servicename@debian12: chrony
         servicename@debian13: chrony

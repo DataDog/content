@@ -1,4 +1,7 @@
 #!/bin/bash
+{{% if PACKAGE_FOR_TESTING %}}
+# packages = {{{ PACKAGE_FOR_TESTING }}}
+{{% endif %}}
 # This scenario is a regression test for https://issues.redhat.com/browse/RHEL-93659
 SECTION="{{{ SECTION }}}"
 PARAM="{{{ PARAM }}}"
