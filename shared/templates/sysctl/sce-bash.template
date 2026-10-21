@@ -100,6 +100,13 @@ function check_sysctl_configuration()
 if ! grep -qs '^[[:space:]]*0' /sys/module/ipv6/parameters/disable ; then
     exit $XCCDF_RESULT_PASS
 fi
+# CIS Amazon Linux 2 also passes when the running kernel disables IPv6 on
+# all interfaces and by default
+if grep -qs '^ID="\?amzn"\?$' /etc/os-release && grep -qs '^VERSION_ID="\?2"\?$' /etc/os-release &&
+    [[ "$(sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null)" == 1 &&
+       "$(sysctl -n net.ipv6.conf.default.disable_ipv6 2>/dev/null)" == 1 ]] ; then
+    exit $XCCDF_RESULT_PASS
+fi
 {{% elif IPV6 == "true" -%}}
 # pass if IPv6 is disabled
 check_sysctl_configuration "net.ipv6.conf.all.disable_ipv6" "1"

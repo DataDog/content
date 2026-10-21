@@ -19,6 +19,14 @@ description: |-
     to mark it read only and exported with the <tt>readonly</tt> and <tt>export</tt>
     commands. None of the files may set <tt>TMOUT</tt> to 0 or to a value above
     {{{ xccdf_value("var_accounts_tmout") }}}.
+    {{%- if product == "rhel7" %}}
+    On Amazon Linux 2, the CIS Benchmark requires at least one of the files
+    <tt>/etc/*bashrc /etc/profile /etc/profile.d/*.sh</tt> to set <tt>TMOUT</tt>,
+    and every file that mentions it to set a value from 1 to
+    {{{ xccdf_value("var_accounts_tmout") }}}, to mark it read only and to export it.
+    <tt>typeset -xr TMOUT</tt> does all three, as do the <tt>readonly</tt> and
+    <tt>export</tt> commands.
+    {{%- endif %}}
     {{% elif product in ["rhel9", "almalinux9"] %}}
     The CIS Benchmark requires at least one of the files <tt>{{{ tmout_files }}}</tt>
     to set <tt>TMOUT</tt>, and every file that sets it to set a value from 1 to

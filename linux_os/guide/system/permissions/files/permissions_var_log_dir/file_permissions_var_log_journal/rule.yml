@@ -1,0 +1,29 @@
+documentation_complete: true
+
+title: 'Verify Permissions on /var/log/*.journal(~) Files'
+
+description: |-
+    To properly set the permissions of the journal files under <code>/var/log</code>,
+    <code>*.journal</code> and <code>*.journal~</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec chmod 0640 {} +</pre>
+
+rationale: |-
+    The <tt>/var/log/*.journal(~)</tt> files are system logs managed by the "systemd" service.
+
+severity: medium
+
+ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/*.journal(~)", perms="-rw-r-----") }}}'
+
+ocil: |-
+    To check the permissions of the journal files under <code>/var/log</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec ls -l {} +</pre>
+    If properly configured, the output should indicate the following permissions:
+    <code>-rw-r-----</code>
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /var/log/
+        file_regex: ^.*\.journal~?$
+        filemode: '0640'
+        recursive: 'true'

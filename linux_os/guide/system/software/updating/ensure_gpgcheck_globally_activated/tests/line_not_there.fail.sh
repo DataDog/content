@@ -1,6 +1,8 @@
 #!/bin/bash
 {{% if 'sle' in product or 'slmicro' in product %}}
 # packages = libselinux1
+{{% elif product == "rhel7" %}}
+# packages = libselinux-python
 {{% else %}}
 # packages = python3-libselinux
 {{% endif %}}

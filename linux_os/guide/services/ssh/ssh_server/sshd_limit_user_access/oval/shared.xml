@@ -3,6 +3,10 @@
 {{%- set sshd_main_config_regex = sshd_main_config | replace(".", "\\.") -%}}
 {{%- set sshd_drop_in_dir_regex = sshd_drop_in_dir | replace(".", "\\.") -%}}
 {{%- set sshd_any_config_regex = "^(" ~ sshd_main_config_regex ~ "|" ~ sshd_drop_in_dir_regex ~ "/.*\\.conf)$" -%}}
+{{#- The sshd of OpenSSH 7.4 on RHEL 7 and Amazon Linux 2 reads sshd_config alone. -#}}
+{{%- if product == "rhel7" -%}}
+{{%- set sshd_any_config_regex = "^" ~ sshd_main_config_regex ~ "$" -%}}
+{{%- endif -%}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("One of the following parameters of the sshd configuration file is set:  AllowUsers, DenyUsers, AllowGroups, DenyGroups.", rule_title=rule_title) }}}
