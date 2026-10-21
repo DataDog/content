@@ -20,7 +20,7 @@
   with_items: "{{ pwquality_conf_d_files.files }}"
 {{% endif %}}
 
-{{% if "ol" in families %}}
+{{% if "ol" in families or product == "rhel7" %}}
 {{{ ansible_remove_pam_module_option_configuration('/etc/pam.d/system-auth',
                                   'password',
                                   '',

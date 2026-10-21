@@ -6,11 +6,18 @@ description: |-
     The SSH server must not offer the MAC algorithms that the CIS benchmark
     of the distribution lists as weak:
     <pre>{{{ sshd_cis_weak_macs() }}}</pre>
+{{%- if product == "rhel7" %}}
+    The OpenSSH 7.4 of RHEL 7 rejects a list that removes algorithms from the
+    defaults. Set the allowed MACs in a <tt>MACs</tt> line ahead of any other
+    in the SSH server configuration, as the benchmark does:
+    <pre>MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256</pre>
+{{%- else %}}
     Where a system-wide crypto policy governs the SSH server, remove them
     through the policy. Elsewhere, a subtractive list ahead of any other
     <tt>MACs</tt> line in the SSH server configuration removes them from the
     defaults:
     <pre>MACs -{{{ sshd_cis_weak_macs() }}}</pre>
+{{%- endif %}}
     The check reads the list that <tt>sshd -T</tt> prints, which reflects the
     defaults, the crypto policy and the configuration files.
 

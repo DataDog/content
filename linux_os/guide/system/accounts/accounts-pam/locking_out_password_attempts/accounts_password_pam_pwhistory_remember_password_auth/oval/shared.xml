@@ -24,10 +24,14 @@
           <criterion
             test_ref="test_accounts_password_pam_pwhistory_remember_password_auth_pamd"
             comment="Check the remember parameter in password section of password-auth file"/>
+{{%- if product != "rhel7" %}}
           <criterion
             test_ref="test_accounts_password_pam_pwhistory_remember_password_auth_no_pwhistory_conf"
             comment="Check the pam_pwhistory.so remember parameter is absent in pwhistory.conf"/>
+{{%- endif %}}
         </criteria>
+{{#- pam_pwhistory of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
         <criteria operator="AND"
           comment="Check the pam_pwhistory.so remember parameter is only in pwhistory.conf file">
           <criterion
@@ -37,6 +41,7 @@
             test_ref="test_accounts_password_pam_pwhistory_remember_password_auth_pwhistory_conf"
             comment="Check the remember parameter in {{{ pwhistory_path }}}"/>
         </criteria>
+{{%- endif %}}
       </criteria>
     </criteria>
   </definition>
