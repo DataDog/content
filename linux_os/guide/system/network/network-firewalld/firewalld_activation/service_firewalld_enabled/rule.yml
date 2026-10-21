@@ -13,7 +13,11 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "rhel7" %}}
+platform: firewall_applicable[firewalld]
+{{% else %}}
 platform: package[firewalld]
+{{% endif %}}
 
 identifiers:
     cce@rhcos4: CCE-82554-7

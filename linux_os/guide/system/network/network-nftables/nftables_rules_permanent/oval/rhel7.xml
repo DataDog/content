@@ -1,0 +1,44 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The files that the nftables configuration includes hold the input, forward and output base chains, so that the nftables service loads them on boot.", rule_title=rule_title) }}}
+    <criteria operator="AND">
+{{%- for hook in ["input", "forward", "output"] %}}
+      <criterion test_ref="test_{{{ rule_id }}}_{{{ hook }}}"
+        comment="an included file holds a base chain with hook {{{ hook }}}"/>
+{{%- endfor %}}
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_includes" version="1">
+    <ind:filepath operation="equals" var_ref="var_nftables_master_config_file"/>
+    <ind:pattern operation="pattern match">^[\s]*include[\s]+"?([^"\s]+)"?</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <external_variable id="var_nftables_master_config_file" datatype="string" version="1"
+    comment="nftables configuration file that the nftables service reads"/>
+
+  <local_variable id="var_{{{ rule_id }}}_included_files" datatype="string" version="1"
+    comment="files that the nftables configuration includes, as regular expressions">
+    <unique>
+      <glob_to_regex>
+        <object_component item_field="subexpression" object_ref="object_{{{ rule_id }}}_includes"/>
+      </glob_to_regex>
+    </unique>
+  </local_variable>
+{{%- for hook in ["input", "forward", "output"] %}}
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_{{{ hook }}}" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="an included file holds a base chain with hook {{{ hook }}}">
+    <ind:object object_ref="object_{{{ rule_id }}}_{{{ hook }}}"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_{{{ hook }}}" version="1">
+    <ind:filepath operation="pattern match" var_ref="var_{{{ rule_id }}}_included_files"
+      var_check="at least one"/>
+    <ind:pattern operation="pattern match">^[^#]*\bhook[\s]+{{{ hook }}}\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endfor %}}
+</def-group>

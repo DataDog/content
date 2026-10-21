@@ -405,6 +405,42 @@ class AnsibleRemediation(Remediation):
             ])
             parsed_snippet.insert(0, facts_task)
 
+    @staticmethod
+    def _has_task(tasks, names):
+        for task in tasks:
+            if not isinstance(task, dict):
+                continue
+            if any(name in task for name in names):
+                return True
+            if AnsibleRemediation._has_task(task.get("block", []), names):
+                return True
+        return False
+
+    def inject_service_facts_task(self, parsed_snippet):
+        """ Injects a service_facts task only if
+            the snippet has a task with a when clause with ansible_facts.services,
+            and the snippet doesn't already have a service_facts task
+        """
+        has_ansible_facts_services_clause = False
+        for p_task in parsed_snippet:
+            if not isinstance(p_task, dict):
+                continue
+            task_when = p_task.get("when", "")
+            if isinstance(task_when, str):
+                task_when = [task_when]
+            for when in task_when:
+                if "ansible_facts.services" in when:
+                    has_ansible_facts_services_clause = True
+
+        service_facts_names = ("service_facts", "ansible.builtin.service_facts")
+        if has_ansible_facts_services_clause and \
+                not self._has_task(parsed_snippet, service_facts_names):
+            facts_task = OrderedDict([
+                ('name', 'Gather the service facts'),
+                ('ansible.builtin.service_facts', None)
+            ])
+            parsed_snippet.insert(0, facts_task)
+
     def update_when_from_rule(self, to_update, cpe_platforms):
         additional_when = []
         inherited_conditionals = sorted(super(
@@ -443,6 +479,7 @@ class AnsibleRemediation(Remediation):
             self.update_when_from_rule(p, cpe_platforms)
 
         # 2. Inject any extra task necessary
+        self.inject_service_facts_task(parsed)
         self.inject_package_facts_task(parsed)
 
         # 3. Add tags to all tasks, including the ones we have injected
