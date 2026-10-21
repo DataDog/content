@@ -11,6 +11,7 @@ rationale: 'The AIDE package must be installed if it is to be available for inte
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-27096-7
     cce@rhel8: CCE-80844-4
     cce@rhel9: CCE-90843-4
     cce@rhel10: CCE-90477-1

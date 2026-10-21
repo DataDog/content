@@ -375,6 +375,7 @@ all_cmake_products=(
 	OPENSUSE
 	OPENSUSE16
 	RHCOS4
+	RHEL7
 	RHEL8
 	RHEL9
 	RHEL10

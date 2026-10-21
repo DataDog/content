@@ -25,6 +25,7 @@ requires:
 
 identifiers:
     cce@rhcos4: CCE-82463-1
+    cce@rhel7: CCE-27407-6
     cce@rhel8: CCE-80872-5
     cce@rhel9: CCE-90829-3
     cce@rhel10: CCE-87955-1

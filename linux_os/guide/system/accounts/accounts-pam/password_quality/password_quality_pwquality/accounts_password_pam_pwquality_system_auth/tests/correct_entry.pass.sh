@@ -1,6 +1,6 @@
 #!/bin/bash
 # packages = pam
-# platform = Red Hat Virtualization 4,multi_platform_fedora
+# platform = Red Hat Virtualization 4,multi_platform_fedora,Red Hat Enterprise Linux 7
 
 config_file=/etc/pam.d/password-auth
 if [ $(grep -c "^\s*password.*requisite.*pam_pwquality\.so" $config_file) -eq 0 ]; then

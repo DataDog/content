@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = AlmaLinux OS 9,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10
+# platform = AlmaLinux OS 9,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10,Red Hat Enterprise Linux 7
 # packages = grub2,grubby
 
 # Ensure the kernel command line for each installed kernel in the bootloader
