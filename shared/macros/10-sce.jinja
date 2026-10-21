@@ -88,9 +88,17 @@ exit "${XCCDF_RESULT_PASS}"
 
   :param keyword: The sshd -T keyword: ciphers, kexalgorithms or macs
   :param algorithms: Comma-separated algorithms the server must not offer
+  :param amzn2_algorithms: The algorithms to deny instead on Amazon Linux 2,
+      which reads the rhel7 content and whose benchmark lists others. The
+      script recognizes it by ID="amzn" in /etc/os-release.
 #}}
-{{% macro sshd_algorithms_not_offered(keyword, algorithms) %}}
+{{% macro sshd_algorithms_not_offered(keyword, algorithms, amzn2_algorithms="") %}}
 denied="{{{ algorithms }}}"
+{{%- if amzn2_algorithms %}}
+if grep -Eqs '^ID="?amzn"?$' /etc/os-release; then
+    denied="{{{ amzn2_algorithms }}}"
+fi
+{{%- endif %}}
 
 options=()
 backend=/etc/crypto-policies/back-ends/opensshserver.config

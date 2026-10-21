@@ -20,7 +20,15 @@
       <ind:path>/etc/yum.repos.d</ind:path>
   {{%- endif %}}
     <ind:filename operation="pattern match">.*</ind:filename>
+  {{%- if product == "rhel7" %}}
+    <!-- CIS RHEL 7 and Amazon Linux 2 1.2.2 fail gpgcheck set to 0 and
+         any value that is not a boolean, which yum ignores, and grep for 0,
+         a number above 1 or a word. Of the words, yes, true and on enable
+         the check. -->
+    <ind:pattern operation="pattern match">^\s*gpgcheck\s*=\s*(?!(?i:yes|true|on)\b)(?:0|[2-9]|[1-9][0-9]+|[a-zA-Z_]+)\b</ind:pattern>
+  {{%- else %}}
     <ind:pattern operation="pattern match">^\s*gpgcheck\s*=\s*(?i:0|no|false|off)\s*$</ind:pattern>
+  {{%- endif %}}
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 </def-group>
