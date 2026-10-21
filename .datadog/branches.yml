@@ -1,0 +1,58 @@
+# The datadog branch: upstream ComplianceAsCode master at the base, then one
+# commit for every commit of these branches, cherry-picked in this order by
+# .datadog/datadog.py. Recorded resolutions live in .datadog/resolve.
+base: a9f819686043bf9832bc7f0997bcf2f662dbc3ba
+upstream: ComplianceAsCode/content
+entries:
+  - squash: pr-15097
+    author: Thomas Moore <moore.thomas123456789@gmail.com>
+    title: Add CIS Level 1 profiles for Ubuntu 26.04
+    source: ComplianceAsCode/content#15097
+    pr: 15097
+  - pick: pr-15097-components
+  - pick: pr-15097-no-exit
+  - pick: ubuntu-port-2604-pam-motd-cracklib
+  - pick: chrony-ubuntu-cis-sources
+  - pick: sudo-pwfeedback-visiblepw-timestamp-type
+  - pick: sysctl-ipv4-default-route-localnet
+  - pick: rsyslog-config-access
+  - pick: aide-report-url-syslog
+  - pick: gdm-wayland-enable
+  - pick: sudoers-drop-in-access
+  - pick: sshd-private-key-cis
+  - pick: cis-chrony-time-sync-in-use
+  - pick: cis-rhel8-rhel10-logging
+  - pick: firewalld-active-zone-target
+  - pick: sshd-use-post-quantum-kex
+  - pick: user-dot-files-cis
+  - pick: ubuntu-cis-journald
+  - pick: grub2-apparmor-not-disabled
+  - pick: kernel-module-blacklist-almalinux-al2023
+  - pick: aide-audit-tools-almalinux-al2023
+  - pick: cis-root-access-controlled
+  - pick: al2023-cis-checks
+  - pick: al2023-remediation-platforms
+  - pick: almalinux9-like-rhel9
+  - pick: chrony-al2023-cis-chrony-d
+  - pick: kernel-module-absent-cis
+  - pick: cis-rhel9-drop-prodtype-exclusions
+  - pick: pam-motd-cis-audit
+  - pick: cis-services-files
+  - pick: cis-sshd-settings
+  - pick: cis-sudo
+  - pick: cis-boot-authselect
+  - pick: cis-ubuntu-s1
+  - pick: apt-purge-removed-packages
+  - pick: cis-sshd-algorithms
+  - pick: cis-crypto-policy
+  - pick: cis-accounts
+  - pick: cis-dhcp-package-names
+  - pick: kernel-module-usr-bin-false
+    pr: 15223
+  - pick: sysctl-ip-forward-cis
+  - pick: cis-rhel9-v3.0.0
+  - pick: cis-almalinux9-v3.0.0
+  - pick: cis-ubuntu2404-v2.0.0
+  - pick: cis-ubuntu2204-v3.0.0
+  - pick: al2023-cis-logfile-access
+  - pick: datadog-release
