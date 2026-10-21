@@ -20,6 +20,20 @@ if [ -z "$start" ]; then
         END { p = s != "" ? s : r; sub(/^PATH=/, "", p); print p }' /etc/login.defs 2>/dev/null)
 fi
 start=${start:-/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin}
+{{%- if product == "ubuntu2004" %}}
+
+# CIS Ubuntu 20.04 5.4.2.5 reads the PATH that sudo -Hiu root gives the
+# login shell: the secure_path of the sudoers files that sudo reads, when
+# one sets it.
+for f in /etc/sudoers /etc/sudoers.d/*; do
+    case $f in
+    /etc/sudoers.d/*.* | *~) continue ;;
+    esac
+    [ -f "$f" ] || continue
+    secure_path=$(sed -nE 's/^[[:space:]]*Defaults[[:space:]]+([^#]*,[[:space:]]*)?secure_path[[:space:]]*=[[:space:]]*"?([^",[:space:]]+).*/\2/p' "$f" | tail -n 1)
+    [ -n "$secure_path" ] && start=$secure_path
+done
+{{%- endif %}}
 
 # shellcheck disable=SC2016 # the login shell expands $PATH
 root_path=$(cd "$home" 2>/dev/null || cd /

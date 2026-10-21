@@ -47,6 +47,7 @@ template:
         packagename: bind
         packagename@debian12: bind9
         packagename@debian13: bind9
+        packagename@ubuntu2004: bind9
         packagename@ubuntu2204: bind9
         packagename@ubuntu2404: bind9
         packagename@ubuntu2604: bind9
