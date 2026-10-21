@@ -30,6 +30,7 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-83636-1
     cce@sle15: CCE-83280-8
     cce@slmicro5: CCE-93690-6
     cce@slmicro6: CCE-94679-8

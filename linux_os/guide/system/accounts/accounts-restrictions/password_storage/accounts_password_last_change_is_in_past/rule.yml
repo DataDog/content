@@ -14,6 +14,7 @@ severity: medium
 platform: system_with_kernel
 
 identifiers:
+    cce@rhel7: CCE-86524-6
     cce@rhel8: CCE-86525-3
     cce@rhel9: CCE-86526-1
     cce@rhel10: CCE-90359-1
