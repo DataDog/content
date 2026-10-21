@@ -50,7 +50,7 @@
           {{%- endif %}}
           {{%- endif %}}
         </criteria>
-        {{%- if (product != "ubuntu2604" and product not in ["al2023", "almalinux9", "ol8", "ol9"] and "rhel" not in product) or product == "rhel7" %}}
+        {{%- if product != "ubuntu2604" and product not in ["al2023", "almalinux9", "ol8", "ol9"] and "rhel" not in product %}}
         <extend_definition comment="The SSH ClientAliveCountMax is set correctly" definition_ref="sshd_set_keepalive" />
         {{% endif %}}
       </criteria>

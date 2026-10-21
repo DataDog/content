@@ -8,7 +8,12 @@
 
   <ind:textfilecontent54_object id="obj_{{{ rule_id }}}"
       comment="Umask value from /root/.bashrc and /root/.profile" version="1">
+{{#- The CIS RHEL 7 audit reads /root/.bash_profile and /root/.bashrc, the files bash reads on RHEL. #}}
+{{%- if product == "rhel7" %}}
+  <ind:filepath operation="pattern match">^/root/\.(?:bash_profile|bashrc)$</ind:filepath>
+{{%- else %}}
   <ind:filepath operation="pattern match">^(/root/.bashrc|/root/.profile)$</ind:filepath>
+{{%- endif %}}
     <ind:pattern operation="pattern match">^[^#]*\bumask\s+[0-7]?[0-7]([0-1][0-7]|[0-7][0-6])\s*$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>

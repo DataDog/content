@@ -1,22 +1,22 @@
 {{#-
   The CIS Benchmarks audit TMOUT in three ways, followed here per product.
-  Amazon Linux 2023 v1.0.0 4.6.3: one file of /etc/bashrc, /etc/profile and
-  /etc/profile.d/*.sh assigns TMOUT a positive value and has a readonly and an
-  export command for it, and no file of the set assigns 0 or a value above the
-  limit. RHEL 9 and AlmaLinux 9 v3.0.0 5.4.3.2: every file that assigns TMOUT
-  marks it readonly and exports it in the same file, with typeset -xr or with
-  readonly and export. The other benchmarks (RHEL 8 v4.0.0, RHEL 10 v1.0.1,
-  Ubuntu 22.04 v3.0.0, Ubuntu 24.04 v2.0.0 5.4.3.2) require the same of every
-  file that mentions TMOUT. Every value assigned has to be in range, where
-  the RHEL 9 and AlmaLinux 9 audits read the last one of each file. The
-  regular expressions are those of the audits, confined to one line, since a
-  pattern applies to a whole file here.
+  Amazon Linux 2023 v1.0.0 4.6.3 and RHEL 7 v4.0.0 4.5.3.2: one file of
+  /etc/bashrc, /etc/profile and /etc/profile.d/*.sh assigns TMOUT a positive
+  value and has a readonly and an export command for it, and no file of the
+  set assigns 0 or a value above the limit. RHEL 9 and AlmaLinux 9 v3.0.0
+  5.4.3.2: every file that assigns TMOUT marks it readonly and exports it in
+  the same file, with typeset -xr or with readonly and export. The other
+  benchmarks (RHEL 8 v4.0.0, RHEL 10 v1.0.1, Ubuntu 22.04 v3.0.0, Ubuntu 24.04
+  v2.0.0 5.4.3.2) require the same of every file that mentions TMOUT. Every
+  value assigned has to be in range, where the RHEL 9 and AlmaLinux 9 audits
+  read the last one of each file. The regular expressions are those of the
+  audits, confined to one line, since a pattern applies to a whole file here.
 -#}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("The interactive shell timeout TMOUT is configured as the CIS Benchmark requires", rule_title=rule_title) }}}
     <criteria operator="AND">
-{{% if product == "al2023" %}}
+{{% if product in ["al2023", "rhel7"] %}}
       <criterion comment="a file assigns TMOUT and marks it readonly and exported"
         test_ref="test_accounts_tmout_cis_configured" />
 {{% elif product in ["rhel9", "almalinux9"] %}}
@@ -33,7 +33,7 @@
     </criteria>
   </definition>
 
-{{% if product == "al2023" %}}
+{{% if product in ["al2023", "rhel7"] %}}
   <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
     comment="a file assigns TMOUT and has readonly and export commands for it"
     id="test_accounts_tmout_cis_configured">
@@ -85,7 +85,7 @@
 {{% endif %}}
 
   <ind:textfilecontent54_test check="all" version="1"
-    check_existence="{{{ "any_exist" if product == "al2023" else "at_least_one_exists" }}}"
+    check_existence="{{{ "any_exist" if product in ["al2023", "rhel7"] else "at_least_one_exists" }}}"
     comment="every TMOUT value is at most var_accounts_tmout"
     id="test_accounts_tmout_cis_upper_bound">
     <ind:object object_ref="obj_accounts_tmout_cis_values" />
@@ -93,7 +93,7 @@
   </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_test check="all" version="1"
-    check_existence="{{{ "any_exist" if product == "al2023" else "at_least_one_exists" }}}"
+    check_existence="{{{ "any_exist" if product in ["al2023", "rhel7"] else "at_least_one_exists" }}}"
     comment="every TMOUT value is at least 1"
     id="test_accounts_tmout_cis_lower_bound">
     <ind:object object_ref="obj_accounts_tmout_cis_values" />

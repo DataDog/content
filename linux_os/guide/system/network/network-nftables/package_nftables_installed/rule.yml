@@ -30,7 +30,11 @@ references:
 
 {{{ complete_ocil_entry_package_installed("nftables") }}}
 
+{{% if product == "rhel7" %}}
+platform: system_with_kernel and firewall_applicable[nftables]
+{{% else %}}
 platform: system_with_kernel and service_disabled[iptables] and service_disabled[ufw]
+{{% endif %}}
 
 {{%- if 'ubuntu' in product %}}
 template:

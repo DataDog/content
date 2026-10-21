@@ -42,4 +42,7 @@ template:
         file_regex:
             - ^.*audit(\.rules|d\.conf)$
             - ^.*\.rules$
+        file_regex@rhel7:
+            - ^.*\.(conf|rules)$
+            - ^.*\.rules$
         uid_or_name: '0'

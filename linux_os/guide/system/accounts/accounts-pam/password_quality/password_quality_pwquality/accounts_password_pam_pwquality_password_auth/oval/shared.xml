@@ -9,7 +9,12 @@
 
   <ind:textfilecontent54_object id="object_accounts_password_pam_pwquality_password_auth" version="1">
     <ind:filepath>/etc/pam.d/password-auth</ind:filepath>
+{{#- The RHEL 7 STIG enables pam_pwquality.so as required, which the CIS RHEL 7 audit accepts. #}}
+{{%- if product == "rhel7" %}}
+    <ind:pattern operation="pattern match">^\s*password\s+(?:requisite|required)\s+pam_pwquality\.so</ind:pattern>
+{{%- else %}}
     <ind:pattern operation="pattern match">^password[\s]*requisite[\s]*pam_pwquality\.so</ind:pattern>
+{{%- endif %}}
     <ind:instance datatype="int" operation="equals">1</ind:instance>
   </ind:textfilecontent54_object>
 

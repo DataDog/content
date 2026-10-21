@@ -24,7 +24,11 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "rhel7" %}}
+platform: firewall_applicable[iptables]
+{{% else %}}
 platform: not package[nftables] and not package[ufw] and package[iptables]
+{{% endif %}}
 
 identifiers:
     cce@rhel7: CCE-86718-4

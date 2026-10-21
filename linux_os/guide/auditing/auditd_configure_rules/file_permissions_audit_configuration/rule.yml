@@ -41,5 +41,8 @@ template:
         file_regex:
             - ^.*audit(\.rules|d\.conf)$
             - ^.*\.rules$
+        file_regex@rhel7:
+            - ^.*\.(conf|rules)$
+            - ^.*\.rules$
         allow_stricter_permissions: "true"
         filemode: '0640'

@@ -37,6 +37,7 @@ controls:
     status: automated
     rules:
     - kernel_module_cramfs_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.2
     title: Ensure freevxfs kernel module is not available (Automated)
@@ -46,6 +47,7 @@ controls:
     status: automated
     rules:
     - kernel_module_freevxfs_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.3
     title: Ensure hfs kernel module is not available (Automated)
@@ -55,6 +57,7 @@ controls:
     status: automated
     rules:
     - kernel_module_hfs_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.4
     title: Ensure hfsplus kernel module is not available (Automated)
@@ -64,6 +67,7 @@ controls:
     status: automated
     rules:
     - kernel_module_hfsplus_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.5
     title: Ensure jffs2 kernel module is not available (Automated)
@@ -73,6 +77,7 @@ controls:
     status: automated
     rules:
     - kernel_module_jffs2_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.6
     title: Ensure squashfs kernel module is not available (Automated)
@@ -82,6 +87,7 @@ controls:
     status: automated
     rules:
     - kernel_module_squashfs_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.7
     title: Ensure udf kernel module is not available (Automated)
@@ -91,6 +97,7 @@ controls:
     status: automated
     rules:
     - kernel_module_udf_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.1.8
     title: Ensure usb-storage kernel module is not available (Automated)
@@ -100,6 +107,7 @@ controls:
     status: automated
     rules:
     - kernel_module_usb-storage_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 1.1.2.1.1
     title: Ensure /tmp is a separate partition (Automated)
@@ -310,7 +318,7 @@ controls:
     - partition_for_var_log_audit
 
   - id: 1.1.2.7.2
-    title: Ensure noexec option set on /var/log/audit partition (Automated)
+    title: Ensure nodev option set on /var/log/audit partition (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -368,7 +376,7 @@ controls:
     status: manual
 
   - id: 1.2.5
-    title: Ensure updates, patches, and additional security software are installed
+    title: Ensure updates, patches, and additional security software are installed (Manual)
     levels:
     - l1_server
     - l1_workstation
@@ -391,18 +399,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - file_groupowner_grub2_cfg
-    - file_owner_grub2_cfg
-    - file_permissions_grub2_cfg
-    - file_groupowner_efi_grub2_cfg
-    - file_owner_efi_grub2_cfg
-    - file_permissions_efi_grub2_cfg
-    - file_groupowner_efi_user_cfg
-    - file_groupowner_user_cfg
-    - file_owner_efi_user_cfg
-    - file_owner_user_cfg
-    - file_permissions_efi_user_cfg
-    - file_permissions_user_cfg
+    - file_groupowner_grub2_config_files
+    - file_owner_grub2_config_files
+    - file_permissions_grub2_config_files
+    - file_permissions_efi_grub2_config_files
 
   - id: 1.3.3
     title: Ensure authentication required for single user mode (Automated)
@@ -424,7 +424,7 @@ controls:
     - sysctl_kernel_randomize_va_space
 
   - id: 1.4.2
-    title: Ensure ptrace_scope is restricted
+    title: Ensure ptrace_scope is restricted (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -466,7 +466,7 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - grub2_enable_selinux # the rule does not check for uefi configuration
+    - grub2_enable_selinux
 
   - id: 1.5.1.3
     title: Ensure SELinux policy is configured (Automated)
@@ -488,7 +488,7 @@ controls:
       - selinux_not_disabled
 
   - id: 1.5.1.5
-    title: Ensure the SELinux mode is enforcing
+    title: Ensure the SELinux mode is enforcing (Automated)
     levels:
     - l2_server
     - l2_workstation
@@ -520,9 +520,10 @@ controls:
     - package_mcstrans_removed
 
   - id: 1.5.1.8
-    title: Ensure SETroubleshoot is not installed
+    title: Ensure SETroubleshoot is not installed (Automated)
     levels:
     - l1_server
+    status: automated
     rules:
     - package_setroubleshoot_removed
 
@@ -533,8 +534,8 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - banner_etc_motd
-    - motd_banner_text=cis_banners
+    - banner_etc_motd_cis
+    - cis_banner_text=cis
 
   - id: 1.6.2
     title: Ensure local login warning banner is configured properly (Automated)
@@ -543,8 +544,8 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - banner_etc_issue
-    - login_banner_text=cis_banners
+    - banner_etc_issue_cis
+    - cis_banner_text=cis
 
   - id: 1.6.3
     title: Ensure remote login warning banner is configured properly (Automated)
@@ -553,11 +554,11 @@ controls:
     - l1_workstation
     status: automated
     rules:
-      - banner_etc_issue_net
-      - remote_login_banner_text=cis_banners
+      - banner_etc_issue_net_cis
+      - cis_banner_text=cis
 
   - id: 1.6.4
-    title: Ensure access on /etc/motd are configured (Automated)
+    title: Ensure access to /etc/motd is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -568,7 +569,7 @@ controls:
     - file_permissions_etc_motd
 
   - id: 1.6.5
-    title: Ensure access on /etc/issue are configured (Automated)
+    title: Ensure access to /etc/issue is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -579,7 +580,7 @@ controls:
     - file_permissions_etc_issue
 
   - id: 1.6.6
-    title: Ensure permissions on /etc/issue.net are configured (Automated)
+    title: Ensure access to /etc/issue.net is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -606,7 +607,8 @@ controls:
     rules:
     - dconf_gnome_banner_enabled
     - dconf_gnome_login_banner_text
-    - login_banner_text=cis_banners
+    - dconf_login_banner_text=cis_banners
+    - dconf_login_banner_contents=cis_default
 
   - id: 1.7.3
     title: Ensure GDM disable-user-list option is enabled (Automated)
@@ -618,7 +620,7 @@ controls:
     - dconf_gnome_disable_user_list
 
   - id: 1.7.4
-    title: Ensure GDM screen locks when the user is idle
+    title: Ensure GDM screen locks when the user is idle (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -630,7 +632,7 @@ controls:
       - var_screensaver_lock_delay=5_seconds
 
   - id: 1.7.5
-    title: Ensure GDM screen locks cannot be overridden
+    title: Ensure GDM screen locks cannot be overridden (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -640,7 +642,7 @@ controls:
       - dconf_gnome_screensaver_user_locks
 
   - id: 1.7.6
-    title: Ensure GDM automatic mounting of removable media is disabled
+    title: Ensure GDM automatic mounting of removable media is disabled (Automated)
     levels:
     - l1_server
     - l2_workstation
@@ -650,17 +652,20 @@ controls:
         - dconf_gnome_disable_automount_open
 
   - id: 1.7.7
-    title: Ensure GDM disabling automatic mounting of removable media is not overridden
+    title: Ensure GDM disabling automatic mounting of removable media is not overridden (Automated)
     levels:
     - l1_server
     - l2_workstation
     status: automated
     notes: |-
-      The rules in "Ensure GDM automatic mounting of removable media is disabled" also
-      cover the locks.
+      dconf_gnome_disable_automount and dconf_gnome_disable_automount_open check
+      the locks together with the values of 1.7.6.
+    rules:
+    - dconf_gnome_disable_automount
+    - dconf_gnome_disable_automount_open
 
   - id: 1.7.8
-    title: Ensure GDM autorun-never is enabled
+    title: Ensure GDM autorun-never is enabled (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -669,16 +674,18 @@ controls:
       - dconf_gnome_disable_autorun
 
   - id: 1.7.9
-    title: Ensure GDM autorun-never is not overridden
+    title: Ensure GDM autorun-never is not overridden (Automated)
     levels:
     - l1_server
     - l1_workstation
     status: automated
     notes: |-
-        Covered by "Ensure GDM autorun-never is enabled".
+      dconf_gnome_disable_autorun checks the lock together with the value of 1.7.8.
+    rules:
+    - dconf_gnome_disable_autorun
 
   - id: 1.7.10
-    title: Ensure XDCMP is not enabled (Automated)
+    title: Ensure XDMCP is not enabled (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -719,11 +726,10 @@ controls:
     levels:
     - l1_server
     - l2_workstation
-    status: partial
-    notes: |-
-      We need package_autofs_removed to complete this control
+    status: automated
     rules:
     - service_autofs_disabled
+    - var_service_disabled_mask_optional=true
 
   - id: 2.2.2
     title: Ensure avahi daemon services are not in use (Automated)
@@ -732,9 +738,10 @@ controls:
     - l2_workstation
     status: automated
     rules:
-      - package_avahi_removed
+    - service_avahi-daemon_disabled
+    - var_service_disabled_mask_optional=true
     related_rules:
-      - service_avahi-daemon_disabled
+      - package_avahi_removed
 
   - id: 2.2.3
     title: Ensure dhcp server services are not in use (Automated)
@@ -743,9 +750,11 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_dhcp_removed
-    related_rules:
     - service_dhcpd_disabled
+    - service_dhcpd6_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_dhcp_removed
 
   - id: 2.2.4
     title: Ensure dns server services are not in use (Automated)
@@ -754,9 +763,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_bind_removed
-    related_rules:
     - service_named_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_bind_removed
 
   - id: 2.2.5
     title: Ensure dnsmasq services are not in use (Automated)
@@ -765,6 +775,9 @@ controls:
     - l1_workstation
     status: automated
     rules:
+    - service_dnsmasq_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
     - package_dnsmasq_removed
 
   - id: 2.2.6
@@ -774,9 +787,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_samba_removed
-    related_rules:
     - service_smb_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_samba_removed
 
   - id: 2.2.7
     title: Ensure ftp server services are not in use (Automated)
@@ -785,9 +799,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_vsftpd_removed
-    related_rules:
     - service_vsftpd_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_vsftpd_removed
 
   - id: 2.2.8
     title: Ensure message access server services are not in use (Automated)
@@ -796,11 +811,12 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_dovecot_removed
     - package_cyrus-imapd_removed
-    related_rules:
     - service_dovecot_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
     # we might add a rule disabling cyrus-imapd service
+    - package_dovecot_removed
 
   - id: 2.2.9
     title: Ensure network file system services are not in use (Automated)
@@ -810,6 +826,7 @@ controls:
     status: automated
     rules:
     - service_nfs_disabled
+    - var_service_disabled_mask_optional=true
     related_rules:
     - package_nfs-utils_removed
     notes: |-
@@ -823,9 +840,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_ypserv_removed
-    related_rules:
     - service_ypserv_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_ypserv_removed
 
   - id: 2.2.11
     title: Ensure print server services are not in use (Automated)
@@ -833,9 +851,10 @@ controls:
     - l1_server
     status: automated
     rules:
-      - package_cups_removed
+    - service_cups_disabled
+    - var_service_disabled_mask_optional=true
     related_rules:
-      - service_cups_disabled
+      - package_cups_removed
 
   - id: 2.2.12
     title: Ensure rpcbind services are not in use (Automated)
@@ -845,6 +864,7 @@ controls:
     status: automated
     rules:
       - service_rpcbind_disabled
+      - var_service_disabled_mask_optional=true
     related_rules:
       - package_rpcbind_removed
     notes: |-
@@ -860,9 +880,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-      - package_rsync_removed
+    - service_rsyncd_disabled
+    - var_service_disabled_mask_optional=true
     related_rules:
-      - service_rsyncd_disabled
+      - package_rsync_removed
 
   - id: 2.2.14
     title: Ensure snmp services are not in use (Automated)
@@ -871,9 +892,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_net-snmp_removed
-    related_rules:
     - service_snmpd_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_net-snmp_removed
 
   - id: 2.2.15
     title: Ensure telnet server services are not in use (Automated)
@@ -893,9 +915,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_tftp-server_removed
-    related_rules:
     - service_tftp_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_tftp-server_removed
 
   - id: 2.2.17
     title: Ensure web proxy server services are not in use (Automated)
@@ -904,9 +927,10 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_squid_removed
-    related_rules:
     - service_squid_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_squid_removed
 
   - id: 2.2.18
     title: Ensure web server services are not in use (Automated)
@@ -915,11 +939,13 @@ controls:
     - l1_workstation
     status: automated
     rules:
+    - service_httpd_disabled
+    - service_nginx_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    # rule would be nice to disable nginx service
     - package_httpd_removed
     - package_nginx_removed
-    related_rules:
-    - service_httpd_disabled
-    # rule would be nice to disable nginx service
 
   - id: 2.2.19
     title: Ensure xinetd services are not in use (Automated)
@@ -928,19 +954,19 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_xinetd_removed
-    related_rules:
     - service_xinetd_disabled
+    - var_service_disabled_mask_optional=true
+    related_rules:
+    - package_xinetd_removed
 
   - id: 2.2.20
     title: Ensure X window server services are not in use (Automated)
     levels:
     - l2_server
     status: automated
-    notes: >-
-      The rule also configures correct run level to prevent unbootable system.
     rules:
     - package_xorg-x11-server-common_removed
+    related_rules:
     - xwindows_runlevel_target
 
   - id: 2.2.21
@@ -948,14 +974,11 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
-    notes:  |-
-      The rule has_nonlocal_mta currently checks for services listening only on
-      port 25, but the policy checks also for ports 465 and 587
+    status: automated
     rules:
-    - postfix_network_listening_disabled
-    - var_postfix_inet_interfaces=loopback-only
     - has_nonlocal_mta
+    related_rules:
+    - postfix_network_listening_disabled
 
   - id: 2.2.22
     title: Ensure only approved services are listening on a network interface (Manual)
@@ -974,7 +997,7 @@ controls:
     - package_ftp_removed
 
   - id: 2.3.2
-    title: Ensure LDAP client is not installed (Automated)
+    title: Ensure ldap client is not installed (Automated)
     levels:
     - l2_server
     - l2_workstation
@@ -983,7 +1006,7 @@ controls:
     - package_openldap-clients_removed
 
   - id: 2.3.3
-    title: Ensure NIS Client is not installed (Automated)
+    title: Ensure nis client is not installed (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1032,6 +1055,7 @@ controls:
     status: automated
     rules:
     - service_bluetooth_disabled
+    - var_service_disabled_mask_optional=true
 
   - id: 3.2.1
     title: Ensure dccp kernel module is not available (Automated)
@@ -1041,6 +1065,7 @@ controls:
     status: automated
     rules:
     - kernel_module_dccp_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 3.2.2
     title: Ensure tipc kernel module is not available (Automated)
@@ -1050,6 +1075,7 @@ controls:
     status: automated
     rules:
     - kernel_module_tipc_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 3.2.3
     title: Ensure rds kernel module is not available (Automated)
@@ -1059,6 +1085,7 @@ controls:
     status: automated
     rules:
     - kernel_module_rds_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 3.2.4
     title: Ensure sctp kernel module is not available (Automated)
@@ -1068,9 +1095,10 @@ controls:
     status: automated
     rules:
     - kernel_module_sctp_disabled
+    - var_kernel_module_absent_disabled=true
 
   - id: 3.3.1
-    title: Ensure IP forwarding is disabled (Automated)
+    title: Ensure ip forwarding is disabled (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1091,7 +1119,7 @@ controls:
     - sysctl_net_ipv4_conf_default_send_redirects
 
   - id: 3.3.3
-    title: Ensure bogus ICMP responses are ignored (Automated)
+    title: Ensure bogus icmp responses are ignored (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1101,7 +1129,7 @@ controls:
     - sysctl_net_ipv4_icmp_ignore_bogus_error_responses_value=enabled
 
   - id: 3.3.4
-    title: Ensure broadcast ICMP requests are ignored (Automated)
+    title: Ensure broadcast icmp requests are ignored (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1111,7 +1139,7 @@ controls:
     - sysctl_net_ipv4_icmp_echo_ignore_broadcasts_value=enabled
 
   - id: 3.3.5
-    title: Ensure ICMP redirects are not accepted (Automated)
+    title: Ensure icmp redirects are not accepted (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1127,7 +1155,7 @@ controls:
     - sysctl_net_ipv6_conf_default_accept_redirects_value=disabled
 
   - id: 3.3.6
-    title: Ensure secure ICMP redirects are not accepted (Automated)
+    title: Ensure secure icmp redirects are not accepted (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1139,7 +1167,7 @@ controls:
     - sysctl_net_ipv4_conf_default_secure_redirects_value=disabled
 
   - id: 3.3.7
-    title: Ensure Reverse Path Filtering is enabled (Automated)
+    title: Ensure reverse path filtering is enabled (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1179,7 +1207,7 @@ controls:
     - sysctl_net_ipv4_conf_default_log_martians_value=enabled
 
   - id: 3.3.10
-    title: Ensure TCP SYN Cookies is enabled (Automated)
+    title: Ensure tcp syn cookies is enabled (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1189,7 +1217,7 @@ controls:
     - sysctl_net_ipv4_tcp_syncookies_value=enabled
 
   - id: 3.3.11
-    title: Ensure IPv6 router advertisements are not accepted (Automated)
+    title: Ensure ipv6 router advertisements are not accepted (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1214,8 +1242,10 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     # rules: TODO
+    rules:
+    - firewall_single_service_active
 
   - id: 3.4.2.1
     title: Ensure firewalld is installed (Automated)
@@ -1224,7 +1254,6 @@ controls:
     - l1_workstation
     status: automated
     rules:
-    - package_iptables_installed
     - package_firewalld_installed
 
   - id: 3.4.2.2
@@ -1259,12 +1288,9 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: supported
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    related_rules:
-      - package_nftables_installed
+    status: automated
+    rules:
+    - package_nftables_installed
 
   - id: 3.4.3.2
     title: Ensure iptables are flushed with nftables (Manual)
@@ -1278,45 +1304,38 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: supported
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    related_rules:
-      - set_nftables_table
-      - var_nftables_family=inet
-      - var_nftables_table=filter
+    status: automated
+    rules:
+    - set_nftables_table
+    - var_nftables_family=inet
+    - var_nftables_table=filter
 
   - id: 3.4.3.4
     title: Ensure nftables base chains exist (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: supported
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
+    status: automated
     related_rules:
-      - set_nftables_base_chain
       - var_nftables_table=firewalld
-      - var_nftables_family=inet
-      - var_nftables_base_chain_names=chain_names
-      - var_nftables_base_chain_types=chain_types
-      - var_nftables_base_chain_hooks=chain_hooks
-      - var_nftables_base_chain_priorities=chain_priorities
-      - var_nftables_base_chain_policies=chain_policies
+    rules:
+    - set_nftables_base_chain
+    - var_nftables_table=filter
+    - var_nftables_family=inet
+    - var_nftables_base_chain_names=chain_names
+    - var_nftables_base_chain_types=chain_types
+    - var_nftables_base_chain_hooks=chain_hooks
+    - var_nftables_base_chain_priorities=chain_priorities
+    - var_nftables_base_chain_policies=chain_policies
 
   - id: 3.4.3.5
     title: Ensure nftables loopback traffic is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: supported
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    related_rules:
-      - set_nftables_loopback_traffic
+    status: automated
+    rules:
+    - set_nftables_loopback_traffic
 
   - id: 3.4.3.6
     title: Ensure nftables outbound and established connections are configured (Manual)
@@ -1331,36 +1350,27 @@ controls:
     - l1_server
     - l1_workstation
     status: automated
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    related_rules:
-      - nftables_ensure_default_deny_policy
+    rules:
+    - nftables_ensure_default_deny_policy
 
   - id: 3.4.3.8
-    title: Ensure nftables service is enabled (Automated)
+    title: Ensure nftables service is enabled and active (Automated)
     levels:
     - l1_server
     - l1_workstation
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    status: supported
-    related_rules:
-      - service_nftables_enabled
+    status: automated
+    rules:
+    - service_nftables_enabled
 
   - id: 3.4.3.9
     title: Ensure nftables rules are permanent (Automated)
     levels:
     - l1_server
     - l1_workstation
-    notes: |-
-      RHEL systems use firewalld for firewall management. The back-end for firewalld in RHEL7 is
-      iptables. nftables is supported in RHEL7 but is not expected by default.
-    status: supported
-    related_rules:
-      - var_nftables_master_config_file=sysconfig
-      - nftables_rules_permanent
+    status: automated
+    rules:
+    - nftables_rules_permanent
+    - var_nftables_master_config_file=sysconfig
 
   - id: 3.4.4.1.1
     title: Ensure iptables packages are installed (Automated)
@@ -1368,10 +1378,10 @@ controls:
     - l1_server
     - l1_workstation
     status: automated
-    notes: |-
-      Already covered by requirement 3.4.1.1.
     related_rules:
       - package_iptables_installed
+    rules:
+    - package_iptables-services_installed
 
   - id: 3.4.4.2.1
     title: Ensure iptables loopback traffic is configured (Automated)
@@ -1394,7 +1404,7 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     notes: |-
       Currently the check is only available in SCE and an automated remediation is not expected.
     rules:
@@ -1406,35 +1416,35 @@ controls:
     - l1_server
     - l1_workstation
     status: automated
-    related_rules:
-      - set_iptables_default_rule
+    rules:
+    - set_iptables_default_rule
 
   - id: 3.4.4.2.5
     title: Ensure iptables rules are saved (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: pending # rule missing
+    status: automated
+    rules:
+    - iptables_rules_saved
 
   - id: 3.4.4.2.6
     title: Ensure iptables service is enabled and active (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: partial
-    notes: |-
-      The remediations conflicts with service_firewalld_enabled.
-      Related to 3.4.1.2 which needs to be implemented first.
-      The CPE template "platform_service_enabled" is missing remediation conditionals.
-    # rules:
-    # - service_iptables_enabled
+    status: automated
+    rules:
+    - service_iptables_enabled
 
   - id: 3.4.4.3.1
     title: Ensure ip6tables loopback traffic is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: pending # rule missing
+    status: automated
+    rules:
+    - set_ipv6_loopback_traffic
 
   - id: 3.4.4.3.2
     title: Ensure ip6tables outbound and established connections are configured (Manual)
@@ -1448,7 +1458,7 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     notes: |-
       Currently the check is only available in SCE and an automated remediation is not expected.
     rules:
@@ -1459,7 +1469,7 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     notes: |-
       RHEL systems use firewalld for firewall management. Although the back-end for firewalld in
       RHEL 7 is iptables, firewall-cmd is the recommended tool to manage firewall rules. This rule
@@ -1472,15 +1482,17 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: pending # rule missing
+    status: automated
+    rules:
+    - ip6tables_rules_saved
 
   - id: 3.4.4.3.6
     title: Ensure ip6tables is enabled and active (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: pending
-    related_rules:
+    status: automated
+    rules:
     - service_ip6tables_enabled
 
   - id: 4.1.1.1
@@ -1491,6 +1503,7 @@ controls:
     status: automated
     rules:
     - service_crond_enabled
+    - package_cron_installed
 
   - id: 4.1.1.2
     title: Ensure permissions on /etc/crontab are configured (Automated)
@@ -1568,37 +1581,43 @@ controls:
     - file_groupowner_cron_allow
     - file_cron_allow_exists
     - file_owner_cron_allow
-    - file_cron_deny_not_exist
     - file_permissions_cron_allow
+    - file_groupowner_cron_deny
+    - file_owner_cron_deny
+    - file_permissions_cron_deny
+    related_rules:
+    - file_cron_deny_not_exist
 
   - id: 4.1.2.1
     title: Ensure at is restricted to authorized users (Automated)
     levels:
     - l1_server
     - l1_workstation
-    status: partial
-    notes: |-
-      It is necessary to create a rule to ensure the existence of at.allow.
-      file_cron_allow_exists can be used as reference for a new templated rule.
+    status: automated
     rules:
     - file_groupowner_at_allow
     - file_owner_at_allow
-    - file_at_deny_not_exist
     - file_permissions_at_allow
+    - file_at_allow_exists
+    - file_groupowner_at_deny
+    - file_owner_at_deny
+    - file_permissions_at_deny
+    related_rules:
+    - file_at_deny_not_exist
 
   - id: 4.2.1
     title: Ensure permissions on /etc/ssh/sshd_config are configured (Automated)
     levels:
       - l1_server
       - l1_workstation
-    status: partial
-    notes: |-
-      These rules only check the /etc/ssh/sshd_config file but the policy also mentions files in
-      /etc/ssh/sshd_config.d directory. New templated rules should be created for sshd_config.d.
+    status: automated
     rules:
       - file_groupowner_sshd_config
       - file_owner_sshd_config
       - file_permissions_sshd_config
+      - file_groupowner_sshd_drop_in_config
+      - file_owner_sshd_drop_in_config
+      - file_permissions_sshd_drop_in_config
 
   - id: 4.2.2
     title: Ensure permissions on SSH private host key files are configured (Automated)
@@ -1607,9 +1626,11 @@ controls:
       - l1_workstation
     status: automated
     rules:
-      - file_permissions_sshd_private_key
       - file_ownership_sshd_private_key
       - file_groupownership_sshd_private_key
+      - file_permissions_sshd_private_key_cis
+    related_rules:
+      - file_permissions_sshd_private_key
 
   - id: 4.2.3
     title: Ensure permissions on SSH public host key files are configured (Automated)
@@ -1649,8 +1670,9 @@ controls:
       - l1_workstation
     status: automated
     rules:
+      - sshd_use_strong_ciphers_cis
+    related_rules:
       - sshd_use_approved_ciphers
-      - sshd_approved_ciphers=cis_rhel7
 
   - id: 4.2.7
     title: Ensure sshd ClientAliveInterval and ClientAliveCountMax are configured (Automated)
@@ -1659,25 +1681,28 @@ controls:
       - l1_workstation
     status: automated
     notes: |-
-      The requirement gives an example of 45 seconds, but is flexible about the values. It is only
-      necessary to ensure there is a timeout configured in alignment to the site policy.
+      The audit asks for a ClientAliveInterval and a ClientAliveCountMax above
+      zero, and its remediation gives 15 seconds and 3 as examples. The rules
+      check the interval against sshd_idle_timeout_value (300 seconds) and the
+      count against var_sshd_set_keepalive (3), which fail higher values that
+      the audit passes.
     rules:
       - sshd_idle_timeout_value=5_minutes
       - sshd_set_idle_timeout
       - sshd_set_keepalive
-      - var_sshd_set_keepalive=1
+      - var_sshd_set_keepalive=3
 
   - id: 4.2.8
     title: Ensure sshd DisableForwarding is enabled (Automated)
     levels:
       - l2_server
       - l1_workstation
-    status: pending
-    notes: |-
-      New templated rule is necessary for "disableforwarding" option.
+    status: automated
     related_rules:
       - sshd_disable_tcp_forwarding
       - sshd_disable_x11_forwarding
+    rules:
+    - sshd_disable_forwarding
 
   - id: 4.2.9
     title: Ensure sshd GSSAPIAuthentication is disabled (Automated)
@@ -1713,8 +1738,9 @@ controls:
       - l1_workstation
     status: automated
     rules:
+      - sshd_use_strong_kex_cis
+    related_rules:
       - sshd_use_strong_kex
-      - sshd_strong_kex=cis_rhel7
 
   - id: 4.2.13
     title: Ensure sshd LoginGraceTime is configured (Automated)
@@ -1737,9 +1763,10 @@ controls:
       profile uses VERBOSE by default, as it allows for the capture of login and logout activity
       as well as key fingerprints.
     rules:
-      - sshd_set_loglevel_verbose
+      - sshd_set_loglevel_verbose_or_info
     related_rules:
       - sshd_set_loglevel_info
+      - sshd_set_loglevel_verbose
 
   - id: 4.2.15
     title: Ensure sshd MACs are configured (Automated)
@@ -1748,8 +1775,9 @@ controls:
       - l1_workstation
     status: automated
     rules:
+      - sshd_use_strong_macs_cis
+    related_rules:
       - sshd_use_strong_macs
-      - sshd_strong_macs=cis_rhel7
 
   - id: 4.2.16
     title: Ensure sshd MaxAuthTries is configured (Automated)
@@ -1851,11 +1879,8 @@ controls:
       - l2_server
       - l2_workstation
     status: automated
-    notes: |-
-      The rule sudo_require_authentication can probably be split to better attend requirements
-      4.3.4 and 4.3.5.
     rules:
-      - sudo_require_authentication
+      - sudo_remove_nopasswd
 
   - id: 4.3.5
     title: Ensure re-authentication for privilege escalation is not disabled globally (Automated)
@@ -1863,21 +1888,15 @@ controls:
       - l1_server
       - l1_workstation
     status: automated
-    notes: |-
-      The rule sudo_require_authentication can probably be split to better attend requirements
-      4.3.4 and 4.3.5.
     rules:
-      - sudo_require_authentication
+      - sudo_remove_no_authenticate
 
   - id: 4.3.6
     title: Ensure sudo authentication timeout is configured correctly (Automated)
     levels:
       - l1_server
       - l1_workstation
-    status: partial
-    notes: |-
-      The OVAL check in sudo_require_reauthentication ensures the timestamp_timeout parameter but
-      is not precisely testing the value.
+    status: automated
     rules:
       - sudo_require_reauthentication
       - var_sudo_timestamp_timeout=15_minutes
@@ -1903,9 +1922,9 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: pending
-    notes: |-
-      It is necessary a new rule to ensure PAM package is updated.
+    status: automated
+    rules:
+    - package_pam_installed
 
   - id: 4.4.1.2
     title: Ensure libpwquality is installed (Automated)
@@ -1923,12 +1942,16 @@ controls:
       - l1_workstation
     status: automated
     notes: |-
-      This requirement is more specifically satisfied by 4.4.2.1.2.
+      The rules check the pam_faillock module in system-auth and
+      password-auth, as for RHEL 8. 4.4.2.1.2 checks its deny option.
     related_rules:
       - accounts_passwords_pam_faillock_deny
+    rules:
+    - account_password_pam_faillock_password_auth
+    - account_password_pam_faillock_system_auth
 
   - id: 4.4.2.1.2
-    title: Ensure lockout for failed password attempts is configured (Automated)
+    title: Ensure password failed attempts lockout is configured (Automated)
     levels:
     - l1_server
     - l1_workstation
@@ -1944,7 +1967,7 @@ controls:
     - l1_workstation
     status: automated
     rules:
-      - accounts_passwords_pam_faillock_unlock_time
+      - accounts_passwords_pam_faillock_unlock_time_with_zero
       - var_accounts_passwords_pam_faillock_unlock_time=900
 
   - id: 4.4.2.1.4
@@ -1954,19 +1977,20 @@ controls:
       - l2_workstation
     status: automated
     rules:
-      - accounts_passwords_pam_faillock_deny_root
+      - accounts_passwords_pam_faillock_even_deny_root_or_root_unlock_time
+      - var_accounts_passwords_pam_faillock_root_unlock_time=60
 
   - id: 4.4.2.2.1
     title: Ensure pam_pwquality module is enabled (Automated)
     levels:
       - l1_server
       - l1_workstation
-    status: pending
-    notes: |-
-      This requirement is probably automatically satisfied when by the 4.4.1.2.
-      It is necessary to better investigate the scenarios to confirm.
+    status: automated
     related_rules:
       - package_pam_pwquality_installed
+    rules:
+    - accounts_password_pam_pwquality_password_auth
+    - accounts_password_pam_pwquality_system_auth
 
   - id: 4.4.2.2.2
     title: Ensure password number of changed characters is configured (Automated)
@@ -1993,21 +2017,13 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: automated
-    notes: |-
-      This requirement is expected to be manual. However, in previous versions of the policy
-      it was already automated the configuration of "minclass" option. This posture was kept for
-      RHEL 7 in this new version. Rules related to other options are informed in related_rules.
-      In short, minclass=4 alone can achieve the same result achieved by the combination of the
-      other 4 options mentioned in the policy.
-    rules:
-      - accounts_password_pam_minclass
-      - var_password_pam_minclass=4
+    status: manual
     related_rules:
       - accounts_password_pam_dcredit
       - accounts_password_pam_lcredit
       - accounts_password_pam_ocredit
       - accounts_password_pam_ucredit
+      - accounts_password_pam_minclass
 
   - id: 4.4.2.2.5
     title: Ensure password same consecutive characters is configured (Automated)
@@ -2024,9 +2040,10 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: planned
-    notes: |-
-      A new templated rule and variable are necessary for the maxsequence option.
+    status: automated
+    rules:
+    - accounts_password_pam_maxsequence
+    - var_password_pam_maxsequence=3
 
   - id: 4.4.2.2.7
     title: Ensure password dictionary check is enabled (Automated)
@@ -2037,6 +2054,7 @@ controls:
     rules:
       - accounts_password_pam_dictcheck
       - var_password_pam_dictcheck=1
+      - var_password_pam_pwquality_default_compliant=true
 
   - id: 4.4.2.3.1
     title: Ensure pam_pwhistory module is enabled (Automated)
@@ -2044,12 +2062,9 @@ controls:
       - l1_server
       - l1_workstation
     status: automated
-    notes: |-
-      The module is properly enabled by the rules mentioned in related_rules.
-      Requirement 4.4.2.3.2 uses these rules more specifically.
-    related_rules:
-      - accounts_password_pam_pwhistory_remember_password_auth
-      - accounts_password_pam_pwhistory_remember_system_auth
+    rules:
+    - accounts_password_pam_pwhistory_remember_password_auth
+    - accounts_password_pam_pwhistory_remember_system_auth
 
   - id: 4.4.2.3.2
     title: Ensure password history remember is configured (Automated)
@@ -2068,22 +2083,21 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: planned
-    notes: |-
-      A new rule needs to be created to check and remediate the enforce_for_root option in
-      /etc/security/pwhistory.conf. accounts_password_pam_enforce_root can be used as reference.
+    status: automated
+    rules:
+    - accounts_password_pam_pwhistory_enforce_for_root
 
   - id: 4.4.2.3.4
     title: Ensure pam_pwhistory includes use_authtok (Automated)
     levels:
       - l1_server
       - l1_workstation
-    status: pending
-    notes: |-
-      We don't have a rule to check and remediate this option specifically in RHEL7.
+    status: automated
     related_rules:
       - accounts_password_pam_pwhistory_remember_password_auth
       - accounts_password_pam_pwhistory_remember_system_auth
+    rules:
+    - accounts_password_pam_pwhistory_use_authtok
 
   - id: 4.4.2.4.1
     title: Ensure pam_unix does not include nullok (Automated)
@@ -2099,13 +2113,9 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: pending
-    notes: |-
-      Usage of pam_unix.so module together with "remember" option is deprecated and is not
-      recommened by this policy. Instead, it should be used remember option of pam_pwhistory
-      module, as required in 4.4.2.3.2. See here for more details about pam_unix.so:
-      https://bugzilla.redhat.com/show_bug.cgi?id=1778929
-      A new rule needs to be created to remove the remember option from pam_unix module.
+    status: automated
+    rules:
+    - accounts_password_pam_unix_no_remember
 
   - id: 4.4.2.4.3
     title: Ensure pam_unix includes a strong password hashing algorithm (Automated)
@@ -2118,16 +2128,16 @@ controls:
     rules:
       - set_password_hashing_algorithm_systemauth
       - set_password_hashing_algorithm_passwordauth
+      - var_password_hashing_algorithm_pam=sha512
 
   - id: 4.4.2.4.4
     title: Ensure pam_unix includes use_authtok (Automated)
     levels:
       - l1_server
       - l1_workstation
-    status: partial
-    notes: |-
-      In RHEL 7 pam_unix is enabled by default already with the use_authtok option set.
-      In any case, we don't have a rule to check this option specifically. Similar to 4.4.2.3.4.
+    status: automated
+    rules:
+    - accounts_password_pam_unix_authtok
 
   - id: 4.5.1.1
     title: Ensure strong password hashing algorithm is configured (Automated)
@@ -2196,10 +2206,9 @@ controls:
     levels:
       - l1_server
       - l1_workstation
-    status: pending
-    notes: |-
-      There is no rule to ensure umask in /root/.bash_profile and /root/.bashrc. A new rule have
-      to be created. It can be based on accounts_umask_interactive_users.
+    status: automated
+    rules:
+    - accounts_umask_root
 
   - id: 4.5.2.3
     title: Ensure system accounts are secured (Automated)
@@ -2225,10 +2234,9 @@ controls:
     levels:
       - l2_server
       - l2_workstation
-    status: pending
-    notes: |-
-      It is necessary to create a new rule to check and remove nologin from /etc/shells.
-      The no_tmux_in_shells rule can be used as referece.
+    status: automated
+    rules:
+    - no_nologin_in_shells
 
   - id: 4.5.3.2
     title: Ensure default user shell timeout is configured (Automated)
@@ -2237,7 +2245,7 @@ controls:
       - l1_workstation
     status: automated
     rules:
-      - accounts_tmout
+      - accounts_tmout_cis
       - var_accounts_tmout=15_min
 
   - id: 4.5.3.3
@@ -2246,18 +2254,10 @@ controls:
       - l1_server
       - l1_workstation
     status: automated
-    notes: |-
-      It is missing a rule to check /etc/pam.d/postlogin. Files /etc/bash.bashrc and
-      /etc/default/login are not used in RHEL 7, but are mentioned in the policy. It has to be
-      clarified in CIS Community. The policy allows the user to override the default system umask
-      on its discretion. This is the reason the accounts_umask_interactive_users rule is in
-      related_rules. If this changes in the future, the rule can be used to ensure that users do
-      not override the system default.
     rules:
-      - accounts_umask_etc_bashrc
       - accounts_umask_etc_login_defs
-      - accounts_umask_etc_profile
       - var_accounts_user_umask=027
+      - accounts_umask_shell_init_files
     related_rules:
       - accounts_umask_interactive_users
 
@@ -2278,7 +2278,7 @@ controls:
     status: automated
     notes: |-
       This requirement is expected to be manual in the policy because there are valid cases where
-      other solutions are used for logging. rsyslog is the default in RHEL 8 and so far other
+      other solutions are used for logging. rsyslog is the default in RHEL 7 and so far other
       solutions are not expected to be incompatible with rsyslog. If so, for these particular
       cases, this rule should be removed for those systems by a tailored file.
     rules:
@@ -2421,9 +2421,12 @@ controls:
       - rsyslog_files_permissions
       - rsyslog_files_ownership
       - rsyslog_files_groupownership
+      - permissions_local_var_log
+      - file_permissions_var_log_wbtmp
+      - file_permissions_var_log_lastlog
 
   - id: 5.2.1.1
-    title: Ensure auditd is installed (Automated)
+    title: Ensure audit is installed (Automated)
     levels:
     - l2_server
     - l2_workstation
@@ -2447,10 +2450,9 @@ controls:
     - l2_server
     - l2_workstation
     status: automated
-    notes: <-
-      Note that currently the value is hardcoded to 8192
     rules:
     - grub2_audit_backlog_limit_argument
+    - var_audit_backlog_limit=8192
 
   - id: 5.2.1.4
     title: Ensure auditd service is enabled (Automated)
@@ -2489,9 +2491,9 @@ controls:
     status: automated
     rules:
     - auditd_data_disk_full_action
-    - var_auditd_disk_full_action=cis_rhel7
+    - var_auditd_disk_full_action=cis_rhel9
     - auditd_data_disk_error_action
-    - var_auditd_disk_error_action=cis_rhel7
+    - var_auditd_disk_error_action=cis_rhel8
 
   - id: 5.2.2.4
     title: Ensure system warns when audit logs are low on space (Automated)
@@ -2501,11 +2503,11 @@ controls:
     status: automated
     rules:
     - auditd_data_retention_space_left_action
-    - var_auditd_space_left_action=cis_rhel7
-    - auditd_data_retention_action_mail_acct
-    - var_auditd_action_mail_acct=root
+    - var_auditd_space_left_action=cis_rhel8
     - auditd_data_retention_admin_space_left_action
-    - var_auditd_admin_space_left_action=cis_rhel7
+    - var_auditd_admin_space_left_action=cis_rhel8
+    related_rules:
+    - auditd_data_retention_action_mail_acct
 
   - id: 5.2.3.1
     title: Ensure changes to system administration scope (sudoers) is collected (Automated)
@@ -2544,8 +2546,9 @@ controls:
     - audit_rules_time_adjtimex
     - audit_rules_time_settimeofday
     - audit_rules_time_clock_settime
-    - audit_rules_time_stime
     - audit_rules_time_watch_localtime
+    related_rules:
+    - audit_rules_time_stime
 
   - id: 5.2.3.5
     title: Ensure events that modify the system's network environment are collected (Automated)
@@ -2640,6 +2643,7 @@ controls:
     rules:
     - audit_rules_login_events_faillock
     - audit_rules_login_events_lastlog
+    - var_accounts_passwords_pam_faillock_dir=run
 
   - id: 5.2.3.13
     title: Ensure file deletion events by users are collected (Automated)
@@ -2700,7 +2704,7 @@ controls:
       - audit_rules_privileged_commands_usermod
 
   - id: 5.2.3.19
-    title: Ensure kernel module loading, unloading and modification is collected (Automated)
+    title: Ensure kernel module loading unloading and modification is collected (Automated)
     levels:
       - l2_server
       - l2_workstation
@@ -2827,6 +2831,7 @@ controls:
     status: automated
     rules:
     - package_aide_installed
+    related_rules:
     - aide_build_database
 
   - id: 5.3.2
@@ -2942,10 +2947,14 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     rules:
-    # We need another rule that checks /etc/security/opasswd.old
-    - file_etc_security_opasswd
+    - file_groupowner_etc_security_opasswd
+    - file_owner_etc_security_opasswd
+    - file_permissions_etc_security_opasswd
+    - file_groupowner_etc_security_opasswd_old
+    - file_owner_etc_security_opasswd_old
+    - file_permissions_etc_security_opasswd_old
 
   - id: 6.1.11
     title: Ensure world writable files and directories are secured (Automated)
@@ -2962,11 +2971,11 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     rules:
     # TODO: add rules for unowned/ungrouped directories
-    - no_files_unowned_by_user
-    - file_permissions_ungroupowned
+    - no_files_or_dirs_unowned_by_user
+    - no_files_or_dirs_ungroupowned
 
   - id: 6.1.13
     title: Ensure SUID and SGID files are reviewed (Manual)
@@ -3050,11 +3059,9 @@ controls:
     levels:
     - l1_server
     - l1_workstation
-    status: partial
+    status: automated
     rules:
-    # TODO: add non root owned directories
-    - accounts_root_path_dirs_no_write
-    - root_path_no_dot
+    - root_path_login_integrity
 
   - id: 6.2.9
     title: Ensure root is the only UID 0 account (Automated)
@@ -3082,17 +3089,18 @@ controls:
     - l1_server
     - l1_workstation
     notes: |-
-      According to the RHEL 7 CIS Benchmark guidance, the incompliant .forward
-      and .rhost files should be investigated and remediated manually.
-      However, in other profiles we remediate the rule using the automated
-      remediation.
-    status: partial
-    # TODO: add rule checking that .bash_history is mode 0600 or more restrictive
+      The audit fails on .forward and .rhost files, and the CIS remediation
+      lists them for the administrator to investigate and delete.
+      no_forward_files and no_rhost_files check for them and leave their
+      removal to the administrator. The audit passes a .netrc file whose
+      access is right, with a warning, so accounts_users_netrc_file_permissions
+      checks the access of .netrc files.
+    status: automated
     rules:
     - accounts_user_dot_group_ownership
     - accounts_user_dot_user_ownership
-    - file_permission_user_init_files
-    - var_user_initialization_files_regex=all_dotfiles
+    - file_permission_user_dot_files
     - no_forward_files
-    - no_rsh_trust_files
+    - no_rhost_files
     - accounts_users_netrc_file_permissions
+    - file_permission_user_bash_history

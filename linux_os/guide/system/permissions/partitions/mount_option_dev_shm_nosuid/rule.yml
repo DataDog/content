@@ -51,6 +51,7 @@ template:
         filesystem: tmpfs
         type: tmpfs
         mount_has_to_exist@sle12: true
+        fstab_entry_optional@rhel7: 'true'
         filesystem@sle12: ''
         type@sle12: ''
     backends:

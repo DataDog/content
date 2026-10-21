@@ -1,4 +1,5 @@
 #!/bin/bash
+# platform = multi_platform_debian,multi_platform_ubuntu
 #
 # remediation = none
 

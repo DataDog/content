@@ -8,7 +8,11 @@
 
     <ind:textfilecontent54_object id="obj_all_group_names" version="1" comment="Get all group names">
         <ind:filepath>/etc/group</ind:filepath>
+{{%- if product == "rhel7" %}}
+        <ind:pattern operation="pattern match">^([^:]+):</ind:pattern>
+{{%- else %}}
         <ind:pattern operation="pattern match">^(.+):.+</ind:pattern>
+{{%- endif %}}
         <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
     </ind:textfilecontent54_object>
 

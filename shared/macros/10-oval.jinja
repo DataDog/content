@@ -1715,18 +1715,33 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
 :type operation: str
 :param description: brief description for OVAL metadata
 :type description: str
+:param regex_empty: Regex that matches the entries of users with a password whose field is unset, which then fail. Optional.
+:type regex_empty: str
 
 #}}
-{{%- macro test_etc_shadow_password_variable(regex, external_variable_id, operation, description, rule_id=None, rule_title=None) -%}}
+{{%- macro test_etc_shadow_password_variable(regex, external_variable_id, operation, description, rule_id=None, rule_title=None, regex_empty=None) -%}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata(description, rule_title=rule_title) }}}
+{{%- if regex_empty %}}
+    <criteria operator="AND">
+      <criteria operator="OR">
+        <criterion test_ref="test_{{{ rule_id }}}"
+          comment="Passwords must be configured to the appropriate value"/>
+        <criterion test_ref="test_{{{ rule_id }}}_no_pass"
+          comment="There is no password defined in /etc/shadow"/>
+      </criteria>
+      <criterion test_ref="test_{{{ rule_id }}}_not_empty"
+        comment="Users with a password have the field set in /etc/shadow"/>
+    </criteria>
+{{%- else %}}
     <criteria operator="OR">
       <criterion test_ref="test_{{{ rule_id }}}"
         comment="Passwords must be configured to the appropriate value"/>
       <criterion test_ref="test_{{{ rule_id }}}_no_pass"
         comment="There is no password defined in /etc/shadow"/>
     </criteria>
+{{%- endif %}}
   </definition>
 
   {{{ textfilecontent54_test_etc_shadow(
@@ -1746,6 +1761,20 @@ Generates an OVAL check that checks a particular field in the "/etc/shadow" file
     <ind:pattern operation="pattern match">{{{ regex }}}</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
+{{%- if regex_empty %}}
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_not_empty" version="1"
+    check="all" check_existence="none_exist"
+    comment="Users with a password have the field set in /etc/shadow">
+    <ind:object object_ref="object_{{{ rule_id }}}_not_empty"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_not_empty" version="1">
+    <ind:filepath>/etc/shadow</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ regex_empty }}}</ind:pattern>
+    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 
 </def-group>
 {{%- endmacro %}}
