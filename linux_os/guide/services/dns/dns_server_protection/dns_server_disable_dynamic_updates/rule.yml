@@ -22,3 +22,6 @@ rationale: |-
     only the precise type of change needed.
 
 severity: unknown
+
+identifiers:
+    cce@rhel7: CCE-80329-6

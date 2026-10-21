@@ -22,6 +22,9 @@ options:
     rotate: rotate
     ol8: syslog|single|halt
     rhel8: syslog|single|halt
+{{% if product == "rhel7" %}}
+    cis_rhel7: halt|single
+{{% endif %}}
     cis_rhel8: single|halt
     cis_rhel9: halt|single
     cis_rhel10: halt|single

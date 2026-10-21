@@ -858,7 +858,7 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
     mode: 0600
   with_items:
     - { section: sssd, option: domains, value: default}
-{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel8', 'rhel9']) %}}
+{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel7', 'rhel8', 'rhel9']) %}}
     - { section: domain/default, option: id_provider, value: proxy }
     - { section: domain/default, option: proxy_lib_name, value: files }
     - { section: domain/default, option: local_auth_policy, value: only }
@@ -880,7 +880,7 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 :type rule_title: str
 #}}
 {{% macro ansible_install_sssd_proxy(rule_title) -%}}
-{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel8', 'rhel9']) %}}
+{{% if product in ["fedora"] or (('rhel' in product or 'ol' in families) and product not in ['ol7', 'ol8', 'ol9', 'rhel7', 'rhel8', 'rhel9']) %}}
 - name: "{{{ rule_title }}} - Install sssd-proxy for default domain"
   ansible.builtin.package:
     name: sssd-proxy
@@ -1759,7 +1759,7 @@ Part of the grub2_bootloader_argument template.
 
 #}}
 {{%- macro ansible_grub2_bootloader_argument(arg_name, arg_name_value, arg_variable) -%}}
-{{% if 'ubuntu' in product or 'debian' in product or product in ['ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
+{{% if 'ubuntu' in product or 'debian' in product or product in ['rhel7', 'ol7', 'sle12', 'sle15', 'sle16', 'slmicro5'] %}}
 
 {{%- if 'ubuntu' in product %}}
 {{%- set grub_vars = ['GRUB_CMDLINE_LINUX', 'GRUB_CMDLINE_LINUX_DEFAULT'] -%}}
@@ -1850,7 +1850,7 @@ Part of the grub2_bootloader_argument_absent template.
 
 #}}
 {{%- macro ansible_grub2_bootloader_argument_absent(arg_name) -%}}
-{{% if 'ubuntu' in product or 'debian' in product or product in ['ol7', 'sle12', 'sle15', 'sle16'] %}}
+{{% if 'ubuntu' in product or 'debian' in product or product in ['rhel7', 'ol7', 'sle12', 'sle15', 'sle16'] %}}
 - name: Check {{{ arg_name }}} argument exists
   ansible.builtin.command: grep -E '^GRUB_CMDLINE_LINUX=.*{{{ arg_name }}}=?.*"' /etc/default/grub
   check_mode: False

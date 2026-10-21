@@ -1,4 +1,4 @@
-# platform = Oracle Linux 7,multi_platform_sle,multi_platform_slmicro
+# platform = Oracle Linux 7,multi_platform_sle,multi_platform_slmicro,Red Hat Enterprise Linux 7
 
 {{% if product in ['sle16', 'slmicro6'] %}}
     {{{ bash_copy_distro_defaults("/usr/etc/ssh/sshd_config", sshd_main_config_file) }}}
