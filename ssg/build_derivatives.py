@@ -186,11 +186,14 @@ def remove_cce_reference(tree_root, namespace):
                     metadata.remove(ref)
 
 
-def profile_handling(tree_root, namespace):
+def profile_handling(tree_root, namespace, profiles=standard_profiles):
+    """
+    Removes from the Benchmark every profile but the given ones.
+    """
     ns_profiles = []
-    for i in standard_profiles:
+    for i in profiles:
         ns_profiles.append("xccdf_%s.content_profile_%s" % (OSCAP_VENDOR, i))
-    all_profiles = standard_profiles + ns_profiles
+    all_profiles = list(profiles) + ns_profiles
     for profile in tree_root.findall(".//{%s}Profile" % (namespace)):
         if profile.get("id") not in all_profiles:
             tree_root.remove(profile)

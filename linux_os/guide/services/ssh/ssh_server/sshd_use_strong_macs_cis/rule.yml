@@ -7,6 +7,8 @@ description: |-
     of the distribution lists as weak:
     <pre>{{{ sshd_cis_weak_macs() }}}</pre>
 {{%- if product == "rhel7" %}}
+    On Amazon Linux 2, whose benchmark allows hmac-sha1-etm@openssh.com, the
+    check allows it too.
     The OpenSSH 7.4 of RHEL 7 rejects a list that removes algorithms from the
     defaults. Set the allowed MACs in a <tt>MACs</tt> line ahead of any other
     in the SSH server configuration, as the benchmark does:

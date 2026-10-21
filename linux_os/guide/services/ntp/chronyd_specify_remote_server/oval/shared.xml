@@ -5,12 +5,49 @@
     <criteria comment="chrony.conf conditions are met" operator="OR">
       <criterion test_ref="test_chronyd_server_in_main_conf"
         comment="server/pool in main chrony.conf"/>
+{{%- if product == "rhel7" %}}
+      <criteria comment="server/pool in the sourcedir or confdir files, outside Amazon Linux 2" operator="AND">
+        <extend_definition comment="the system is not Amazon Linux 2"
+          definition_ref="installed_OS_is_amzn2" negate="true"/>
+        <criteria operator="OR">
+          <criterion test_ref="test_chronyd_server_in_sourcedir_files"
+            comment="server/pool in sourcedir .sources files"/>
+          <criterion test_ref="test_chronyd_server_in_confdir_files"
+            comment="server/pool in confdir .conf files"/>
+        </criteria>
+      </criteria>
+      <criteria comment="server/pool in a file of /etc/chrony.d on Amazon Linux 2" operator="AND">
+        <extend_definition comment="the system is Amazon Linux 2"
+          definition_ref="installed_OS_is_amzn2"/>
+        <criterion test_ref="test_chronyd_server_in_chrony_d"
+          comment="server/pool in a file of /etc/chrony.d"/>
+      </criteria>
+{{%- else %}}
       <criterion test_ref="test_chronyd_server_in_sourcedir_files"
         comment="server/pool in sourcedir .sources files"/>
       <criterion test_ref="test_chronyd_server_in_confdir_files"
         comment="server/pool in confdir .conf files"/>
+{{%- endif %}}
     </criteria>
   </definition>
+{{%- if product == "rhel7" %}}
+
+  <!-- CIS Amazon Linux 2 2.1.2 reads the time sources from the files of
+       /etc/chrony.d, and CIS-CAT also from /etc/chrony.conf. -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    id="test_chronyd_server_in_chrony_d" version="1"
+    comment="server or pool line in a file of /etc/chrony.d">
+    <ind:object object_ref="obj_chronyd_server_in_chrony_d" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_chronyd_server_in_chrony_d" version="1">
+    <ind:behaviors recurse="directories" recurse_direction="down" max_depth="-1" />
+    <ind:path>/etc/chrony.d</ind:path>
+    <ind:filename operation="pattern match">^.*$</ind:filename>
+    <ind:pattern operation="pattern match">^[\s]*(?:server|pool)[\s]+[^#\s][^#]*$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 
   <!-- Test 1: Check main chrony.conf for server/pool -->
   <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
