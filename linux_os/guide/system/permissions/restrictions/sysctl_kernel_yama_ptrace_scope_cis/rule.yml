@@ -1,0 +1,43 @@
+documentation_complete: true
+
+title: 'Restrict usage of ptrace to descendant processes or stricter'
+
+description: |-
+    {{{ describe_sysctl_option_value(sysctl="kernel.yama.ptrace_scope", value=xccdf_value("sysctl_kernel_yama_ptrace_scope_value")) }}}
+    The values 1 (descendant processes only), 2 (processes with
+    <tt>CAP_SYS_PTRACE</tt> only) and 3 (no process) all restrict ptrace,
+    and the check accepts any of them, as the CIS Benchmarks do.
+
+rationale: |-
+    Unrestricted ptrace lets a compromised process attach to the other
+    processes of the same user and read their memory, such as SSH sessions
+    or web browsers, without any further action from the user.
+
+severity: medium
+
+ocil_clause: 'kernel.yama.ptrace_scope is not set to 1, 2 or 3'
+
+ocil: |-
+    The runtime status of the <code>kernel.yama.ptrace_scope</code> kernel parameter
+    can be queried by running the following command:
+    <pre>$ sysctl kernel.yama.ptrace_scope</pre>
+    The output should show the value 1, 2 or 3, and every line of
+    <tt>/etc/sysctl.conf</tt> and of the files in <tt>/etc/sysctl.d</tt>
+    that sets the parameter should set one of these values.
+
+fixtext: |-
+    Configure {{{ full_name }}} to restrict usage of ptrace.
+    {{{ fixtext_sysctl(sysctl="kernel.yama.ptrace_scope", value=xccdf_value("sysctl_kernel_yama_ptrace_scope_value")) | indent(4) }}}
+
+platform: system_with_kernel
+
+template:
+    name: sysctl
+    vars:
+        sysctlvar: kernel.yama.ptrace_scope
+        sysctlval:
+          - '1'
+          - '2'
+          - '3'
+        wrong_sysctlval_for_testing: '0'
+        datatype: int

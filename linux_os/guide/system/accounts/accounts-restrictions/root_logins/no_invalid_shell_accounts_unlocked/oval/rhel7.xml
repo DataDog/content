@@ -1,0 +1,66 @@
+{{#-
+  CIS Amazon Linux 2 Benchmark v4.0.0 5.5.2.8: every account but root whose
+  shell is not a valid shell, one listed in /etc/shells whose last component
+  is neither nologin nor false, is locked as passwd -S reports it. passwd
+  0.79 reports LK for a password that starts with !, and for one of at most
+  10 characters that starts with * or x.
+-#}}
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure Accounts Without Valid Login Shell Are Locked", rule_title=rule_title) }}}
+    <criteria>
+      <criterion comment="every account but root without a valid login shell is locked"
+        test_ref="test_{{{ rule_id }}}_unlocked" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_valid_shells" version="1">
+    <ind:filepath>/etc/shells</ind:filepath>
+    <ind:pattern operation="pattern match">^(/.*)$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+    <filter action="exclude">state_{{{ rule_id }}}_nologin_false</filter>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_nologin_false" version="1">
+    <ind:subexpression operation="pattern match">/(?:nologin|false)$</ind:subexpression>
+  </ind:textfilecontent54_state>
+
+  <local_variable id="var_{{{ rule_id }}}_valid_shells" datatype="string" version="1"
+    comment="valid login shells">
+    <object_component item_field="subexpression" object_ref="obj_{{{ rule_id }}}_valid_shells" />
+  </local_variable>
+
+  <unix:password_object id="obj_{{{ rule_id }}}_no_valid_shell" version="1">
+    <unix:username operation="pattern match">.*</unix:username>
+    <filter action="exclude">state_{{{ rule_id }}}_root</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_valid_shell</filter>
+  </unix:password_object>
+
+  <unix:password_state id="state_{{{ rule_id }}}_root" version="1">
+    <unix:username>root</unix:username>
+  </unix:password_state>
+
+  <unix:password_state id="state_{{{ rule_id }}}_valid_shell" version="1">
+    <unix:login_shell var_ref="var_{{{ rule_id }}}_valid_shells" var_check="at least one" />
+  </unix:password_state>
+
+  <local_variable id="var_{{{ rule_id }}}_no_valid_shell" datatype="string" version="1"
+    comment="accounts but root without a valid login shell">
+    <object_component item_field="username" object_ref="obj_{{{ rule_id }}}_no_valid_shell" />
+  </local_variable>
+
+  <unix:shadow_object id="obj_{{{ rule_id }}}_unlocked" version="1">
+    <unix:username var_ref="var_{{{ rule_id }}}_no_valid_shell" var_check="at least one" />
+    <filter action="exclude">state_{{{ rule_id }}}_locked</filter>
+  </unix:shadow_object>
+
+  <unix:shadow_state id="state_{{{ rule_id }}}_locked" version="1">
+    <unix:password operation="pattern match">^(?:!.*|[*x].{0,9})$</unix:password>
+  </unix:shadow_state>
+
+  <unix:shadow_test id="test_{{{ rule_id }}}_unlocked" version="1"
+    check="all" check_existence="none_exist"
+    comment="accounts but root without a valid login shell whose password is not locked">
+    <unix:object object_ref="obj_{{{ rule_id }}}_unlocked" />
+  </unix:shadow_test>
+</def-group>

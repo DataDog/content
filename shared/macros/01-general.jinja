@@ -1510,6 +1510,11 @@ Create a description text for rules that use the crypto_sub_policies template.
     The MAC list differs: the RHEL 9 and AlmaLinux 9 benchmarks allow
     umac-128-etm@openssh.com, and the RHEL 10 benchmark and the audit
     command of the RHEL 7 benchmark also prohibit hmac-sha1-etm@openssh.com.
+    The Amazon Linux 2 benchmark, which the rhel7 content also serves,
+    allows it: sshd_cis_weak_macs(amzn2=true) gives its list. The audits
+    match each name between word boundaries, so hmac-ripemd160 also matches
+    hmac-ripemd160@openssh.com, an alias that the OpenSSH 7.4 of RHEL 7 and
+    Amazon Linux 2 accepts. The rhel7 lists name it.
 #}}
 {{%- macro sshd_cis_weak_ciphers() -%}}
 3des-cbc,blowfish-cbc,cast128-cbc,aes128-cbc,aes192-cbc,aes256-cbc,arcfour,arcfour128,arcfour256,rijndael-cbc@lysator.liu.se
@@ -1519,13 +1524,15 @@ Create a description text for rules that use the crypto_sub_policies template.
 diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
 {{%- endmacro -%}}
 
-{{%- macro sshd_cis_weak_macs() -%}}
+{{%- macro sshd_cis_weak_macs(amzn2=false) -%}}
 {{%- if product in ["almalinux9", "rhel9"] -%}}
 hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com
 {{%- elif product == "rhel10" -%}}
 hmac-md5,hmac-md5-96,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
+{{%- elif product == "rhel7" and not amzn2 -%}}
+hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
 {{%- elif product == "rhel7" -%}}
-hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
+hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
 {{%- else -%}}
 hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
 {{%- endif -%}}

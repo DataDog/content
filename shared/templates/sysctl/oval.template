@@ -45,6 +45,14 @@
 {{%- if product == "rhel7" %}}
       <criterion comment="the ipv6 module is disabled"
                  test_ref="test_{{{ rule_id }}}_ipv6_module_enabled" negate="true"/>
+      <criteria comment="IPv6 is disabled on all interfaces and by default on Amazon Linux 2" operator="AND">
+        <extend_definition comment="the system is Amazon Linux 2"
+                           definition_ref="installed_OS_is_amzn2"/>
+        <criterion comment="net.ipv6.conf.all.disable_ipv6 is 1 in the running kernel"
+                   test_ref="test_{{{ rule_id }}}_ipv6_all_disabled"/>
+        <criterion comment="net.ipv6.conf.default.disable_ipv6 is 1 in the running kernel"
+                   test_ref="test_{{{ rule_id }}}_ipv6_default_disabled"/>
+      </criteria>
 {{%- else %}}
       <extend_definition comment="is IPv6 enabled?"
                          definition_ref="sysctl_kernel_ipv6_disable"/>
@@ -74,6 +82,34 @@
     <ind:pattern operation="pattern match">^\s*0\b</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
+
+  <!-- CIS Amazon Linux 2 also counts IPv6 as disabled when the running
+       kernel disables it on all interfaces and by default (3.3.2). -->
+  <unix:sysctl_test id="test_{{{ rule_id }}}_ipv6_all_disabled" version="1"
+                    check="all" check_existence="all_exist"
+                    comment="net.ipv6.conf.all.disable_ipv6 is 1 in the running kernel">
+    <unix:object object_ref="obj_{{{ rule_id }}}_ipv6_all_disabled"/>
+    <unix:state state_ref="state_{{{ rule_id }}}_ipv6_disabled"/>
+  </unix:sysctl_test>
+
+  <unix:sysctl_object id="obj_{{{ rule_id }}}_ipv6_all_disabled" version="1">
+    <unix:name>net.ipv6.conf.all.disable_ipv6</unix:name>
+  </unix:sysctl_object>
+
+  <unix:sysctl_test id="test_{{{ rule_id }}}_ipv6_default_disabled" version="1"
+                    check="all" check_existence="all_exist"
+                    comment="net.ipv6.conf.default.disable_ipv6 is 1 in the running kernel">
+    <unix:object object_ref="obj_{{{ rule_id }}}_ipv6_default_disabled"/>
+    <unix:state state_ref="state_{{{ rule_id }}}_ipv6_disabled"/>
+  </unix:sysctl_test>
+
+  <unix:sysctl_object id="obj_{{{ rule_id }}}_ipv6_default_disabled" version="1">
+    <unix:name>net.ipv6.conf.default.disable_ipv6</unix:name>
+  </unix:sysctl_object>
+
+  <unix:sysctl_state id="state_{{{ rule_id }}}_ipv6_disabled" version="1">
+    <unix:value datatype="int" operation="equals">1</unix:value>
+  </unix:sysctl_state>
 {{%- endif %}}
 </def-group>
 
