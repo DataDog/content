@@ -35,6 +35,18 @@ set(SSG_MAJOR_VERSION 0)
 set(SSG_MINOR_VERSION 1)
 set(SSG_PATCH_VERSION 83)
 set(SSG_VERSION "${SSG_MAJOR_VERSION}.${SSG_MINOR_VERSION}.${SSG_PATCH_VERSION}")
+# A DataDog/content release names its version after its tag, such as
+# 0.1.82-dd.20261021.1 for v0.1.82-dd.20261021.1, whose numbers are those
+# of the upstream release 0.1.82.
+if(SSG_VERSION_OVERRIDE)
+    if(NOT SSG_VERSION_OVERRIDE MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-dd\\.[0-9]+\\.[0-9]+$")
+        message(FATAL_ERROR "SSG_VERSION_OVERRIDE is ${SSG_VERSION_OVERRIDE}, want <major>.<minor>.<patch>-dd.<YYYYMMDD>.<N>")
+    endif()
+    set(SSG_MAJOR_VERSION "${CMAKE_MATCH_1}")
+    set(SSG_MINOR_VERSION "${CMAKE_MATCH_2}")
+    set(SSG_PATCH_VERSION "${CMAKE_MATCH_3}")
+    set(SSG_VERSION "${SSG_VERSION_OVERRIDE}")
+endif()
 
 set(SSG_VENDOR "ssgproject" CACHE STRING "Specify the XCCDF 1.2 vendor string.")
 
