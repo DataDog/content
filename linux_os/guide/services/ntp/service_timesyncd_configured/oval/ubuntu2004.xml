@@ -1,0 +1,52 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure that timesyncd has a time server", rule_title=rule_title) }}}
+    <criteria comment="NTP or FallbackNTP names a time server" operator="OR">
+      <criterion test_ref="{{{ rule_id }}}_test_systemd_timesyncd_master_ntp_configuration" />
+      <criterion test_ref="{{{ rule_id }}}_test_systemd_timesyncd_dropin_ntp_configuration" />
+    </criteria>
+  </definition>
+
+  <!-- CIS Ubuntu 20.04 v3.0.0 2.3.2.1 accepts any server and leaves its
+       approval to site policy. -->
+  <constant_variable id="{{{ rule_id }}}_variable_test_servers" datatype="string" version="1"
+    comment="an NTP or FallbackNTP line with a value in the [Time] section">
+    <value>^\s*\[Time\].*(?:\n\s*[^[\s].*)*\n[ \t]*(NTP|FallbackNTP)[ \t]*=[ \t]*[^\s#].*$</value>
+  </constant_variable>
+
+  <constant_variable id="{{{ rule_id }}}_variable_dropin_dirs" datatype="string" version="1"
+    comment="the drop-in directories that systemd-timesyncd reads">
+    <value>/etc/systemd/timesyncd.conf.d</value>
+    <value>/run/systemd/timesyncd.conf.d</value>
+    <value>/usr/local/lib/systemd/timesyncd.conf.d</value>
+    <value>/usr/lib/systemd/timesyncd.conf.d</value>
+  </constant_variable>
+
+  <ind:textfilecontent54_object comment="Ensure at least one NTP server is set"
+    id="{{{ rule_id }}}_object_systemd_timesyncd_master_configuration" version="1">
+    <ind:filepath>/etc/systemd/timesyncd.conf</ind:filepath>
+    <ind:pattern operation="pattern match" var_ref="{{{ rule_id }}}_variable_test_servers"/>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_object comment="Ensure at least one NTP server is set"
+    id="{{{ rule_id }}}_object_systemd_timesyncd_dropin_configuration" version="1">
+    <ind:path var_ref="{{{ rule_id }}}_variable_dropin_dirs" var_check="at least one" />
+    <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+    <ind:pattern operation="pattern match" var_ref="{{{ rule_id }}}_variable_test_servers"/>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
+    comment="Ensure NTP servers are configured in master configuration file"
+    id="{{{ rule_id }}}_test_systemd_timesyncd_master_ntp_configuration">
+    <ind:object object_ref="{{{ rule_id }}}_object_systemd_timesyncd_master_configuration" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
+    comment="Ensure NTP servers are configured in dropin configuration file"
+    id="{{{ rule_id }}}_test_systemd_timesyncd_dropin_ntp_configuration">
+    <ind:object object_ref="{{{ rule_id }}}_object_systemd_timesyncd_dropin_configuration" />
+  </ind:textfilecontent54_test>
+
+</def-group>

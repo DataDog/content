@@ -3,18 +3,20 @@ documentation_complete: true
 
 title: 'Verify Group Who Owns /etc/cron.allow file'
 
-{{% if "ubuntu" in product %}}
+{{% if product == "ubuntu2004" %}}
+    {{% set target_group="crontab|root" %}}
+{{% elif "ubuntu" in product %}}
     {{% set target_group="crontab" %}}
 {{% else %}}
     {{% set target_group="root" %}}
 {{% endif %}}
 
 description: |-
-    If <tt>/etc/cron.allow</tt> exists, it must be group-owned by <tt>{{{ target_group }}}</tt>.
+    If <tt>/etc/cron.allow</tt> exists, it must be group-owned by <tt>{{{ target_group | replace("|", "</tt> or <tt>") }}}</tt>.
     {{{ describe_file_group_owner(file="/etc/cron.allow", group=target_group) }}}
 
 rationale: |-
-    If the owner of the cron.allow file is not set to {{{ target_group }}}, the possibility exists for an
+    If the owner of the cron.allow file is not set to {{{ target_group | replace("|", " or ") }}}, the possibility exists for an
     unauthorized user to view or edit sensitive information.
 
 severity: medium
@@ -50,7 +52,9 @@ template:
     name: file_groupowner
     vars:
         filepath: /etc/cron.allow
-{{% if "ubuntu" in product %}}
+{{% if product == "ubuntu2004" %}}
+        gid_or_name: 'crontab|root'
+{{% elif "ubuntu" in product %}}
         gid_or_name: 'crontab'
 {{% else %}}
         gid_or_name: '0'

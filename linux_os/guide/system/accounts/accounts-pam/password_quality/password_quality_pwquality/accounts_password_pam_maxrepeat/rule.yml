@@ -57,8 +57,8 @@ template:
     vars:
         variable: maxrepeat
         operation: less than or equal
-{{#- The CIS RHEL 7 and Amazon Linux 2 audits also fail a maxrepeat of 0, which turns the check off. #}}
-{{%- if product in ["rhel7", "ubuntu2404", "ubuntu2604"] %}}
+{{#- The CIS audits of these products also fail a maxrepeat of 0, which turns the check off. #}}
+{{%- if product in ["rhel7", "ubuntu2004", "ubuntu2404", "ubuntu2604"] %}}
         zero_comparison_operation: greater than
 {{%- endif %}}
 

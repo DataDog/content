@@ -112,7 +112,14 @@
   {{% elif product == "rhel7" %}}
       <literal_component>{{{ PATH_ESCAPED_NO_SLASH }}}\/?</literal_component>
   {{% else %}}
+{{%- if product == "ubuntu2004" %}}
+      {{#- CIS Ubuntu 20.04 v3.0.0 6.3.3 writes /etc/sudoers.d and /etc/pam.d
+          without a trailing slash and /etc/apparmor/ with one. auditctl
+          watches the same path either way. #}}
+      <literal_component>{{{ PATH_ESCAPED[:-2] if PATH_ESCAPED.endswith("\\/") else PATH_ESCAPED }}}\/?</literal_component>
+{{%- else %}}
       <literal_component>{{{ PATH_ESCAPED }}}</literal_component>
+{{%- endif %}}
   {{% endif %}}
       <literal_component>[\s]+\-p[\s]+\b([rx]*w[rx]*a[rx]*|[rx]*a[rx]*w[rx]*)\b.*$</literal_component>
     </concat>
