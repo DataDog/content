@@ -1,4 +1,5 @@
-{{% if 'ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product %}}
+{{#- libpwquality 1.2.3 (RHEL 7) reads pwquality.conf alone. -#}}
+{{% if ('ol' in families or 'rhel' in product or product == 'almalinux9' or 'ubuntu' in product) and product != 'rhel7' %}}
 {{% set filepath_regex="^/etc/security/pwquality\.conf(\.d/[^/]+\.conf)?$" %}}
 {{% else %}}
 {{% set filepath_regex="^" + pwquality_path + "$" %}}
@@ -27,8 +28,31 @@
       <criterion comment="{{{ VARIABLE }}} is not overwritten in password-auth"
         test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}_not_overwritten_password-auth"/>
       {{% endif %}}
+{{#- The CIS RHEL 7 audits accept a module argument of pam_pwquality.so that meets the requirement. #}}
+{{%- if product == "rhel7" %}}
+      <criterion comment="the pam_pwquality.so lines leave {{{ VARIABLE }}} out or meet the requirement"
+        test_ref="test_password_pam_pwquality_{{{ VARIABLE }}}_pamd"/>
+{{%- endif %}}
     </criteria>
   </definition>
+{{%- if product == "rhel7" %}}
+
+  <ind:textfilecontent54_test check="all" check_existence="any_exist" state_operator="AND" version="1"
+    comment="the pam_pwquality.so lines of system-auth and password-auth leave {{{ VARIABLE }}} out or meet the requirement"
+    id="test_password_pam_pwquality_{{{ VARIABLE }}}_pamd">
+    <ind:object object_ref="obj_password_pam_pwquality_{{{ VARIABLE }}}_pamd" />
+    <ind:state state_ref="state_password_pam_{{{ VARIABLE }}}" />
+  {{%- if ZERO_COMPARISON_OPERATION %}}
+    <ind:state state_ref="state_password_pam_{{{ VARIABLE }}}_zero_comparison" />
+  {{%- endif %}}
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_password_pam_pwquality_{{{ VARIABLE }}}_pamd" version="1">
+    <ind:filepath operation="pattern match">^/etc/pam\.d/(?:system|password)-auth$</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*password\s+(?:requisite|required|sufficient)\s+pam_pwquality\.so\s+(?:[^#\n]*\s)?{{{ VARIABLE }}}=(-?\d+)(?:\s|$)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 
   {{% if "ol" in families %}}
   <ind:textfilecontent54_test check="all" check_existence="none_exist"

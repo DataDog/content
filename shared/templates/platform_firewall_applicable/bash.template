@@ -1,0 +1,13 @@
+{{#- A utility is in use when its package is installed and one of its
+services is enabled. The nftables and iptables remediations run only
+where their utility is in use. The firewalld ones also run where no
+utility is in use, and they come first in the benchmark: on such a host
+they set firewalld up, and the other two sections no longer apply. -#}}
+{{%- macro in_use(u) -%}}
+{ {{{ bash_pkg_conditional(u.package) | trim }}} && { {{% for s in u.services %}}systemctl is-enabled {{{ s }}}.service 2>/dev/null | grep -q '^enabled'{{% if not loop.last %}} || {{% endif %}}{{% endfor %}}; }; }
+{{%- endmacro -%}}
+{{%- if ARG == "firewalld" -%}}
+{ {{{ in_use(UTILITY) }}} || ! { {{% for u in OTHERS %}}{{{ in_use(u) }}}{{% if not loop.last %}} || {{% endif %}}{{% endfor %}}; }; }
+{{%- else -%}}
+{{{ in_use(UTILITY) }}}
+{{%- endif -%}}

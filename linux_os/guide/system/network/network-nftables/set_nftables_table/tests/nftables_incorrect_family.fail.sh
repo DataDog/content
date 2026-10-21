@@ -1,5 +1,7 @@
 #!/bin/bash
 # check = sce
+# packages = nftables
+# platform = multi_platform_ubuntu,Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10
 # variables = var_nftables_family=inet,var_nftables_table=filter
 
 var_nftables_family="ip"

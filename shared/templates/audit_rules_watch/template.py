@@ -8,6 +8,7 @@ def preprocess(data, lang):
     data["name"] = name
     if lang == "oval":
         data["path_escaped"] = path.replace("/", "\\/")
+        data["path_escaped_no_slash"] = path.rstrip("/").replace("/", "\\/")
     if "key" not in data:
         data["key"] = data["_rule_id"]
     if data["path"].endswith("/"):

@@ -37,3 +37,4 @@ template:
     name: socket_disabled
     vars:
         socketname: systemd-journal-remote
+        packagename@rhel7: systemd-journal-gateway

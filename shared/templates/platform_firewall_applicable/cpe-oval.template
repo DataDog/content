@@ -1,0 +1,52 @@
+{{#-
+A service is enabled when a .wants directory of /etc/systemd/system links
+it, as systemctl enable leaves it, which the check reads without systemd
+(agentless scans of snapshots, containers).
+-#}}
+<def-group>
+  <definition class="inventory" id="{{{ _RULE_ID }}}" version="1">
+    {{{ oval_metadata("The guidance for the " + ARG + " firewall utility applies: " + ARG + " is in use, or no firewall utility is in use.", title="The " + ARG + " firewall guidance applies", affected_platforms=["multi_platform_all"]) }}}
+    <criteria operator="OR" comment="{{{ ARG }}} is in use, or no firewall utility is in use">
+      <extend_definition definition_ref="{{{ _RULE_ID }}}_{{{ ARG }}}_in_use"
+        comment="{{{ ARG }}} is in use"/>
+      <criteria operator="AND" comment="no other firewall utility is in use">
+{{%- for u in OTHERS %}}
+        <extend_definition definition_ref="{{{ _RULE_ID }}}_{{{ u.name }}}_in_use" negate="true"
+          comment="{{{ u.name }}} is not in use"/>
+{{%- endfor %}}
+      </criteria>
+    </criteria>
+  </definition>
+{{%- for u in UTILITIES %}}
+
+  <definition class="inventory" id="{{{ _RULE_ID }}}_{{{ u.name }}}_in_use" version="1">
+    {{{ oval_metadata("Package " + u.package + " is installed and one of its services is enabled.", title="The " + u.name + " firewall utility is in use", affected_platforms=["multi_platform_all"]) }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_{{{ _RULE_ID }}}_{{{ u.name }}}_installed"
+        comment="package {{{ u.package }}} is installed"/>
+      <criteria operator="OR">
+{{%- for s in u.services %}}
+        <criterion test_ref="test_{{{ _RULE_ID }}}_{{{ s }}}_enabled"
+          comment="{{{ s }}}.service is enabled"/>
+{{%- endfor %}}
+      </criteria>
+    </criteria>
+  </definition>
+  {{{ oval_test_package_installed(package=u.package, test_id="test_" + _RULE_ID + "_" + u.name + "_installed") }}}
+{{%- for s in u.services %}}
+
+  <unix:file_test id="test_{{{ _RULE_ID }}}_{{{ s }}}_enabled" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="{{{ s }}}.service is enabled">
+    <unix:object object_ref="obj_{{{ _RULE_ID }}}_{{{ s }}}_enabled"/>
+  </unix:file_test>
+
+  <unix:file_object id="obj_{{{ _RULE_ID }}}_{{{ s }}}_enabled" version="1"
+    comment="the link of {{{ s }}}.service in a .wants directory of /etc/systemd/system">
+    <unix:path operation="pattern match">^/etc/systemd/system/[^/]+\.wants$</unix:path>
+    <unix:filename>{{{ s }}}.service</unix:filename>
+  </unix:file_object>
+{{%- endfor %}}
+{{%- endfor %}}
+
+</def-group>

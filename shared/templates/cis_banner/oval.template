@@ -29,9 +29,37 @@
     <ind:object object_ref="obj_{{{ rule_id }}}" />
   </ind:textfilecontent54_test>
 
+{{% if product == "rhel7" %}}
+  <!-- CIS RHEL 7 v4.0.0 1.6.1 to 1.6.3 grep -E -i for the escape
+       sequences and the ID of /etc/os-release, which is rhel, centos or
+       amzn among the systems that read this content. -->
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}" version="1">
+    <ind:filepath>{{{ FILEPATH }}}</ind:filepath>
+    <ind:pattern operation="pattern match" var_ref="var_{{{ rule_id }}}_system_information" />
+    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <local_variable id="var_{{{ rule_id }}}_system_information" datatype="string" version="1"
+  comment="escape sequences and operating system ID, in any letter case">
+    <concat>
+      <literal_component>(?i)(\\v|\\r|\\m|\\s|</literal_component>
+      <escape_regex>
+        <object_component item_field="subexpression" object_ref="obj_{{{ rule_id }}}_os_id" />
+      </escape_regex>
+      <literal_component>)</literal_component>
+    </concat>
+  </local_variable>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_os_id" version="1">
+    <ind:filepath>/etc/os-release</ind:filepath>
+    <ind:pattern operation="pattern match">^ID=["']?([^"'\s]+)["']?\s*$</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{% else %}}
   <ind:textfilecontent54_object id="obj_{{{ rule_id }}}" version="1">
     <ind:filepath>{{{ FILEPATH }}}</ind:filepath>
     <ind:pattern operation="pattern match">(\\v|\\r|\\m|\\s|{{{ product }}}|{{{ full_name }}})</ind:pattern>
     <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
+{{% endif %}}
 </def-group>

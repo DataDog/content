@@ -6,11 +6,18 @@ description: |-
     The SSH server must not offer the ciphers that the CIS benchmarks list as
     weak:
     <pre>{{{ sshd_cis_weak_ciphers() }}}</pre>
+{{%- if product == "rhel7" %}}
+    The OpenSSH 7.4 of RHEL 7 rejects a list that removes algorithms from the
+    defaults. Set the allowed ciphers in a <tt>Ciphers</tt> line ahead of any
+    other in the SSH server configuration, as the benchmark does:
+    <pre>Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr</pre>
+{{%- else %}}
     Where a system-wide crypto policy governs the SSH server, remove them
     through the policy. Elsewhere, a subtractive list ahead of any other
     <tt>Ciphers</tt> line in the SSH server configuration removes them from
     the defaults:
     <pre>Ciphers -{{{ sshd_cis_weak_ciphers() }}}</pre>
+{{%- endif %}}
     The check reads the list that <tt>sshd -T</tt> prints, which reflects the
     defaults, the crypto policy and the configuration files.
 

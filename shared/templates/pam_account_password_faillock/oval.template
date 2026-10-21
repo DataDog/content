@@ -91,11 +91,15 @@
           <criterion
               test_ref="test_accounts_passwords_pam_faillock_{{{ PRM_NAME }}}_parameter_pamd_password"
               comment="Check the {{{ PRM_NAME }}} parameter in auth section of password-auth file"/>
+{{%- if product != "rhel7" %}}
           <criterion
               test_ref="test_accounts_passwords_pam_faillock_{{{ PRM_NAME }}}_parameter_no_faillock_conf"
               comment="Ensure the {{{ PRM_NAME }}} parameter is not present in {{{ pam_faillock_conf_path }}}"/>
+{{%- endif %}}
         </criteria>
         {{% endif %}}
+{{#- pam_faillock of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
         <criteria operator="AND"
                   comment="Check expected pam_faillock.so {{{ PRM_NAME }}} parameter in {{{ pam_faillock_conf_path }}}">
           <criterion
@@ -108,6 +112,7 @@
               test_ref="test_accounts_passwords_pam_faillock_{{{ PRM_NAME }}}_parameter_faillock_conf"
               comment="Ensure the {{{ PRM_NAME }}} parameter is present in {{{ pam_faillock_conf_path }}}"/>
         </criteria>
+{{%- endif %}}
       </criteria>
     </criteria>
 
@@ -132,6 +137,9 @@
     <value>^\s*auth\s+(requisite|required)\s+pam_faillock\.so.*preauth.*[\s\S]*^\s*auth.*pam_unix\.so[\s\S]*^\s*auth\s+\[default=die\]\s+pam_faillock\.so\s+authfail</value>
     {{% elif 'openeuler' in product or 'kylinserver' in product or 'kylinsecserver' in product %}}
     <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)?(?=.*?\bnew_authtok_reqd=ok\b)?(?=.*?\bignore=ignore\b)?(?=.*?\bdefault=bad\b)?.*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)?(?=.*?\bnew_authtok_reqd=done\b)?(?=.*?\bdefault=ignore\b)?.*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)?(?=.*?\bnew_authtok_reqd=ok\b)?(?=.*?\bignore=ignore\b)?(?=.*?\bdefault=die\b)?.*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
+    {{% elif product == "rhel7" %}}
+    {{# The CIS RHEL 7 Benchmark and the RHEL 7 Security Guide write the authfail line as [default=die]. #}}
+    <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[default=die\]|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
     {{% else %}}
     <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
     {{% endif %}}

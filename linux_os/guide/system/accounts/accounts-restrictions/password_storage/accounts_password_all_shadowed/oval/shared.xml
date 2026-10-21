@@ -15,6 +15,10 @@
     <unix:username operation="pattern match">.*</unix:username>
   </unix:password_object>
   <unix:password_state id="state_accounts_password_all_shadowed" version="1">
+{{%- if product == "rhel7" %}}
+    <unix:password operation="pattern match" mask="true">^x$</unix:password>
+{{%- else %}}
     <unix:password operation="pattern match" mask="true">^[x*]$</unix:password>
+{{%- endif %}}
   </unix:password_state>
 </def-group>

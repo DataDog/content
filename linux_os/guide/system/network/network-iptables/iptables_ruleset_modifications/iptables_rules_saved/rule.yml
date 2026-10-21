@@ -1,0 +1,33 @@
+documentation_complete: true
+
+title: 'Ensure iptables Rules are Saved'
+
+description: |-
+    The <tt>iptables</tt> service loads <tt>/etc/sysconfig/iptables</tt> at
+    boot. That file must hold the complete rule set of the running
+    <tt>filter</tt> table, as <tt>iptables-save</tt> writes it. After
+    reviewing the running rules, save them:
+    <pre># service iptables save</pre>
+
+rationale: |-
+    Rules that are not saved are lost when the system reboots, and the
+    firewall comes up with whatever the file holds.
+
+severity: medium
+
+platform: firewall_applicable[iptables]
+
+ocil_clause: 'the running iptables rules differ from the saved ones'
+
+ocil: |-
+    Compare the running <tt>filter</tt> table with the one in
+    <tt>/etc/sysconfig/iptables</tt>:
+    <pre># iptables-save -t filter</pre>
+    <pre># cat /etc/sysconfig/iptables</pre>
+    Apart from comments and packet counters, the policies and rules
+    must be the same.
+
+warnings:
+    - general: |-
+        The check compares the rules as <tt>iptables-save</tt> writes them,
+        so a file edited by hand fails until <tt>service iptables save</tt> rewrites it.

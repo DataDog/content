@@ -1,4 +1,5 @@
 #!/bin/bash
+# platform = multi_platform_sle
 # variables = var_nftables_master_config_file=/etc/sysconfig/nftables.conf
 
 {{% set nftables_family_names = ['bridge', 'arp', 'inet'] %}}
