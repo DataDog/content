@@ -1,5 +1,6 @@
+{{%- set rx_a0_tail = "[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" -%}}
 {{#- CIS RHEL 7 v4.0.0 5.2.3.4 audits clock_settime with the other time syscalls, without an argument filter -#}}
-{{%- set rx_tail = "[\s]+(?:-S[\s]+\S+[\s]+)*?-S[\s]+(?:\S+,)?clock_settime(?:,\S+)?[\s]+(?:-S[\s]+\S+[\s]+)*(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" if product == "rhel7" else "[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" -%}}
+{{%- set rx_tail = "[\s]+(?:-S[\s]+\S+[\s]+)*?-S[\s]+(?:\S+,)?clock_settime(?:,\S+)?[\s]+(?:-S[\s]+\S+[\s]+)*(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" if product == "rhel7" else rx_a0_tail -%}}
 {{%- set rx_b32 = "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32" + rx_tail -%}}
 {{%- set rx_b64 = "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64" + rx_tail -%}}
 <def-group>
@@ -31,6 +32,31 @@
           <criterion comment="audit auditctl 64-bit clock_settime" test_ref="test_64bit_art_clock_settime_auditctl" />
         </criteria>
       </criteria>
+{{%- if product == "rhel7" %}}
+
+      <!-- CIS Amazon Linux 2 v4.0.0 6.2.3.4 audits clock_settime in a rule of its own with -F a0=0x0 -->
+      <criteria operator="AND">
+        <extend_definition comment="Amazon Linux 2" definition_ref="installed_OS_is_amzn2" />
+        <criteria operator="OR">
+          <criteria operator="AND">
+            <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
+            <criterion comment="audit augenrules 32-bit clock_settime with a0=0x0" test_ref="test_32bit_art_clock_settime_a0_augenrules" />
+            <criteria operator="OR">
+              <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+              <criterion comment="audit augenrules 64-bit clock_settime with a0=0x0" test_ref="test_64bit_art_clock_settime_a0_augenrules" />
+            </criteria>
+          </criteria>
+          <criteria operator="AND">
+            <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
+            <criterion comment="audit auditctl 32-bit clock_settime with a0=0x0" test_ref="test_32bit_art_clock_settime_a0_auditctl" />
+            <criteria operator="OR">
+              <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+              <criterion comment="audit auditctl 64-bit clock_settime with a0=0x0" test_ref="test_64bit_art_clock_settime_a0_auditctl" />
+            </criteria>
+          </criteria>
+        </criteria>
+      </criteria>
+{{%- endif %}}
 
     </criteria>
   </definition>
@@ -70,5 +96,43 @@
     <ind:pattern operation="pattern match">{{{ rx_b64 }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
+{{%- if product == "rhel7" %}}
+
+  <ind:textfilecontent54_test check="all" comment="audit augenrules 32-bit clock_settime with a0=0x0" id="test_32bit_art_clock_settime_a0_augenrules" version="1">
+    <ind:object object_ref="object_32bit_art_clock_settime_a0_augenrules" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_32bit_art_clock_settime_a0_augenrules" version="1">
+    <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32" + rx_a0_tail }}}</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" comment="audit auditctl 32-bit clock_settime with a0=0x0" id="test_32bit_art_clock_settime_a0_auditctl" version="1">
+    <ind:object object_ref="object_32bit_art_clock_settime_a0_auditctl" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_32bit_art_clock_settime_a0_auditctl" version="1">
+    <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32" + rx_a0_tail }}}</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" comment="audit augenrules 64-bit clock_settime with a0=0x0" id="test_64bit_art_clock_settime_a0_augenrules" version="1">
+    <ind:object object_ref="object_64bit_art_clock_settime_a0_augenrules" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_64bit_art_clock_settime_a0_augenrules" version="1">
+    <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64" + rx_a0_tail }}}</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" comment="audit auditctl 64-bit clock_settime with a0=0x0" id="test_64bit_art_clock_settime_a0_auditctl" version="1">
+    <ind:object object_ref="object_64bit_art_clock_settime_a0_auditctl" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_64bit_art_clock_settime_a0_auditctl" version="1">
+    <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+    <ind:pattern operation="pattern match">{{{ "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64" + rx_a0_tail }}}</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 
 </def-group>

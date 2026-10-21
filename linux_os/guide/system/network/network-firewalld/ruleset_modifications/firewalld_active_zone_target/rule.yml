@@ -46,4 +46,8 @@ warnings:
         This rule does not come with a remediation. The target to use (default,
         DROP or REJECT) depends on the services the site exposes through the zone.
 
+{{% if product == "rhel7" %}}
+platform: firewall_applicable[firewalld]
+{{% else %}}
 platform: package[firewalld]
+{{% endif %}}
