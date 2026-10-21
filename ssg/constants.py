@@ -329,11 +329,30 @@ MULTI_PLATFORM_MAPPING = {
     "multi_platform_al": ["al2023"],
 }
 
+RHEL_AMZN_CPE_MAPPING = {
+    "cpe:/o:redhat:enterprise_linux:7": "cpe:/o:amazon:amazon_linux:2",
+}
+
 RHEL_CENTOS_CPE_MAPPING = {
     "cpe:/o:redhat:enterprise_linux:8": "cpe:/o:centos:centos:8",
     "cpe:/o:redhat:enterprise_linux:9": "cpe:/o:centos:centos:9",
     "cpe:/o:redhat:enterprise_linux:10": "cpe:/o:centos:centos:10",
 }
+
+AMZN_NOTICE = \
+    "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n" \
+    "<p>This benchmark is a direct port of a <i>SCAP Security Guide </i> " \
+    "benchmark developed for <i>Red Hat Enterprise Linux</i>.</p>" \
+    "\n" \
+    "<p>Users of <i>Amazon Linux 2</i> are invited to participate in " \
+    "<a href=\"http://open-scap.org\">OpenSCAP</a> and " \
+    "<a href=\"https://github.com/ComplianceAsCode/content\">" \
+    "SCAP Security Guide</a> development. Bug reports and patches " \
+    "can be sent to GitHub: " \
+    "<a href=\"https://github.com/ComplianceAsCode/content\">" \
+    "https://github.com/ComplianceAsCode/content</a>." \
+    "</p>" \
+    "</div>"
 
 CENTOS_NOTICE = \
     "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n" \
@@ -512,6 +531,7 @@ class OvalNamespaces:
 OVAL_NAMESPACES = OvalNamespaces()
 
 DERIVATIVES_PRODUCT_MAPPING = {
+    "amzn2": "rhel7",
     "centos8": "rhel8",
     "cs9": "rhel9",
     "cs10": "rhel10",

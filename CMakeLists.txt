@@ -128,6 +128,7 @@ option(SSG_PRODUCT_UBUNTU2404 "If enabled, the Ubuntu 24.04 SCAP content will be
 option(SSG_PRODUCT_UBUNTU2604 "If enabled, the Ubuntu 26.04 SCAP content will be built" ${SSG_PRODUCT_DEFAULT})
 # Products derivatives
 option(SSG_CENTOS_DERIVATIVES_ENABLED "If enabled, CentOS derivative content will be built from the RHEL content" TRUE)
+option(SSG_AMZN_DERIVATIVES_ENABLED "If enabled, Amazon Linux 2 derivative content will be built from the RHEL 7 content" TRUE)
 
 if("$ENV{PYTHONPATH}" STREQUAL "")
     set(ENV{PYTHONPATH} "${PROJECT_SOURCE_DIR}")
