@@ -3,6 +3,8 @@ documentation_complete: true
 
 {{% if product == "rhel7" %}}
 platform: system_with_kernel
+{{% elif product == "ubuntu2004" %}}
+platform: system_with_kernel and deb_firewall_applicable[iptables]
 {{% else %}}
 platform: system_with_kernel and not rhcos4-rhel9 and service_disabled[nftables] and service_disabled[ufw]
 {{% endif %}}
@@ -36,7 +38,7 @@ references:
 
 {{{ complete_ocil_entry_package_installed("iptables") }}}
 
-{{%- if product in [ "sle12", "sle15" ] or 'ubuntu' in product %}}
+{{%- if product in [ "sle12", "sle15" ] or ('ubuntu' in product and product != "ubuntu2004") %}}
 template:
     name: package_installed_guard_var
     vars:

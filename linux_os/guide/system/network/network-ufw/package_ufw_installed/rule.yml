@@ -20,8 +20,11 @@ references:
     stigid@ubuntu2004: UBTU-20-010433
 
 {{{ complete_ocil_entry_package_installed("ufw") }}}
+{{%- if product == "ubuntu2004" %}}
+platform: deb_firewall_applicable[ufw]
+{{%- endif %}}
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: package_installed_guard_var
     vars:

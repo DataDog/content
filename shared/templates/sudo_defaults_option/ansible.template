@@ -16,6 +16,9 @@
     )
 }}}
 {{% endif %}}
+{{%- if NEGATION_FAILS %}}
+{{{ ansible_sudo_remove_config("!" ~ OPTION, "\\!" ~ OPTION) }}}
+{{%- endif %}}
 
 {{% if VARIABLE_NAME %}}
 {{{ ansible_instantiate_variables(VARIABLE_NAME) }}}

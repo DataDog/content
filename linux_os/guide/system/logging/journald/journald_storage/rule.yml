@@ -66,3 +66,7 @@ template:
         value: persistent
         no_quotes: 'true'
 {{% endif -%}}
+{{%- if product == "ubuntu2004" %}}
+
+platform: service_disabled[rsyslog]
+{{%- endif %}}

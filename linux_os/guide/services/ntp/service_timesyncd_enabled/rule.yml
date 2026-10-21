@@ -40,7 +40,7 @@ references:
 ocil: |-
     {{{ ocil_service_enabled(service="systemd_timesyncd") }}}
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: service_enabled_guard_var
     vars:
@@ -54,4 +54,5 @@ template:
     vars:
         servicename: systemd-timesyncd
         packagename: systemd
+        packagename@ubuntu2004: systemd-timesyncd
 {{%- endif %}}

@@ -4,6 +4,10 @@
     <criteria operator="AND">
       <criterion comment="Check sum of complaining and enforced profiles equals all profiles"
         test_ref="{{{ rule_id }}}_test_sum_complain_n_enforced_equal_all" />
+{{%- if product == "ubuntu2004" %}}
+      <criterion comment="AppArmor profiles are loaded"
+        test_ref="{{{ rule_id }}}_test_profiles_loaded" />
+{{%- endif %}}
     </criteria>
   </definition>
   <ind:textfilecontent54_object id="{{{ rule_id }}}_obj_apparmor_profiles" version="1">
@@ -54,4 +58,13 @@
     <ind:object object_ref="{{{ rule_id }}}_obj_all_apparmor_profiles"/>
     <ind:state state_ref="{{{ rule_id }}}_state_sum_complain_n_enforced"/>
   </ind:variable_test>
+{{%- if product == "ubuntu2004" %}}
+  {{#- CIS Ubuntu 20.04 1.3.1.3 requires profiles to be loaded: with AppArmor
+      off, the profiles file is absent and both counts are 0. #}}
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    id="{{{ rule_id }}}_test_profiles_loaded" version="1"
+    comment="At least one AppArmor profile is loaded">
+    <ind:object object_ref="{{{ rule_id }}}_obj_apparmor_profiles"/>
+  </ind:textfilecontent54_test>
+{{%- endif %}}
 </def-group>
