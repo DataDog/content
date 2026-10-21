@@ -24,3 +24,14 @@
   when:
     - item.value[1]|int < {{{ uid_min }}}
     - item.key not in ['root', 'halt', 'sync', 'shutdown', 'nfsnobody']
+{{%- if product == "rhel7" %}}
+
+- name: {{{ rule_title }}} - Lock Accounts With the nologin Shell
+  ansible.builtin.user:
+    name: '{{ item.key }}'
+    password_lock: true
+  loop: '{{ local_users }}'
+  when:
+    - item.key != 'root'
+    - item.value[5] is search('nologin')
+{{%- endif %}}

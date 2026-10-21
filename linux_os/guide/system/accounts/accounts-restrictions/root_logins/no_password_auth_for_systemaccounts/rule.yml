@@ -11,6 +11,10 @@ description: |-
     If any system account other than <tt>root</tt>, <tt>halt</tt>, <tt>sync</tt>, <tt>shutdown</tt>
     and <tt>nfsnobody</tt> has an unlocked password, disable it with the command:
     <pre>$ sudo usermod -L <i>account</i></pre>
+{{%- if product == "rhel7" %}}
+    Lock as well every account other than <tt>root</tt> whose shell is <tt>nologin</tt>,
+    whatever its user ID.
+{{%- endif %}}
 
 rationale: |-
     Disabling authentication for default system accounts makes it more difficult for attackers

@@ -1,5 +1,8 @@
 #!/bin/bash
 # packages = audit
+{{% if product == "rhel7" %}}
+# platform = Not Applicable
+{{% endif %}}
 
 
 rm -rf /etc/audit/rules.d/*.rules

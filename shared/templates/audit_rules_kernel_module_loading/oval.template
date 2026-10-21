@@ -5,6 +5,22 @@
     <criteria operator="OR">
 
       <!-- Test the augenrules case -->
+{{%- if product == "rhel7" %}}
+      <criteria operator="AND">
+        <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
+        <!-- CIS RHEL 7 v4.0.0 5.2.3.19 audits the rule of the native architecture: b64 on a 64-bit system, b32 otherwise -->
+        <criteria operator="OR">
+          <criteria operator="AND">
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" />
+            <criterion comment="audit augenrules 64-bit {{{ NAME }}}" test_ref="test_64bit_arkml_{{{ NAME }}}_augenrules" />
+          </criteria>
+          <criteria operator="AND">
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+            <criterion comment="audit augenrules 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_augenrules" />
+          </criteria>
+        </criteria>
+      </criteria>
+{{%- else %}}
       <criteria operator="AND">
         <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
         <criterion comment="audit augenrules 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_augenrules" />
@@ -15,8 +31,25 @@
           <criterion comment="audit augenrules 64-bit {{{ NAME }}}" test_ref="test_64bit_arkml_{{{ NAME }}}_augenrules" />
         </criteria>
       </criteria>
+{{%- endif %}}
 
       <!-- OR test the auditctl case -->
+{{%- if product == "rhel7" %}}
+      <criteria operator="AND">
+        <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
+        <!-- CIS RHEL 7 v4.0.0 5.2.3.19 audits the rule of the native architecture: b64 on a 64-bit system, b32 otherwise -->
+        <criteria operator="OR">
+          <criteria operator="AND">
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" />
+            <criterion comment="audit auditctl 64-bit {{{ NAME }}}" test_ref="test_64bit_arkml_{{{ NAME }}}_auditctl" />
+          </criteria>
+          <criteria operator="AND">
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+            <criterion comment="audit auditctl 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_auditctl" />
+          </criteria>
+        </criteria>
+      </criteria>
+{{%- else %}}
       <criteria operator="AND">
         <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
         <criterion comment="audit auditctl 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_auditctl" />
@@ -27,6 +60,7 @@
           <criterion comment="audit auditctl 64-bit {{{ NAME }}}" test_ref="test_64bit_arkml_{{{ NAME }}}_auditctl" />
         </criteria>
       </criteria>
+{{%- endif %}}
 
     </criteria>
   </definition>

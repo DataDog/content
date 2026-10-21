@@ -1513,8 +1513,8 @@ Create a description text for rules that use the crypto_sub_policies template.
     cipher list is the one of the RHEL 8, RHEL 9 and Ubuntu audits. The
     RHEL 10 audit names only the four CBC ciphers that its OpenSSH accepts.
     The MAC list differs: the RHEL 9 and AlmaLinux 9 benchmarks allow
-    umac-128-etm@openssh.com, and the RHEL 10 benchmark also prohibits
-    hmac-sha1-etm@openssh.com.
+    umac-128-etm@openssh.com, and the RHEL 10 benchmark and the audit
+    command of the RHEL 7 benchmark also prohibit hmac-sha1-etm@openssh.com.
 #}}
 {{%- macro sshd_cis_weak_ciphers() -%}}
 3des-cbc,blowfish-cbc,cast128-cbc,aes128-cbc,aes192-cbc,aes256-cbc,arcfour,arcfour128,arcfour256,rijndael-cbc@lysator.liu.se
@@ -1529,6 +1529,8 @@ diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exch
 hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com
 {{%- elif product == "rhel10" -%}}
 hmac-md5,hmac-md5-96,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
+{{%- elif product == "rhel7" -%}}
+hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
 {{%- else -%}}
 hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com
 {{%- endif -%}}

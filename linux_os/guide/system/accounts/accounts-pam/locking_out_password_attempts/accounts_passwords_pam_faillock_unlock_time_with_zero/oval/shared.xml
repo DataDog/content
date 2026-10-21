@@ -49,10 +49,14 @@
           <criterion
               test_ref="test_{{{ rule_id }}}_parameter_pamd_password"
               comment="Check the unlock_time parameter in auth section of password-auth file"/>
+{{%- if product != "rhel7" %}}
           <criterion
               test_ref="test_{{{ rule_id }}}_parameter_no_faillock_conf"
               comment="Ensure the unlock_time parameter is not present in {{{ pam_faillock_conf_path }}}"/>
+{{%- endif %}}
         </criteria>
+{{#- pam_faillock of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
         <criteria operator="AND"
                   comment="Check expected pam_faillock.so unlock_time parameter in {{{ pam_faillock_conf_path }}}">
           <criterion
@@ -65,6 +69,7 @@
               test_ref="test_{{{ rule_id }}}_parameter_faillock_conf"
               comment="Ensure the unlock_time parameter is present in {{{ pam_faillock_conf_path }}}"/>
         </criteria>
+{{%- endif %}}
       </criteria>
     </criteria>
 
@@ -82,7 +87,11 @@
       id="var_{{{ rule_id }}}_pam_faillock_auth_regex"
       datatype="string" version="2"
       comment="regex to identify pam_faillock.so entries in auth section of pam files">
+{{%- if product == "rhel7" %}}
+    <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[default=die\]|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
+{{%- else %}}
     <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
+{{%- endif %}}
   </constant_variable>
 
   <constant_variable
@@ -96,7 +105,12 @@
       id="var_{{{ rule_id }}}_pam_faillock_unlock_time_parameter_regex"
       datatype="string" version="1"
       comment="regex to identify pam_faillock.so unlock_time entry in auth section of pam files">
+{{#- On RHEL 7 a pam_faillock.so line may also carry root_unlock_time. #}}
+{{%- if product == "rhel7" %}}
+    <value>^[\s]*auth[\s]+.+[\s]+pam_faillock.so[\s]+(?:[^\n]*[\s])?unlock_time=([0-9]+)</value>
+{{%- else %}}
     <value>^[\s]*auth[\s]+.+[\s]+pam_faillock.so[\s]+[^\n]*unlock_time=([0-9]+)</value>
+{{%- endif %}}
   </constant_variable>
 
   <constant_variable

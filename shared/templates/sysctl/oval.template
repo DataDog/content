@@ -42,8 +42,13 @@
   <definition class="compliance" id="{{{ rule_id }}}" version="4">
     {{{ oval_metadata("The kernel '" + SYSCTLVAR + "' parameter should be set to the appropriate value in system configuration" + (" and system runtime." if CHECK_RUNTIME == "true" else "."), rule_title=rule_title) }}}
     <criteria comment="IPv6 disabled or {{{ SYSCTLVAR }}} set correctly" operator="OR">
+{{%- if product == "rhel7" %}}
+      <criterion comment="the ipv6 module is disabled"
+                 test_ref="test_{{{ rule_id }}}_ipv6_module_enabled" negate="true"/>
+{{%- else %}}
       <extend_definition comment="is IPv6 enabled?"
                          definition_ref="sysctl_kernel_ipv6_disable"/>
+{{%- endif %}}
       <criteria operator="AND">
         <extend_definition comment="{{{ SYSCTLVAR }}} configuration setting check"
                            definition_ref="{{{ rule_id }}}_static"/>
@@ -54,6 +59,22 @@
       </criteria>
     </criteria>
   </definition>
+{{%- if product == "rhel7" %}}
+
+  <!-- As in the CIS audits, the ipv6 module parameter decides whether
+       IPv6 is enabled. -->
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_ipv6_module_enabled" version="1"
+                              check="all" check_existence="at_least_one_exists"
+                              comment="the ipv6 module is enabled">
+    <ind:object object_ref="obj_{{{ rule_id }}}_ipv6_module_enabled"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_ipv6_module_enabled" version="1">
+    <ind:filepath>/sys/module/ipv6/parameters/disable</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*0\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 </def-group>
 
 {{%- endif %}}
