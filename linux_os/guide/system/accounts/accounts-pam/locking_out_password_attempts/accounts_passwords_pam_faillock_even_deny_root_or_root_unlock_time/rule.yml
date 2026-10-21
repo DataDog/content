@@ -7,7 +7,8 @@ description: >-
     account lockout policy using <tt>pam_faillock.so</tt>. The system must have
     either the <tt>even_deny_root</tt> option enabled or <tt>root_unlock_time</tt>
     set to <tt>{{{xccdf_value("var_accounts_passwords_pam_faillock_root_unlock_time") }}}</tt>
-    seconds or greater in <tt>{{{ pam_faillock_conf_path }}}</tt>.
+    seconds or greater in {{% if product == "rhel7" %}}the <tt>pam_faillock.so</tt> lines of
+    <tt>/etc/pam.d/system-auth</tt> and <tt>/etc/pam.d/password-auth</tt>{{% else %}}<tt>{{{ pam_faillock_conf_path }}}</tt>{{% endif %}}.
 
     pam_faillock.so module requires multiple entries in pam files. These entries must be carefully
     defined to work as expected. In order to avoid errors when manually editing these files, it is
@@ -34,7 +35,7 @@ ocil: >-
     Verify {{{ full_name }}} is configured to include the root account in the account lockout
     policy with the command:
 
-    <pre>$ grep -E 'even_deny_root|root_unlock_time' {{{ pam_faillock_conf_path }}}</pre>
+    <pre>$ grep -E 'even_deny_root|root_unlock_time' {{% if product == "rhel7" %}}/etc/pam.d/system-auth /etc/pam.d/password-auth{{% else %}}{{{ pam_faillock_conf_path }}}{{% endif %}}</pre>
 
     The output should show either:
     <pre>even_deny_root</pre>

@@ -2,7 +2,7 @@ documentation_complete: true
 
 title: 'Verify Permissions on /etc/at.deny file'
 
-{{%  if 'rhel' not in product %}}
+{{%  if 'rhel' not in product or product == "rhel7" %}}
     {{% set target_perms_octal="0640" %}}
     {{% set target_perms="-rw-r-----" %}}
 {{% else %}}

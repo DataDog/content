@@ -59,3 +59,6 @@ template:
         value: 'yes'
         datatype: string
         is_default_value: 'true'
+{{%- if product == "rhel7" %}}
+        missing_parameter_pass: 'true'
+{{%- endif %}}

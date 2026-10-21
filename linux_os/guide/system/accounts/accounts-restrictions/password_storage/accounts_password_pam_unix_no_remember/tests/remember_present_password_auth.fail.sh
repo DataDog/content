@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_almalinux
+# platform = Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10,multi_platform_fedora,multi_platform_ol,multi_platform_almalinux
 # packages = pam
 
 authselect create-profile hardening -b sssd

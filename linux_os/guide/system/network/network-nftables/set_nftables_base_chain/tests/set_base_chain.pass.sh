@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = nftables
 
 #Set name of the table
 var_nftables_table='filter'
