@@ -8,7 +8,14 @@
         <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
         <criterion comment="audit augenrules 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_augenrules" />
 {{% if CHECK_ROOT_USER %}}
+{{%- if product == "ubuntu2004" %}}
+        <criteria operator="OR" comment="rule for root, unless the rules for users suffice">
+          <criterion comment="audit augenrules 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_augenrules_auid_0" />
+          <criterion comment="the rules for users suffice" test_ref="test_ardm_{{{ ATTR }}}_root_optional" />
+        </criteria>
+{{%- else %}}
         <criterion comment="audit augenrules 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_augenrules_auid_0" />
+{{%- endif %}}
 {{% endif %}}
 
         <criteria operator="OR">
@@ -18,7 +25,14 @@
             <criteria operator="AND">
                 <criterion comment="audit augenrules 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_augenrules" />
 {{% if CHECK_ROOT_USER %}}
+{{%- if product == "ubuntu2004" %}}
+                <criteria operator="OR" comment="rule for root, unless the rules for users suffice">
+                  <criterion comment="audit augenrules 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_augenrules_auid_0" />
+                  <criterion comment="the rules for users suffice" test_ref="test_ardm_{{{ ATTR }}}_root_optional" />
+                </criteria>
+{{%- else %}}
                 <criterion comment="audit augenrules 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_augenrules_auid_0" />
+{{%- endif %}}
 {{% endif %}}
             </criteria>
         </criteria>
@@ -29,7 +43,14 @@
         <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
         <criterion comment="audit auditctl 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_auditctl" />
 {{% if CHECK_ROOT_USER %}}
+{{%- if product == "ubuntu2004" %}}
+        <criteria operator="OR" comment="rule for root, unless the rules for users suffice">
+          <criterion comment="audit auditctl 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_auditctl_auid_0" />
+          <criterion comment="the rules for users suffice" test_ref="test_ardm_{{{ ATTR }}}_root_optional" />
+        </criteria>
+{{%- else %}}
         <criterion comment="audit auditctl 32-bit {{{ ATTR }}}" test_ref="test_32bit_ardm_{{{ ATTR }}}_auditctl_auid_0" />
+{{%- endif %}}
 {{% endif %}}
         <criteria operator="OR">
           <!-- System either isn't 64-bit => we just check presence of 32-bit version of {{{ ATTR }}} audit DAC rule -->
@@ -38,7 +59,14 @@
             <criteria operator="AND">
                 <criterion comment="audit auditctl 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_auditctl" />
 {{% if CHECK_ROOT_USER %}}
+{{%- if product == "ubuntu2004" %}}
+                <criteria operator="OR" comment="rule for root, unless the rules for users suffice">
+                  <criterion comment="audit auditctl 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_auditctl_auid_0" />
+                  <criterion comment="the rules for users suffice" test_ref="test_ardm_{{{ ATTR }}}_root_optional" />
+                </criteria>
+{{%- else %}}
                 <criterion comment="audit auditctl 64-bit {{{ ATTR }}}" test_ref="test_64bit_ardm_{{{ ATTR }}}_auditctl_auid_0" />
+{{%- endif %}}
 {{% endif %}}
             </criteria>
         </criteria>
@@ -120,6 +148,22 @@
     <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b64[\s]+)(?:.*(-S[\s]+{{{ ATTR }}}[\s]+|([\s]+|[,]){{{ ATTR }}}([\s]+|[,])))(?:.*-F\s+auid=0[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
+{{%- if product == "ubuntu2004" %}}
+
+  <ind:variable_test id="test_ardm_{{{ ATTR }}}_root_optional" version="1" check="all"
+  check_existence="all_exist" comment="the rules for users suffice">
+    <ind:object object_ref="obj_ardm_{{{ ATTR }}}_root_optional" />
+    <ind:state state_ref="state_ardm_{{{ ATTR }}}_root_optional" />
+  </ind:variable_test>
+  <ind:variable_object id="obj_ardm_{{{ ATTR }}}_root_optional" version="1">
+    <ind:var_ref>var_audit_rules_dac_root_optional</ind:var_ref>
+  </ind:variable_object>
+  <ind:variable_state id="state_ardm_{{{ ATTR }}}_root_optional" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+  <external_variable id="var_audit_rules_dac_root_optional" datatype="boolean" version="1"
+  comment="the DAC audit rules for users suffice without the rules for root" />
+{{%- endif %}}
 {{% endif %}}
 
 </def-group>

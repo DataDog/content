@@ -1,0 +1,21 @@
+documentation_complete: true
+
+title: 'Require the Latest Version of Packages'
+
+description: |-
+    Whether the checks of installed packages also require that the
+    configured repositories offer no newer version of the package, as
+    <tt>apt list --upgradable</tt> reports from the local package lists.
+    CIS Ubuntu 20.04 v3.0.0 requires the latest versions of the AppArmor
+    packages.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true

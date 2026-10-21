@@ -46,5 +46,11 @@ template:
         pkgname@ubuntu2604: libpam-pwquality
         pkgname@debian12: libpam-pwquality
         pkgname@debian13: libpam-pwquality
+{{%- if product == "ubuntu2004" %}}
+    {{#- OpenSCAP evaluates the last check of a rule, which would be the OVAL
+        one: the SCE check alone follows CIS 5.3.1. #}}
+    backends:
+        oval: 'off'
+{{%- endif %}}
 
 platform: package[pam]

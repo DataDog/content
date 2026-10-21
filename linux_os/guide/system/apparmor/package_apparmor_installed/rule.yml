@@ -23,3 +23,9 @@ template:
     vars:
         pkgname: apparmor
         pkgname@sle15: patterns-base-apparmor
+{{%- if product == "ubuntu2004" %}}
+    {{#- OpenSCAP evaluates the last check of a rule, which would be the OVAL
+        one: the SCE check alone follows CIS 1.3.1.1. #}}
+    backends:
+        oval: 'off'
+{{%- endif %}}

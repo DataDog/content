@@ -6,6 +6,30 @@
   	  <criterion test_ref="test_apparmor_set_bootloader" comment="security=apparmor is set in bootloader" />
     </criteria>
   </definition>
+{{%- if product == "ubuntu2004" %}}
+  {{#- CIS Ubuntu 20.04 1.3.1.2 requires both parameters on every linux line
+      of grub.cfg. linux\b leaves out the linux16 line of memtest86+, whose
+      parameters the remediation cannot set. #}}
+  <ind:textfilecontent54_object id="obj_grub2_enable_apparmor_linux_lines" version="1">
+    <ind:filepath datatype="string">/boot/grub/grub.cfg</ind:filepath>
+    <ind:pattern operation="pattern match" datatype="string">^[ \t]*linux\b(.*)$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+  <ind:textfilecontent54_state id="state_grub2_enable_apparmor_apparmor_1" version="1">
+    <ind:subexpression operation="pattern match">(^|\s)apparmor=1(\s|$)</ind:subexpression>
+  </ind:textfilecontent54_state>
+  <ind:textfilecontent54_state id="state_grub2_enable_apparmor_security_apparmor" version="1">
+    <ind:subexpression operation="pattern match">(^|\s)security=apparmor(\s|$)</ind:subexpression>
+  </ind:textfilecontent54_state>
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_apparmor_enabled_bootloader" version="1" comment="every linux line sets apparmor=1">
+    <ind:object object_ref="obj_grub2_enable_apparmor_linux_lines" />
+    <ind:state state_ref="state_grub2_enable_apparmor_apparmor_1" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_apparmor_set_bootloader" version="1" comment="every linux line sets security=apparmor">
+    <ind:object object_ref="obj_grub2_enable_apparmor_linux_lines" />
+    <ind:state state_ref="state_grub2_enable_apparmor_security_apparmor" />
+  </ind:textfilecontent54_test>
+{{%- else %}}
    <ind:textfilecontent54_object id="obj_apparmor_enabled_in_grubcfg" version="1">
     <ind:filepath datatype="string">/boot/grub/grub.cfg</ind:filepath>
     <ind:pattern operation="pattern match" datatype="string">^\s*linux\b.*(?!/boot/memtest86\+\.bin).*\bapparmor=1\b.*$</ind:pattern>
@@ -22,4 +46,5 @@
   <ind:textfilecontent54_test check="all" id="test_apparmor_set_bootloader" version="1" comment="security=apparmor is set in bootloader">
     <ind:object object_ref="obj_apparmor_set_in_grubcfg" />
   </ind:textfilecontent54_test>
+{{%- endif %}}
 </def-group>

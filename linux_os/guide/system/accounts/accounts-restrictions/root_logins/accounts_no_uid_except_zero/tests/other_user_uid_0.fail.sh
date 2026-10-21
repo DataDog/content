@@ -1,6 +1,6 @@
 #!/bin/bash
 # platform = multi_platform_all
-{{%- if product == "rhel7" %}}
+{{%- if product in ["rhel7", "ubuntu2004"] %}}
 # The remediation locks the account, which leaves it at UID 0.
 # remediation = none
 {{%- endif %}}

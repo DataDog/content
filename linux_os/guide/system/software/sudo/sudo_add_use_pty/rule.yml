@@ -41,5 +41,8 @@ template:
     name: sudo_defaults_option
     vars:
         option: use_pty
+{{%- if product == "ubuntu2004" %}}
+        negation_fails: 'true'
+{{%- endif %}}
 
 platform: package[sudo]

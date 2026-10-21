@@ -1,4 +1,7 @@
 #!/bin/bash
+{{% if PACKAGE_FOR_TESTING %}}
+# packages = {{{ PACKAGE_FOR_TESTING }}}
+{{% endif %}}
 SECTION="{{{ SECTION }}}"
 PARAM="{{{ PARAM }}}"
 DROPIN_DIR="{{{ DROPIN_DIR }}}"

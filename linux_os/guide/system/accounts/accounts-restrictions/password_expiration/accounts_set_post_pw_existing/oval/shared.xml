@@ -1,4 +1,52 @@
 {{# The regular expression filters away accounts with no passwords and locked passwords (passwords are located in the 2nd field of /etc/shadow entries). #}}
+{{%- if product == "ubuntu2004" %}}
+{{#- CIS Ubuntu 20.04 5.4.1.5 reads the accounts whose password field holds a hash ($...$),
+    and fails an INACTIVE above the limit, below 0 or empty. #}}
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Set existing passwords a period of inactivity before they been locked", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_{{{ rule_id }}}_unset"
+        comment="Every account with a password hash sets a number of days of inactivity" />
+      <criterion test_ref="test_{{{ rule_id }}}"
+        comment="Every account with a password hash allows at most var_account_disable_post_pw_expiration days of inactivity" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_unset" version="1"
+    check="all" check_existence="none_exist"
+    comment="No account with a password hash has an empty or negative INACTIVE">
+    <ind:object object_ref="object_{{{ rule_id }}}_unset" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_unset" version="1">
+    <ind:filepath>/etc/shadow</ind:filepath>
+    <ind:pattern operation="pattern match">^[^:]*:\$[^:]+\$[^:]*(?::[^:]*){4}:(?![0-9]+:)</ind:pattern>
+    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}" version="1"
+    check="all" check_existence="any_exist"
+    comment="The INACTIVE of every account with a password hash is at most var_account_disable_post_pw_expiration">
+    <ind:object object_ref="object_{{{ rule_id }}}" />
+    <ind:state state_ref="state_{{{ rule_id }}}" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}" version="1">
+    <ind:filepath>/etc/shadow</ind:filepath>
+    <ind:pattern operation="pattern match">^[^:]*:\$[^:]+\$[^:]*(?::[^:]*){4}:([0-9]+):</ind:pattern>
+    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}" version="1">
+    <ind:subexpression datatype="int" operation="less than or equal"
+      var_ref="var_account_disable_post_pw_expiration" />
+  </ind:textfilecontent54_state>
+
+  <external_variable comment="inactive days expiration" datatype="int"
+    id="var_account_disable_post_pw_expiration" version="1" />
+</def-group>
+{{%- else %}}
 {{#- The CIS RHEL 7 audit fails a user with a password whose INACTIVE field is empty or -1, which never disables the account. #}}
 {{%- set regex_empty = "^(?:[^:]*:)(?:\\$[^:]*:)(?:[^:]*:){4}(?:\\s*|-\\d+):(?:[^:]*:)(?:[^:]*)$" if product == "rhel7" else none %}}
 {{{ test_etc_shadow_password_variable(
@@ -6,3 +54,4 @@
     external_variable_id="var_account_disable_post_pw_expiration",
     operation="less than or equal",
     description="Set existing passwords a period of inactivity before they been locked", rule_id=rule_id, rule_title=rule_title, regex_empty=regex_empty) }}}
+{{%- endif %}}

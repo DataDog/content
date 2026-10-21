@@ -4,7 +4,7 @@ title: 'Verify Only Root Has UID 0'
 
 description: |-
     If any account other than root has a UID of 0, this misconfiguration should
-{{%- if product == "rhel7" %}}
+{{%- if product in ["rhel7", "ubuntu2004"] %}}
     be investigated and the accounts other than root should be removed or have
     their UID changed.
 {{%- else %}}
@@ -64,7 +64,7 @@ ocil: |-
     following command:
     <pre>$ awk -F: '$3 == 0 {print $1}' /etc/passwd</pre>
     <pre>root</pre>
-{{%- if product != "rhel7" %}}
+{{%- if product not in ["rhel7", "ubuntu2004"] %}}
     Also make sure that if non-root account with UID "0" exist, it is locked:
     <pre>$ grep -E '^[^:]+:[!*][^:]*:.*$' /etc/shadow</pre>
 {{%- endif %}}

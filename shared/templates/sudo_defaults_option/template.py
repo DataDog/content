@@ -9,6 +9,10 @@ def preprocess(data, lang):
     if data.get("variable_name"):
         data["default_is_enabled"] = False
 
+    # With negation_fails, a Defaults entry that turns the option off fails
+    # the check, and the remediation comments it out.
+    data["negation_fails"] = parse_template_boolean_value(data, parameter="negation_fails", default_value=False)
+
     if data.get("default_is_enabled") is True:
         data["option_existence"] = "any_exist"
     else:

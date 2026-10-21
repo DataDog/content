@@ -32,11 +32,13 @@ references:
 
 {{% if product == "rhel7" %}}
 platform: system_with_kernel and firewall_applicable[nftables]
+{{% elif product == "ubuntu2004" %}}
+platform: system_with_kernel and deb_firewall_applicable[nftables]
 {{% else %}}
 platform: system_with_kernel and service_disabled[iptables] and service_disabled[ufw]
 {{% endif %}}
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: package_installed_guard_var
     vars:

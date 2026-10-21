@@ -1,6 +1,6 @@
 <def-group>
   <definition class="compliance" id="accounts_no_uid_except_zero" version="1">
-{{%- if product == "rhel7" %}}
+{{%- if product in ["rhel7", "ubuntu2004"] %}}
     {{{ oval_metadata("Only the root account should be assigned a user id of 0.", rule_title=rule_title) }}}
 {{%- else %}}
     {{{ oval_metadata("Only the root account should be assigned a user id of 0, or the account must be locked.", rule_title=rule_title) }}}
@@ -9,9 +9,9 @@
       <criterion comment="tests that there are no accounts with UID 0 except root in the /etc/passwd file" test_ref="test_accounts_no_uid_except_root" />
     </criteria>
   </definition>
-{{%- if product == "rhel7" %}}
+{{%- if product in ["rhel7", "ubuntu2004"] %}}
 
-  {{#- CIS RHEL 7 6.2.9 accepts root alone at UID 0, whether the other accounts are locked or not. #}}
+  {{#- CIS RHEL 7 6.2.9 and Ubuntu 20.04 5.4.2.1 accept root alone at UID 0, whether the other accounts are locked or not. #}}
   <ind:textfilecontent54_test check="all" check_existence="none_exist"
      comment="test that there are no accounts with UID 0 except root in the /etc/passwd file"
      id="test_accounts_no_uid_except_root" version="1">

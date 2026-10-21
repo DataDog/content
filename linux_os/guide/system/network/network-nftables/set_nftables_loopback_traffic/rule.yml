@@ -19,6 +19,8 @@ severity: medium
 
 {{% if product == "rhel7" %}}
 platform: firewall_applicable[nftables]
+{{% elif product == "ubuntu2004" %}}
+platform: deb_firewall_applicable[nftables]
 {{% else %}}
 platform: package[nftables] and service_disabled[firewalld]
 {{% endif %}}

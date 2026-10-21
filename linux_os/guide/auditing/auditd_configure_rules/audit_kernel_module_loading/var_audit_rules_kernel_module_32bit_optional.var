@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: '64-bit Kernel Module Audit Rules Suffice'
+
+description: |-
+    Whether the audit rules for the 64-bit kernel module calls suffice on a
+    64-bit system, without the rules for the 32-bit calls. The CIS
+    Benchmarks list the 64-bit rules only.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true

@@ -11,7 +11,11 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "ubuntu2004" -%}}
+platform: deb_firewall_applicable[ufw]
+{{%- else -%}}
 platform: package[ufw]
+{{%- endif %}}
 
 {{{ complete_ocil_entry_package_removed("iptables-persistent") }}}
 

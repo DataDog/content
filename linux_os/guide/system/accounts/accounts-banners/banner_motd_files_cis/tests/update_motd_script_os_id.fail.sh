@@ -1,5 +1,9 @@
 #!/bin/bash
+{{% if product == "ubuntu2004" %}}
+# platform = Not Applicable
+{{% else %}}
 # platform = multi_platform_ubuntu
+{{% endif %}}
 
 rm -rf /etc/motd.d /run/motd.d /usr/lib/motd.d /run/motd /usr/lib/motd
 mkdir -p /etc/update-motd.d

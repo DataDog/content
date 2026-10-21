@@ -8,6 +8,9 @@
             test_ref="test_{{{ rule_id }}}_config_file_exists"/>
         {{% endif %}}
         <criterion comment="{{{ OPTION }}} is configured in /etc/sudoers or /etc/sudoers.d/" test_ref="test_{{{ OPTION }}}_sudoers" />
+        {{%- if NEGATION_FAILS %}}
+        <criterion comment="no Defaults entry turns {{{ OPTION }}} off" test_ref="test_{{{ OPTION }}}_sudoers_negated" />
+        {{%- endif %}}
     </criteria>
   </definition>
 
@@ -22,6 +25,19 @@
     <ind:pattern operation="pattern match">^[\s]*Defaults[ \t]+[^!\n]*\b{{{ OPTION_REGEX }}}.*$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal" >1</ind:instance>
   </ind:textfilecontent54_object>
+
+{{%- if NEGATION_FAILS %}}
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist" id="test_{{{ OPTION }}}_sudoers_negated"
+      comment="no Defaults entry turns {{{ OPTION }}} off" version="1">
+    <ind:object object_ref="object_{{{ OPTION }}}_sudoers_negated" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_{{{ OPTION }}}_sudoers_negated" version="1">
+    <ind:filepath operation="pattern match">^/etc/sudoers(|\.d/[^/.]*[^/.~])$</ind:filepath>
+    <ind:pattern operation="pattern match">^[ \t]*Defaults[ \t]+(?:[^#\n]*,[ \t]*)?!{{{ OPTION }}}\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 
 {{% if VARIABLE_NAME %}}
   <ind:textfilecontent54_state id="state_{{{ OPTION }}}_sudoers" version="1">

@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'DAC Audit Rules for Users Suffice'
+
+description: |-
+    Whether the audit rules for the permission and attribute changes of
+    users (auid 1000 and above) suffice where a rule also asks for rules
+    for root (auid 0). The CIS Benchmarks list the rules for users only.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true

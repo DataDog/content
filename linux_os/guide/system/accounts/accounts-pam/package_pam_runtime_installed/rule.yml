@@ -18,3 +18,9 @@ template:
         evr@ubuntu2204: 0:1.4.0-11
         evr@ubuntu2404: 0:1.5.3-5
         evr@debian12: 0:1.5.2-6
+{{%- if product == "ubuntu2004" %}}
+    {{#- OpenSCAP evaluates the last check of a rule, which would be the OVAL
+        one: the SCE check alone follows CIS 5.3.1. #}}
+    backends:
+        oval: 'off'
+{{%- endif %}}

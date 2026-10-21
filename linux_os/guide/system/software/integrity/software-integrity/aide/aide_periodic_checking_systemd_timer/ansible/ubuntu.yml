@@ -4,6 +4,65 @@
 # complexity = low
 # disruption = low
 
+{{%- if product == "ubuntu2004" %}}
+
+- name: "{{{ rule_title }}} - Look for the dailyaidecheck units of aide-common"
+  ansible.builtin.stat:
+    path: "/lib/systemd/system/{{ item }}"
+  loop:
+    - dailyaidecheck.service
+    - dailyaidecheck.timer
+  register: aide_dailyaidecheck_units
+
+- name: "{{{ rule_title }}} - Define dailyaidecheck.service"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dailyaidecheck.service
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+    content: |
+      [Unit]
+      Description=Daily AIDE check
+
+      [Service]
+      Type=oneshot
+      ExecStart={{{ aide_bin_path }}} --check
+  when: not aide_dailyaidecheck_units.results[0].stat.exists
+
+- name: "{{{ rule_title }}} - Define dailyaidecheck.timer"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dailyaidecheck.timer
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+    content: |
+      [Unit]
+      Description=Daily AIDE check
+
+      [Timer]
+      OnCalendar=*-*-* 05:00:00
+
+      [Install]
+      WantedBy=timers.target
+  when: not aide_dailyaidecheck_units.results[1].stat.exists
+
+- name: "{{{ rule_title }}} - Ensure AIDE Service is Unmasked"
+  ansible.builtin.systemd:
+    name: dailyaidecheck.service
+    daemon_reload: true
+    masked: false
+
+- name: "{{{ rule_title }}} - Ensure AIDE Service Timer is Enabled"
+  ansible.builtin.systemd:
+    name: dailyaidecheck.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+    masked: false
+{{%- else %}}
+
 - name: "{{{ rule_title }}} - Ensure AIDE Service is Enabled"
   ansible.builtin.systemd:
     name: dailyaidecheck.service
@@ -18,3 +77,4 @@
     enabled: true
     daemon_reload: true
     masked: false
+{{%- endif %}}

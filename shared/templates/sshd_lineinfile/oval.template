@@ -10,7 +10,8 @@
             rule_id=rule_id,
             rule_title=rule_title,
             xccdf_variable_is_maximum=XCCDF_VARIABLE_IS_MAXIMUM,
-            sshd_default=SSHD_DEFAULT
+            sshd_default=SSHD_DEFAULT,
+            missing_parameter_pass_variable=MISSING_PARAMETER_PASS_VARIABLE
         )
     }}}
 {{%- else -%}}
@@ -23,7 +24,8 @@
         runtime_check=sshd_runtime_check,
         datatype=DATATYPE,
         rule_id=rule_id,
-        rule_title=rule_title
+        rule_title=rule_title,
+        missing_parameter_pass_variable=MISSING_PARAMETER_PASS_VARIABLE
         )
     }}}
 {{%- endif -%}}

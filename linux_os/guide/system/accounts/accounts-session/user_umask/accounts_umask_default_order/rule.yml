@@ -1,0 +1,46 @@
+documentation_complete: true
+
+title: 'Ensure the Default Umask Is Set Correctly Where It Is First Set'
+
+description: |-
+    The default umask of a session comes from the first of these locations
+    that sets it: a script matching <tt>/etc/profile.d/*.sh</tt>,
+    <tt>/etc/profile</tt>, <tt>/etc/bashrc</tt>, <tt>/etc/bash.bashrc</tt>, the
+    <tt>pam_umask</tt> line of <tt>/etc/pam.d/postlogin</tt>,
+    <tt>/etc/login.defs</tt> and <tt>/etc/default/login</tt>. Reading them in
+    this order, one of them has to set the umask to
+    <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or a more restrictive
+    value, written as three or four octal digits or as an absolute symbolic mode
+    such as <tt>u=rwx,g=rx,o=</tt>, and every <tt>umask</tt> command in the
+    <tt>/etc/profile.d</tt> scripts and in the locations read before that one has
+    to do the same. For example, add the following line to
+    <tt>/etc/profile.d/50-systemwide_umask.sh</tt>:
+    <pre>umask {{{ xccdf_value("var_accounts_user_umask") }}}</pre>
+
+rationale: |-
+    The umask value influences the permissions assigned to files when they are created.
+    A misconfigured umask value could result in files with excessive permissions that can be read or
+    written to by unauthorized users.
+
+severity: medium
+
+ocil_clause: 'no location sets the umask, or one read before the first restrictive setting sets a less restrictive value'
+
+ocil: |-
+    Run the following command to list the <tt>umask</tt> settings of these locations:
+    <pre>$ sudo grep -Pis '^\h*(umask\h+\S|session\h+\S+\h+pam_umask\.so)' /etc/profile.d/*.sh /etc/profile /etc/bashrc /etc/bash.bashrc /etc/pam.d/postlogin /etc/login.defs /etc/default/login</pre>
+    Every value returned for <tt>/etc/profile.d</tt> has to be
+    <tt>{{{ xccdf_value("var_accounts_user_umask") }}}</tt> or more restrictive. If none
+    of them sets the umask, the first of the other files, in the order of the
+    command, that sets a value has to set such a value.
+
+fixtext: |-
+    Configure {{{ full_name }}} to set a restrictive default umask.
+
+    Change every "umask" command in "/etc/profile.d/*.sh", "/etc/profile", "/etc/bashrc", "/etc/bash.bashrc", "/etc/login.defs" and "/etc/default/login" that sets a less restrictive value to:
+
+    umask {{{ xccdf_value("var_accounts_user_umask") }}}
+
+    and add that line to "/etc/profile.d/50-systemwide_umask.sh".
+
+platform: package[bash]

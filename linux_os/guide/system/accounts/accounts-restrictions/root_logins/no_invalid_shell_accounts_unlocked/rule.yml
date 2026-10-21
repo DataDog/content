@@ -6,6 +6,10 @@ description: |-
     Accounts meant for non-interactive purposes should be locked to prevent
     unauthorized access. Accounts with non-standard shells (those not defined in
     <tt>/etc/shells</tt>) should be locked using <tt>usermod -L</tt>.
+{{%- if product == "ubuntu2004" %}}
+    The <tt>nologin</tt> shell counts as non-standard, even when
+    <tt>/etc/shells</tt> lists it.
+{{%- endif %}}
 
 rationale: |-
     Locking non-interactive accounts improves security by preventing potential

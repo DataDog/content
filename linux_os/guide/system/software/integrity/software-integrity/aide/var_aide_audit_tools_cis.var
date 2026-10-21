@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'AIDE Checks the Audit Tools of the CIS Benchmark'
+
+description: |-
+    Whether AIDE entries for the six audit tools that the CIS Benchmark
+    names (auditctl, auditd, ausearch, aureport, autrace and augenrules)
+    suffice, in the AIDE configuration file or in a file of its drop-in
+    directory.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
