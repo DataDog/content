@@ -49,6 +49,11 @@ def preprocess(data, lang):
                   "which needs xccdf_variable, the int datatype and "
                   "missing_parameter_pass false.".format(data["_rule_id"]))
         raise ValueError(errmsg)
+    data["missing_parameter_pass_variable"] = data.get("missing_parameter_pass_variable", "")
+    if data["missing_parameter_pass_variable"] and data["missing_parameter_pass"]:
+        errmsg = ("The template instance of the rule {0} sets missing_parameter_pass_variable, "
+                  "which needs missing_parameter_pass false.".format(data["_rule_id"]))
+        raise ValueError(errmsg)
     data["sshd_default"] = str(data.get("sshd_default", ""))
     if data["sshd_default"] and (
             not data["xccdf_variable_is_maximum"] or not data["sshd_default"].isdigit()
