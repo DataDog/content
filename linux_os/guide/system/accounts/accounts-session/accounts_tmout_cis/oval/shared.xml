@@ -11,29 +11,69 @@
   value assigned has to be in range, where the RHEL 9 and AlmaLinux 9 audits
   read the last one of each file. The regular expressions are those of the
   audits, confined to one line, since a pattern applies to a whole file here.
+  Amazon Linux 2 v4.0.0 5.5.3.2 audits as RHEL 8 does, and its data stream
+  comes from rhel7, which picks the audit with installed_OS_is_amzn2.
 -#}}
+{{%- set one_file = product in ["al2023", "rhel7"] %}}
+{{%- set per_file = product != "al2023" %}}
+{{%- set per_file_suffix = "_per_file" if product == "rhel7" else "" %}}
+{{% macro tmout_criteria(suffix) %}}
+{{%- if one_file and suffix == "" %}}
+      <criterion comment="a file assigns TMOUT and marks it readonly and exported"
+        test_ref="test_accounts_tmout_cis_configured" />
+{{%- elif product in ["rhel9", "almalinux9"] %}}
+      <criterion comment="every file that assigns TMOUT marks it readonly and exported"
+        test_ref="test_accounts_tmout_cis_per_file" />
+{{%- else %}}
+      <criterion comment="every file that mentions TMOUT assigns it and marks it readonly and exported"
+        test_ref="test_accounts_tmout_cis_per_file" />
+{{%- endif %}}
+      <criterion comment="every TMOUT value is at most var_accounts_tmout"
+        test_ref="test_accounts_tmout_cis_upper_bound{{{ suffix }}}" />
+      <criterion comment="every TMOUT value is at least 1"
+        test_ref="test_accounts_tmout_cis_lower_bound{{{ suffix }}}" />
+{{%- endmacro %}}
+{{% macro tmout_bound_tests(suffix, existence) %}}
+  <ind:textfilecontent54_test check="all" version="1"
+    check_existence="{{{ existence }}}"
+    comment="every TMOUT value is at most var_accounts_tmout"
+    id="test_accounts_tmout_cis_upper_bound{{{ suffix }}}">
+    <ind:object object_ref="obj_accounts_tmout_cis_values{{{ suffix }}}" />
+    <ind:state state_ref="state_accounts_tmout_cis_upper_bound" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_test check="all" version="1"
+    check_existence="{{{ existence }}}"
+    comment="every TMOUT value is at least 1"
+    id="test_accounts_tmout_cis_lower_bound{{{ suffix }}}">
+    <ind:object object_ref="obj_accounts_tmout_cis_values{{{ suffix }}}" />
+    <ind:state state_ref="state_accounts_tmout_cis_lower_bound" />
+  </ind:textfilecontent54_test>
+{{%- endmacro %}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("The interactive shell timeout TMOUT is configured as the CIS Benchmark requires", rule_title=rule_title) }}}
-    <criteria operator="AND">
-{{% if product in ["al2023", "rhel7"] %}}
-      <criterion comment="a file assigns TMOUT and marks it readonly and exported"
-        test_ref="test_accounts_tmout_cis_configured" />
-{{% elif product in ["rhel9", "almalinux9"] %}}
-      <criterion comment="every file that assigns TMOUT marks it readonly and exported"
-        test_ref="test_accounts_tmout_cis_per_file" />
-{{% else %}}
-      <criterion comment="every file that mentions TMOUT assigns it and marks it readonly and exported"
-        test_ref="test_accounts_tmout_cis_per_file" />
-{{% endif %}}
-      <criterion comment="every TMOUT value is at most var_accounts_tmout"
-        test_ref="test_accounts_tmout_cis_upper_bound" />
-      <criterion comment="every TMOUT value is at least 1"
-        test_ref="test_accounts_tmout_cis_lower_bound" />
+{{% if product == "rhel7" %}}
+    <criteria operator="OR">
+      <criteria operator="AND" comment="RHEL 7: one file sets TMOUT as the audit requires">
+        <extend_definition comment="the system is not Amazon Linux 2"
+          definition_ref="installed_OS_is_amzn2" negate="true" />
+        {{{ tmout_criteria("") | indent(4) }}}
+      </criteria>
+      <criteria operator="AND" comment="Amazon Linux 2: every file that mentions TMOUT sets it as the audit requires">
+        <extend_definition comment="the system is Amazon Linux 2"
+          definition_ref="installed_OS_is_amzn2" />
+        {{{ tmout_criteria(per_file_suffix) | indent(4) }}}
+      </criteria>
     </criteria>
+{{% else %}}
+    <criteria operator="AND">
+      {{{ tmout_criteria("") }}}
+    </criteria>
+{{% endif %}}
   </definition>
 
-{{% if product in ["al2023", "rhel7"] %}}
+{{% if one_file %}}
   <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
     comment="a file assigns TMOUT and has readonly and export commands for it"
     id="test_accounts_tmout_cis_configured">
@@ -53,7 +93,10 @@
     <ind:pattern operation="pattern match">(?:^|\G)[^#\n]*?(?&lt;!\S)TMOUT=(0+|[1-9]\d*)\b</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
-{{% else %}}
+
+  {{{ tmout_bound_tests("", "any_exist") }}}
+{{% endif %}}
+{{% if per_file %}}
 {{% if product in ["rhel9", "almalinux9"] %}}
 {{% set tmout_files = "^/(?:etc/(?:(?:[^/.][^/]*)?bashrc|profile|profile\.d/(?:[^/.][^/]*\.sh|sh\.local))|usr/etc/profile\.d/(?:[^/.][^/]*\.sh|sh\.local))$" %}}
 {{% else %}}
@@ -76,29 +119,15 @@
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
 
-  <ind:textfilecontent54_object id="obj_accounts_tmout_cis_values" version="1"
+  <ind:textfilecontent54_object id="obj_accounts_tmout_cis_values{{{ per_file_suffix }}}" version="1"
     comment="TMOUT values assigned in the shell initialization files">
     <ind:filepath operation="pattern match">{{{ tmout_files }}}</ind:filepath>
     <ind:pattern operation="pattern match">(?:^|\G)[^#\n\r]*?\bTMOUT=(\d+)\b</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
+
+  {{{ tmout_bound_tests(per_file_suffix, "at_least_one_exists") }}}
 {{% endif %}}
-
-  <ind:textfilecontent54_test check="all" version="1"
-    check_existence="{{{ "any_exist" if product in ["al2023", "rhel7"] else "at_least_one_exists" }}}"
-    comment="every TMOUT value is at most var_accounts_tmout"
-    id="test_accounts_tmout_cis_upper_bound">
-    <ind:object object_ref="obj_accounts_tmout_cis_values" />
-    <ind:state state_ref="state_accounts_tmout_cis_upper_bound" />
-  </ind:textfilecontent54_test>
-
-  <ind:textfilecontent54_test check="all" version="1"
-    check_existence="{{{ "any_exist" if product in ["al2023", "rhel7"] else "at_least_one_exists" }}}"
-    comment="every TMOUT value is at least 1"
-    id="test_accounts_tmout_cis_lower_bound">
-    <ind:object object_ref="obj_accounts_tmout_cis_values" />
-    <ind:state state_ref="state_accounts_tmout_cis_lower_bound" />
-  </ind:textfilecontent54_test>
 
   <ind:textfilecontent54_state id="state_accounts_tmout_cis_upper_bound" version="1">
     <ind:subexpression datatype="int" operation="less than or equal" var_check="all"
