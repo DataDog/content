@@ -10,3 +10,7 @@ ssg_build_product(${PRODUCT})
 ssg_build_html_ref_tables("${PRODUCT}" "table-${PRODUCT}-{ref_id}refs" "cis")
 
 ssg_build_html_cce_table(${PRODUCT})
+
+if(SSG_AMZN_DERIVATIVES_ENABLED)
+    ssg_build_derivative_product(${PRODUCT} "amzn" "amzn2")
+endif()
