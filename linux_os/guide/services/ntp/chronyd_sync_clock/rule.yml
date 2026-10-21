@@ -21,6 +21,7 @@ platform: package[chrony]
 
 references:
     srg: SRG-OS-000356-GPOS-00144
+    stigid@ubuntu2004: UBTU-20-010436
 
 ocil_clause: ''
 

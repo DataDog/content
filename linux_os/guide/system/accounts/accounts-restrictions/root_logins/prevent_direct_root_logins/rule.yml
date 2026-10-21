@@ -16,6 +16,7 @@ severity: medium
 
 references:
     srg: SRG-OS-000109-GPOS-00056
+    stigid@ubuntu2004: UBTU-20-010408
 
 ocil_clause: 'the output does not contain "L" in the second field'
 
