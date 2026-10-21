@@ -1,0 +1,26 @@
+{{#- pam_pwhistory of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. -#}}
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The pam_pwhistory.so lines of system-auth and password-auth include enforce_for_root.", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion comment="pam_pwhistory.so includes enforce_for_root in system-auth"
+        test_ref="test_{{{ rule_id }}}_system_auth" />
+      <criterion comment="pam_pwhistory.so includes enforce_for_root in password-auth"
+        test_ref="test_{{{ rule_id }}}_password_auth" />
+    </criteria>
+  </definition>
+{{% for stem in ["system", "password"] %}}
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
+    id="test_{{{ rule_id }}}_{{{ stem }}}_auth"
+    comment="pam_pwhistory.so includes enforce_for_root in {{{ stem }}}-auth">
+    <ind:object object_ref="obj_{{{ rule_id }}}_{{{ stem }}}_auth" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_{{{ stem }}}_auth" version="1">
+    <ind:filepath>/etc/pam.d/{{{ stem }}}-auth</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*password\s+(?:required|requisite)\s+pam_pwhistory\.so\s+(?:[^#\n]*\s)?enforce_for_root(?:\s|$)</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{% endfor %}}
+</def-group>

@@ -2,7 +2,7 @@
 
 {{{ bash_instantiate_variables("var_accounts_tmout") }}}
 
-{{% if product == "al2023" %}}
+{{% if product in ["al2023", "rhel7"] %}}
 tmout_files=(/etc/bashrc /etc/profile /etc/profile.d/*.sh)
 tmout_readonly='^\s*([^#]+;\s*)?readonly\s+TMOUT(\s+|\s*;|\s*$|=[1-9]\d*)\b'
 tmout_export='^\s*([^#]+;\s*)?export\s+TMOUT(\s+|\s*;|\s*$|=[1-9]\d*)\b'
@@ -25,7 +25,7 @@ for f in "${tmout_files[@]}"; do
     # is: an edit of part of it breaks the script. A file with such values
     # alone stays as it is.
     grep -Eq '^[^#]*\bTMOUT=[^[:space:];#$`]*([[:space:];#]|$)' "$f" || continue
-    {{% if product == "al2023" %}}
+    {{% if product in ["al2023", "rhel7"] %}}
     sed -i -E 's/^(\s*)(typeset|declare)\s+-[[:alpha:]]+\s+TMOUT=[^[:space:];#$`]*([[:space:];#]|$)/\1readonly TMOUT='"$var_accounts_tmout"' ; export TMOUT\3/' "$f"
     {{% endif %}}
     sed -i -E 's/^([^#]*\bTMOUT=)[^[:space:];#$`]*([[:space:];#]|$)/\1'"$var_accounts_tmout"'\2/' "$f"
