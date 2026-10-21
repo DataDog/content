@@ -25,4 +25,8 @@ fixtext: |-
     Enable the ufw by using the following command:  
     <pre>$ sudo ufw enable</pre>
 
+{{% if product == "ubuntu2004" -%}}
+platform: system_with_kernel and deb_firewall_applicable[ufw]
+{{%- else -%}}
 platform: system_with_kernel and package[ufw]
+{{%- endif %}}

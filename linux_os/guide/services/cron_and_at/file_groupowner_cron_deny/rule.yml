@@ -3,8 +3,10 @@ documentation_complete: true
 
 title: 'Verify Group Who Owns cron.deny'
 
+{{%- set target_group = "crontab|root" if product == "ubuntu2004" else "root" %}}
+
 description: |-
-    {{{ describe_file_group_owner(file="/etc/cron.deny", group="root") }}}
+    {{{ describe_file_group_owner(file="/etc/cron.deny", group=target_group) }}}
 
 rationale: |-
     Service configuration files enable or disable features of their respective services that if configured incorrectly
@@ -22,10 +24,10 @@ references:
     nist: CM-6 b
     srg: SRG-OS-000480-GPOS-00227
 
-ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/cron.deny", group="root") }}}'
+ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/cron.deny", group=target_group) }}}'
 
 ocil: |-
-    {{{ ocil_file_group_owner(file="/etc/cron.deny", group="root") }}}
+    {{{ ocil_file_group_owner(file="/etc/cron.deny", group=target_group) }}}
 
 fixtext: '{{{ fixtext_file_group_owner(file="/etc/cron.deny/", group="root") }}}'
 
@@ -36,3 +38,4 @@ template:
     vars:
         filepath: /etc/cron.deny
         gid_or_name: '0'
+        gid_or_name@ubuntu2004: 'crontab|root'

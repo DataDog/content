@@ -2,7 +2,7 @@
 {{% if product in ['rhel7', 'sle15'] %}}
     {{% set pkp_name="dhcp" %}}
     {{% set svc_name="dhcpd" %}}
-{{% elif product in ['debian12', 'ubuntu2404', 'ubuntu2604'] %}}
+{{% elif product in ['debian12', 'ubuntu2004', 'ubuntu2404', 'ubuntu2604'] %}}
     {{% set pkp_name="isc-dhcp-server" %}}
     {{% set svc_name="isc-dhcp-server" %}}
 {{% else %}}

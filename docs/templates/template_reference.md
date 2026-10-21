@@ -996,6 +996,12 @@ When the remediation is applied duplicate occurrences of `key` are removed.
         `ClientAliveCountMax`. The OVAL check then also passes an absent
         **parameter** when this value is less than or equal to the variable.
 
+    -   **missing_parameter_pass_variable**: effective only in OVAL checks, needs
+        **missing_parameter_pass** set to `"false"`. The name of a boolean XCCDF
+        variable, eg. `var_sshd_default_compliant`. The OVAL check then also
+        passes an absent **parameter** when the variable is true, for an option
+        whose sshd default meets the requirement.
+
     -   **is_default_value** - effective only in Ansible and Bash remediation, if
         set to `"true"`, settings will be remediated into a file
         called (in case of Fedora or RHEL9 and newer):
