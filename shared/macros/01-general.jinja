@@ -1266,11 +1266,14 @@ p+i+n+u+g+s+b+acl+xattrs+sha512
     by spaces. The CIS Amazon Linux 2023 Benchmark names the tools under
     /sbin, a link to /usr/sbin there, and AIDE 0.18 of Amazon Linux 2023
     records the link itself and takes the files from /usr/sbin, so the
-    configuration names them under both directories.
+    configuration names them under both directories. The CIS Ubuntu 20.04
+    Benchmark and the Ubuntu 20.04 STIG name them under /sbin.
 #}}
 {{%- macro aide_audit_dirs() -%}}
 {{%- if product == 'al2023' -%}}
 /usr/sbin /sbin
+{{%- elif product == 'ubuntu2004' -%}}
+/sbin
 {{%- else -%}}
 /usr/sbin
 {{%- endif -%}}

@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'SSH Server Defaults Count as Compliant'
+
+description: |-
+    Whether an SSH server option that the configuration leaves out counts as
+    compliant when the default of sshd meets the requirement. The CIS Benchmarks
+    read the effective configuration with sshd -T, which shows these defaults.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true

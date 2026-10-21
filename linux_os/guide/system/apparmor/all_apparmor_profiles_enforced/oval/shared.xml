@@ -4,6 +4,10 @@
     <criteria>
       <criterion comment="No AppArmor profiles are outside enforce mode"
         test_ref="{{{ rule_id }}}_test_no_non_enforced_profiles" />
+{{%- if product == "ubuntu2004" %}}
+      <criterion comment="AppArmor profiles are loaded"
+        test_ref="{{{ rule_id }}}_test_profiles_loaded" />
+{{%- endif %}}
     </criteria>
   </definition>
 
@@ -18,4 +22,18 @@
     comment="No AppArmor profiles in complain, kill or unconfined mode">
     <ind:object object_ref="{{{ rule_id }}}_obj_non_enforced_profiles"/>
   </ind:textfilecontent54_test>
+{{%- if product == "ubuntu2004" %}}
+  {{#- CIS Ubuntu 20.04 1.3.1.4 requires profiles to be loaded: with AppArmor
+      off, the profiles file is absent and no profile is outside enforce mode. #}}
+  <ind:textfilecontent54_object id="{{{ rule_id }}}_obj_profiles" version="1">
+    <ind:filepath datatype="string">/sys/kernel/security/apparmor/profiles</ind:filepath>
+    <ind:pattern operation="pattern match">^.+\s+\(\w+\)$</ind:pattern>
+    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists"
+    id="{{{ rule_id }}}_test_profiles_loaded" version="1"
+    comment="At least one AppArmor profile is loaded">
+    <ind:object object_ref="{{{ rule_id }}}_obj_profiles"/>
+  </ind:textfilecontent54_test>
+{{%- endif %}}
 </def-group>

@@ -12,6 +12,9 @@
 {{{ bash_copy_distro_defaults("/usr/etc/sudoers", "/etc/sudoers") }}}
 {{{ lineinfile_absent("/etc/sudoers", "^\s*@includedir\s*/usr/etc/sudoers\.d", sed_path_separator="#", rule_id=rule_id) }}}
 {{% endif %}}
+{{%- if NEGATION_FAILS %}}
+{{{ bash_sudo_remove_config("!" ~ OPTION, "\\!" ~ OPTION) }}}
+{{%- endif %}}
 if /usr/sbin/visudo -qcf /etc/sudoers; then
     cp /etc/sudoers /etc/sudoers.bak
     if ! grep -P '^[\s]*Defaults[ \t]+[^!\n]*\b{{{ OPTION_REGEX }}}.*$' /etc/sudoers; then

@@ -51,7 +51,9 @@ template:
         packagename@debian11: rsync
         packagename@debian12: rsync
         packagename@kylinsecserver6: rsync
+        servicename@ubuntu2004: rsync
         servicename@ubuntu2204: rsync
+        packagename@ubuntu2004: rsync
         packagename@ubuntu2204: rsync
         servicename@ubuntu2404: rsync
         servicename@ubuntu2604: rsync

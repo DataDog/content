@@ -1,6 +1,10 @@
 {{% set path = "/etc/ssh" %}}
 {{% set key_regex = ".*_key$" %}}
 {{% set dedicated_ssh_groupname = groups.get("dedicated_ssh_keyowner", {}).get("name") %}}
+{{%- if product == "ubuntu2004" %}}
+{{#- CIS Ubuntu 20.04 5.1.2 accepts keys of the ssh group with mode 0640. #}}
+{{%- set dedicated_ssh_groupname = "ssh" %}}
+{{%- endif %}}
 
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">

@@ -11,11 +11,15 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "ubuntu2004" -%}}
+platform: deb_firewall_applicable[iptables]
+{{%- else -%}}
 platform: package[iptables]
+{{%- endif %}}
 
 {{{ complete_ocil_entry_package_installed("iptables-persistent") }}}
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: package_installed_guard_var
     vars:

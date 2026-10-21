@@ -11,6 +11,9 @@ def preprocess(data, lang):
     data["vendor_dropin_dirs"] = parse_template_boolean_value(
         data, parameter="vendor_dropin_dirs", default_value=False)
     data["missing_parameter_pass_definition"] = data.get("missing_parameter_pass_definition", "")
+    # package_for_testing names a package that the test scenarios install, as
+    # the platform of a rule can require.
+    data.setdefault("package_for_testing", "")
     data["dropin_dirs"] = []
     if data["vendor_dropin_dirs"]:
         dropin_dir = data["dropin_dir"]

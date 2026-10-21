@@ -65,7 +65,13 @@ warnings:
         does not already contain the <tt>[Coredump]</tt> section,
         the value will not be configured correctly.
 
+# yamllint disable rule:key-duplicates
+{{% if product == "ubuntu2004" %}}
+platform: package[systemd-coredump]
+{{% else %}}
 platform: package[systemd]
+{{% endif %}}
+# yamllint enable rule:key-duplicates
 
 {{% if product in ["ol8", "ol9", "rhel8", "rhel9"] %}}
 conflicts:
@@ -76,6 +82,7 @@ template:
     name: systemd_dropin_configuration
     vars:
         master_cfg_file: /etc/systemd/coredump.conf
+        package_for_testing@ubuntu2004: systemd-coredump
         dropin_dir: /etc/systemd/coredump.conf.d
         section: Coredump
         param: ProcessSizeMax

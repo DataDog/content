@@ -3,6 +3,9 @@ documentation_complete: true
 title: 'Verify Permissions on SSH Server Private *_key Key Files for CIS Benchmark'
 
 {{% set dedicated_ssh_groupname = groups.get("dedicated_ssh_keyowner", {}).get("name") %}}
+{{%- if product == "ubuntu2004" %}}
+{{%- set dedicated_ssh_groupname = "ssh" %}}
+{{%- endif %}}
 
 description: |-
     SSH server private keys, the files that match the <code>/etc/ssh/*_key</code> glob,

@@ -23,7 +23,17 @@
 {{%- else %}}
       <criteria operator="AND">
         <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
+{{%- if product == "ubuntu2004" %}}
+        <criteria operator="OR" comment="32-bit rule, unless the 64-bit rules suffice on a 64-bit system">
+          <criterion comment="audit augenrules 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_augenrules" />
+          <criteria operator="AND">
+            <criterion comment="the 64-bit rules suffice" test_ref="test_arkml_{{{ NAME }}}_32bit_optional" />
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" />
+          </criteria>
+        </criteria>
+{{%- else %}}
         <criterion comment="audit augenrules 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_augenrules" />
+{{%- endif %}}
         <criteria operator="OR">
           <!-- System either isn't 64-bit => we just check presence of 32-bit version of {{{ NAME }}} audit ARKML rule -->
           <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
@@ -52,7 +62,17 @@
 {{%- else %}}
       <criteria operator="AND">
         <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
+{{%- if product == "ubuntu2004" %}}
+        <criteria operator="OR" comment="32-bit rule, unless the 64-bit rules suffice on a 64-bit system">
+          <criterion comment="audit auditctl 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_auditctl" />
+          <criteria operator="AND">
+            <criterion comment="the 64-bit rules suffice" test_ref="test_arkml_{{{ NAME }}}_32bit_optional" />
+            <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" />
+          </criteria>
+        </criteria>
+{{%- else %}}
         <criterion comment="audit auditctl 32-bit {{{ NAME }}}" test_ref="test_32bit_arkml_{{{ NAME }}}_auditctl" />
+{{%- endif %}}
         <criteria operator="OR">
           <!-- System either isn't 64-bit => we just check presence of 32-bit version of the {{{ NAME }}} audit ARKML rule -->
           <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
@@ -90,6 +110,22 @@
 {{{ arkml_oval(audit_type, bits, NAME) }}}
 {{% endfor %}}
 {{% endfor %}}
+{{%- if product == "ubuntu2004" %}}
+
+  <ind:variable_test id="test_arkml_{{{ NAME }}}_32bit_optional" version="1" check="all"
+  check_existence="all_exist" comment="the 64-bit rules suffice">
+    <ind:object object_ref="obj_arkml_{{{ NAME }}}_32bit_optional" />
+    <ind:state state_ref="state_arkml_{{{ NAME }}}_32bit_optional" />
+  </ind:variable_test>
+  <ind:variable_object id="obj_arkml_{{{ NAME }}}_32bit_optional" version="1">
+    <ind:var_ref>var_audit_rules_kernel_module_32bit_optional</ind:var_ref>
+  </ind:variable_object>
+  <ind:variable_state id="state_arkml_{{{ NAME }}}_32bit_optional" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+  <external_variable id="var_audit_rules_kernel_module_32bit_optional" datatype="boolean" version="1"
+  comment="the 64-bit kernel module audit rules suffice on a 64-bit system" />
+{{%- endif %}}
 
 </def-group>
 

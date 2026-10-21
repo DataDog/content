@@ -159,6 +159,8 @@ args:
     pkgname: sudo
   systemd:
     pkgname: systemd
+  systemd-coredump:
+    pkgname: systemd-coredump
   systemd-journal-remote:
     pkgname: systemd-journal-remote
   systemd-timesyncd:

@@ -57,6 +57,7 @@ template:
         mount_has_to_exist: false
         filesystem: tmpfs
         type: tmpfs
+        fstab_entry_optional@ubuntu2004: 'true'
         mount_has_to_exist@sle12: true
         fstab_entry_optional@rhel7: 'true'
         filesystem@sle12: ''

@@ -1091,9 +1091,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type xccdf_variable_is_maximum: bool
 :param sshd_default: With xccdf_variable_is_maximum, the value sshd uses when the configuration leaves the parameter out. An absent parameter then passes when this value is at most the value of xccdf_variable.
 :type sshd_default: str
+:param missing_parameter_pass_variable: The name of a boolean XCCDF variable. With missing_parameter_pass false, an absent parameter passes when the variable is true.
+:type missing_parameter_pass_variable: str
 
 #}}
-{{%- macro sshd_oval_check(parameter, value, missing_parameter_pass, config_is_distributed, runtime_check="false", xccdf_variable="", datatype="", rule_id=None, rule_title=None, xccdf_variable_is_maximum=false, sshd_default="") -%}}
+{{%- macro sshd_oval_check(parameter, value, missing_parameter_pass, config_is_distributed, runtime_check="false", xccdf_variable="", datatype="", rule_id=None, rule_title=None, xccdf_variable_is_maximum=false, sshd_default="", missing_parameter_pass_variable="") -%}}
 {{%- set sshd_main_config = sshd_main_config_file %}}
 {{%- set sshd_drop_in_dir = sshd_config_dir -%}}
 {{%- set sshd_base_dir = sshd_config_base_dir -%}}
@@ -1161,6 +1163,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
             <criteria comment="{{{ parameter }}} is set, or its default of {{{ sshd_default }}} is within {{{ xccdf_variable }}}" operator="OR">
               <criterion comment="the configuration exists" test_ref="test_{{{ parameter }}}_present_{{{ rule_id }}}" />
               <criterion comment="the default of {{{ parameter }}} is within {{{ xccdf_variable }}}" test_ref="test_{{{ rule_id }}}_default_within_variable" />
+            </criteria>
+            {{%- elif not missing_parameter_pass and missing_parameter_pass_variable %}}
+            <criteria comment="{{{ parameter }}} is set, or {{{ missing_parameter_pass_variable }}} lets its default pass" operator="OR">
+              <criterion comment="the configuration exists" test_ref="test_{{{ parameter }}}_present_{{{ rule_id }}}" />
+              <criterion comment="{{{ missing_parameter_pass_variable }}} is true" test_ref="test_{{{ rule_id }}}_missing_parameter_passes" />
             </criteria>
             {{%- elif not missing_parameter_pass %}}
             <criterion comment="the configuration exists" test_ref="test_{{{ parameter }}}_present_{{{ rule_id }}}" />
@@ -1342,6 +1349,26 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
     <ind:value operation="greater than or equal" datatype="int">{{{ sshd_default }}}</ind:value>
   </ind:variable_state>
   {{%- endif %}}
+  {{%- endif %}}
+  {{%- if not missing_parameter_pass and missing_parameter_pass_variable %}}
+
+  <ind:variable_test id="test_{{{ rule_id }}}_missing_parameter_passes" version="1"
+                     check="all" check_existence="at_least_one_exists"
+                     comment="{{{ missing_parameter_pass_variable }}} is true">
+    <ind:object object_ref="obj_{{{ rule_id }}}_missing_parameter_passes" />
+    <ind:state state_ref="state_{{{ rule_id }}}_missing_parameter_passes" />
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_{{{ rule_id }}}_missing_parameter_passes" version="1">
+    <ind:var_ref>{{{ missing_parameter_pass_variable }}}</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_{{{ rule_id }}}_missing_parameter_passes" version="1">
+    <ind:value operation="equals" datatype="boolean">true</ind:value>
+  </ind:variable_state>
+
+  <external_variable comment="an absent {{{ parameter }}} passes when this is true"
+    datatype="boolean" id="{{{ missing_parameter_pass_variable }}}" version="1" />
   {{%- endif %}}
 
 </def-group>

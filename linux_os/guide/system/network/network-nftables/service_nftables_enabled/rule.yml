@@ -33,6 +33,8 @@ fixtext: |-
 
 {{% if product == "rhel7" %}}
 platform: system_with_kernel and firewall_applicable[nftables]
+{{% elif product == "ubuntu2004" %}}
+platform: system_with_kernel and deb_firewall_applicable[nftables]
 {{% else %}}
 platform: system_with_kernel and package[nftables] and service_disabled[firewalld]
 {{% endif %}}

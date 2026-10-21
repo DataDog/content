@@ -40,7 +40,7 @@ fixtext: '{{{ describe_package_install(package="chrony") }}}'
 
 srg_requirement: '{{{ srg_requirement_package_installed("chrony") }}}'
 
-{{%- if 'ubuntu' in product %}}
+{{%- if 'ubuntu' in product and product != "ubuntu2004" %}}
 template:
     name: package_installed_guard_var
     vars:

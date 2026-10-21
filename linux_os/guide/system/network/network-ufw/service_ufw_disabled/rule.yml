@@ -1,0 +1,46 @@
+documentation_complete: true
+
+title: 'Remove ufw or Mask the ufw Service'
+
+description: |-
+    When nftables or iptables configures the firewall, the Uncomplicated
+    Firewall (ufw) is removed, or it is inactive with its service masked.
+    Remove the <tt>ufw</tt> package with the following command:
+    <pre>$ sudo apt purge ufw</pre>
+    or disable ufw and mask its service with the following commands:
+    <pre>$ sudo ufw disable
+    $ sudo systemctl stop ufw.service
+    $ sudo systemctl mask ufw.service</pre>
+
+rationale: |-
+    Running ufw along with another firewall utility may lead to conflicts
+    and unexpected results.
+
+severity: medium
+
+ocil_clause: 'ufw is installed and either active or its service is not masked'
+
+ocil: |-
+    Run the following command to verify that ufw is not installed:
+    <pre>$ dpkg-query -s ufw &amp;&gt;/dev/null &amp;&amp; echo "ufw is installed"</pre>
+    If ufw is installed, run the following commands to verify that ufw is
+    inactive and its service is masked and stopped:
+    <pre>$ sudo ufw status
+    Status: inactive</pre>
+    <pre>$ systemctl is-enabled ufw.service
+    masked</pre>
+    <pre>$ systemctl is-active ufw.service
+    inactive</pre>
+
+fixtext: '{{{ fixtext_service_disabled("ufw") }}}'
+
+platform: system_with_kernel and (deb_firewall_applicable[nftables] or deb_firewall_applicable[iptables])
+
+template:
+    name: service_disabled
+    vars:
+        servicename: ufw
+        packagename: ufw
+    backends:
+        oval: "off"
+        sce-bash: "off"

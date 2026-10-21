@@ -8,4 +8,5 @@ rules:
 - accounts_umask_etc_profile
 - accounts_umask_etc_profile_d
 - accounts_umask_shell_init_files
+- accounts_umask_default_order
 - accounts_umask_root
