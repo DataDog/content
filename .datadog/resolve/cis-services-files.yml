@@ -1,0 +1,42 @@
+# Conflicts of cis-services-files when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+linux_os/guide/services/obsolete/package_rsync_removed/rule.yml:
+  - "{{% if 'rhel' in product or product in ['al2023', 'almalinux9', 'ol8','ol9', 'hummingbird'] -%}}"
+shared/applicability/package.yml:
+  - "    {{% if 'debian' in product or 'ubuntu' in product %}}"
+tests/data/profile_stability/rhel10/cis.profile:
+  - package_chrony_installed
+  - package_rsyslog_installed
+  - |
+    service_rsyncd_disabled
+    service_rsyslog_enabled
+    service_smb_disabled
+    service_snmpd_disabled
+    service_squid_disabled
+tests/data/profile_stability/rhel10/cis_server_l1.profile:
+  - package_chrony_installed
+  - package_rsyslog_installed
+  - |
+    service_rsyncd_disabled
+    service_rsyslog_enabled
+    service_smb_disabled
+    service_snmpd_disabled
+    service_squid_disabled
+tests/data/profile_stability/rhel10/cis_workstation_l1.profile:
+  - package_chrony_installed
+  - package_rsyslog_installed
+  - |
+    service_rsyncd_disabled
+    service_rsyslog_enabled
+    service_smb_disabled
+    service_snmpd_disabled
+    service_squid_disabled
+tests/data/profile_stability/rhel10/cis_workstation_l2.profile:
+  - package_chrony_installed
+  - package_rsyslog_installed
+  - |
+    service_rsyncd_disabled
+    service_rsyslog_enabled
+    service_smb_disabled
+    service_snmpd_disabled
+    service_squid_disabled
