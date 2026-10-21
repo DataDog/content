@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = passwd
 # platform = Red Hat Enterprise Linux 7
 
 readarray -t systemaccounts < <(awk -F: '($3 > 0 && $3 < {{{ uid_min }}}) { print $1 }' /etc/passwd)

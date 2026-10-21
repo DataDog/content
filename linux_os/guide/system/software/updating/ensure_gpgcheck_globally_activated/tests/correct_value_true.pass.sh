@@ -1,6 +1,11 @@
 #!/bin/bash
+{{% if product == "rhel7" %}}
+# platform = Not Applicable
+{{% endif %}}
 {{% if 'sle' in product or 'slmicro' in product %}}
 # packages = libselinux1
+{{% elif product == "rhel7" %}}
+# packages = libselinux-python
 {{% else %}}
 # packages = python3-libselinux
 {{% endif %}}

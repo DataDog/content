@@ -1,0 +1,37 @@
+documentation_complete: true
+
+title: 'Verify Permissions of Log Files Are 0644 or More Restrictive'
+
+description: |-
+    Every file under <tt>/var/log</tt>, in its subdirectories too, must not
+    be executable or writable by its group or by others: its mode must be
+    <tt>0644</tt> or more restrictive. The utmp files <tt>lastlog</tt>,
+    <tt>wtmp</tt>, <tt>btmp</tt> and their rotated copies, and
+    <tt>README</tt>, may be group writable and are left out.
+    To find the files that fail, run:
+    <pre>$ sudo find -L /var/log -type f -perm /0133 ! -name lastlog ! -name 'lastlog.*' ! -name '[bw]tmp' ! -name '[bw]tmp[.-]*' ! -name README</pre>
+    and remove the excess permissions of each file it prints with
+    <tt>chmod u-x,g-wx,o-wx</tt>.
+
+rationale: |-
+    Log files record the activity of the system and its users. A log file
+    that others can write can be altered to hide that activity.
+
+severity: medium
+
+ocil_clause: 'a log file is executable or writable by its group or by others'
+
+ocil: |-
+    To find the log files whose mode is more permissive than <tt>0644</tt>,
+    run the following command:
+    <pre>$ sudo find -L /var/log -type f -perm /0133 ! -name lastlog ! -name 'lastlog.*' ! -name '[bw]tmp' ! -name '[bw]tmp[.-]*' ! -name README</pre>
+    The command should print nothing.
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /var/log/
+        file_regex: '.*'
+        filemode: '0644'
+        recursive: 'true'
+        excluded_files: ['[bw]tmp', '[bw]tmp[.-]*', 'lastlog', 'lastlog[.]*', 'README']
