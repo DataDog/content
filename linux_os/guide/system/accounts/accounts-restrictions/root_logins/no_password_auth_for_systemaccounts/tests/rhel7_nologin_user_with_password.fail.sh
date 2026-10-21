@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = passwd
 # platform = Red Hat Enterprise Linux 7
 
 # The CIS RHEL 7 audit requires every account with the nologin shell to be locked.

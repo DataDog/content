@@ -4,6 +4,7 @@
 
 rm -rf /etc/chrony/conf.d
 rm -rf /etc/chrony/sources.d
+rm -rf /etc/chrony.d
 
 echo "some line" > {{{ chrony_conf_path }}}
 echo "another line" >> {{{ chrony_conf_path }}}

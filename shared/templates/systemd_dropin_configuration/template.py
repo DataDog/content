@@ -10,6 +10,7 @@ def preprocess(data, lang):
         data, parameter="missing_config_file_fail", default_value=True)
     data["vendor_dropin_dirs"] = parse_template_boolean_value(
         data, parameter="vendor_dropin_dirs", default_value=False)
+    data["missing_parameter_pass_definition"] = data.get("missing_parameter_pass_definition", "")
     data["dropin_dirs"] = []
     if data["vendor_dropin_dirs"]:
         dropin_dir = data["dropin_dir"]

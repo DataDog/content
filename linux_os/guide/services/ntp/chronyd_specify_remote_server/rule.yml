@@ -25,6 +25,11 @@ description: |-
     # In /etc/chrony/conf.d/ntp-servers.conf:
     pool 1.pool.ntp.org</pre>
     Multiple servers may be configured.
+    {{% if product == "rhel7" %}}
+    On Amazon Linux 2, the server or pool lines are read from <tt>{{{ chrony_conf_path }}}</tt>
+    and from the files of <tt>/etc/chrony.d</tt>, as the CIS benchmark reads them, and chrony
+    reads the <tt>.conf</tt> files of that directory through a <tt>confdir /etc/chrony.d</tt> line.
+    {{% endif %}}
 
 rationale: |-
     If <tt>chrony</tt> is in use on the system proper configuration is vital to ensuring time
@@ -64,3 +69,7 @@ ocil: |-
     <pre># grep -E "^(server|pool)" /path/to/confdir/*.conf</pre>
     At least one server or pool directive must be present in the main configuration file
     or in files within directories specified by sourcedir or confdir directives.
+    {{% if product == "rhel7" %}}
+    On Amazon Linux 2, check the main configuration file and the files of <tt>/etc/chrony.d</tt>:
+    <pre># grep -Prs '^\h*(server|pool)\h+[^#\n\r]+' {{{ chrony_conf_path }}} /etc/chrony.d</pre>
+    {{% endif %}}
