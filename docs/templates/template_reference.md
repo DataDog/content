@@ -625,6 +625,11 @@ The only way to remediate is to recompile and reinstall the kernel, so no remedi
         to `false` the **mountpoint** entry will be created in
         `/etc/fstab`.
 
+    -   **fstab_entry_optional** - Used only in OVAL. If set to `true`,
+        the check passes when `/etc/fstab` has no entry for the
+        **mountpoint**, and the active mount decides, whatever
+        **mount_has_to_exist** says. Default `false`.
+
 -   Languages: Anaconda, Ansible, Bash, OVAL
 
 #### mount_option_remote_filesystems

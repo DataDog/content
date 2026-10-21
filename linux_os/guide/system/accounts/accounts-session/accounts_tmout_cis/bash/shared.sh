@@ -2,7 +2,7 @@
 
 {{{ bash_instantiate_variables("var_accounts_tmout") }}}
 
-{{% if product == "al2023" %}}
+{{% if product in ["al2023", "rhel7"] %}}
 tmout_files=(/etc/bashrc /etc/profile /etc/profile.d/*.sh)
 tmout_readonly='^\s*([^#]+;\s*)?readonly\s+TMOUT(\s+|\s*;|\s*$|=[1-9]\d*)\b'
 tmout_export='^\s*([^#]+;\s*)?export\s+TMOUT(\s+|\s*;|\s*$|=[1-9]\d*)\b'
@@ -30,7 +30,7 @@ for f in "${tmout_files[@]}"; do
     tmout_set=1
     # A file whose values are all computed stays as it is.
     grep -Eq "$tmout_assignment$tmout_literal" "$f" || continue
-    {{% if product == "al2023" %}}
+    {{% if product in ["al2023", "rhel7"] %}}
     sed -i -E "s/^([[:space:]]*)(typeset|declare)[[:space:]]+-[[:alpha:]]+[[:space:]]+TMOUT=$tmout_literal/\\1readonly TMOUT=$var_accounts_tmout ; export TMOUT\\4/" "$f"
     {{% endif %}}
     # A rewritten value carries a mark until its line is done, so that the
