@@ -28,6 +28,7 @@ ocil: |-
 
 identifiers:
     cce@rhcos4: CCE-82659-4
+    cce@rhel7: CCE-27397-9
     cce@rhel9: CCE-89909-6
     cce@rhel10: CCE-88738-0
 

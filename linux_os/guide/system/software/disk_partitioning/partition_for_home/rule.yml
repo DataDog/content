@@ -18,6 +18,7 @@ severity: low
 
 identifiers:
     cce@rhcos4: CCE-82739-4
+    cce@rhel7: CCE-80144-9
     cce@rhel8: CCE-81044-0
     cce@rhel9: CCE-83468-9
     cce@rhel10: CCE-88231-6
