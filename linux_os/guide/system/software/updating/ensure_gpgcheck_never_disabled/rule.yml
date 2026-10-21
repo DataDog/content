@@ -12,6 +12,10 @@ description: |-
     To ensure signature checking is not disabled for
     any repos, remove any lines from files in <tt>{{{ pkg_manager_repos }}}</tt> of the form:
     <pre>gpgcheck=0</pre>
+    {{%- if product == "rhel7" %}}
+    Also set to 1 any gpgcheck value that is not a boolean, such as
+    <tt>gpgcheck=2</tt>, which {{{ pkg_manager }}} ignores.
+    {{%- endif %}}
 
 rationale: |-
     Verifying the authenticity of the software prior to installation validates
