@@ -1,6 +1,6 @@
 {{% if "sle12" in product or "debian" in product or "ubuntu" in product %}}
 {{%- set pam_files = ['/etc/pam.d/common-password'] -%}}
-{{% elif product == "rhel10" %}}
+{{% elif product in ["rhel7", "rhel10"] %}}
 {{%- set pam_files = ['/etc/pam.d/password-auth', '/etc/pam.d/system-auth'] -%}}
 {{% else %}}
 {{%- set pam_files = ['/etc/pam.d/system-auth'] -%}}

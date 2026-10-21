@@ -34,6 +34,15 @@ identifiers:
     cce@rhel10: CCE-87752-2
     cce@sle15: CCE-92563-6
 
+# yamllint disable rule:key-duplicates
+{{% if product == "rhel7" %}}
+ocil_clause: 'Enable is set to true in the xdmcp section of the {{{ gdm_conf_path }}} gdm configuration file'
+
+ocil: |-
+    To ensure that XDMCP is disabled in <code>{{{ gdm_conf_path }}}</code>, run the following command:
+    <pre>sed -n '/^\s*\[xdmcp\]/,/^\s*\[/p' {{{ gdm_conf_path }}} | grep -Pi '^\h*Enable\h*=\h*true\b'</pre>
+    The command should return nothing.
+{{% else %}}
 ocil_clause: 'the Enable is not set to false or is missing in the xdmcp section of the {{{ gdm_conf_path }}} gdm configuration file'
 
 ocil: |-
@@ -44,5 +53,7 @@ ocil: |-
     [xdmcp]
     Enable=false
     </pre>
+{{% endif %}}
+# yamllint enable rule:key-duplicates
 
 # There is a gdm platform implied by the parent group.
