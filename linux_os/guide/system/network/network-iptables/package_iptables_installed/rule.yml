@@ -1,7 +1,11 @@
 documentation_complete: true
 
 
+{{% if product == "rhel7" %}}
+platform: system_with_kernel
+{{% else %}}
 platform: system_with_kernel and not rhcos4-rhel9 and service_disabled[nftables] and service_disabled[ufw]
+{{% endif %}}
 
 title: 'Install iptables Package'
 

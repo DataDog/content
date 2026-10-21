@@ -1,3 +1,7 @@
+{{#- CIS RHEL 7 v4.0.0 5.2.3.4 audits clock_settime with the other time syscalls, without an argument filter -#}}
+{{%- set rx_tail = "[\s]+(?:-S[\s]+\S+[\s]+)*?-S[\s]+(?:\S+,)?clock_settime(?:,\S+)?[\s]+(?:-S[\s]+\S+[\s]+)*(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" if product == "rhel7" else "[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$" -%}}
+{{%- set rx_b32 = "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32" + rx_tail -%}}
+{{%- set rx_b64 = "^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64" + rx_tail -%}}
 <def-group>
   <definition class="compliance" id="audit_rules_time_clock_settime" version="2">
     {{{ oval_metadata("Record attempts to alter time through clock_settime.", rule_title=rule_title) }}}
@@ -36,7 +40,7 @@
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_32bit_art_clock_settime_augenrules" version="1">
     <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$</ind:pattern>
+    <ind:pattern operation="pattern match">{{{ rx_b32 }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
@@ -45,7 +49,7 @@
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_64bit_art_clock_settime_augenrules" version="1">
     <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$</ind:pattern>
+    <ind:pattern operation="pattern match">{{{ rx_b64 }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
@@ -54,7 +58,7 @@
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_32bit_art_clock_settime_auditctl" version="1">
     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b32[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$</ind:pattern>
+    <ind:pattern operation="pattern match">{{{ rx_b32 }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 
@@ -63,7 +67,7 @@
   </ind:textfilecontent54_test>
   <ind:textfilecontent54_object id="object_64bit_art_clock_settime_auditctl" version="1">
     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+arch=b64[\s]+(-S[\s]+clock_settime[\s]+|([\s]+|[,])clock_settime([\s]+|[,]))-F[\s]+a0=(?:0x)?0[\s]+(?:-F[\s]+key=|-k[\s]+)[\S]+[\s]*$</ind:pattern>
+    <ind:pattern operation="pattern match">{{{ rx_b64 }}}</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 

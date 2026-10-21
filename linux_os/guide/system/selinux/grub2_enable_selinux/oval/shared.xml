@@ -8,6 +8,10 @@
         comment="check value selinux|enforcing=0 in /etc/default/grub, fail if found"/>
       <criterion test_ref="test_selinux_grub2_cfg"
         comment="check value selinux|enforcing=0 in /etc/grub2.cfg, fail if found"/>
+{{%- if product == "rhel7" %}}
+      <criterion test_ref="test_selinux_grub2_efi_cfg"
+        comment="check value selinux|enforcing=0 in /etc/grub2-efi.cfg, fail if found"/>
+{{%- endif %}}
       <criterion test_ref="test_selinux_grub_dir"
         comment="check value selinux|enforcing=0 in /etc/grub.d, fail if found"/>
     </criteria>
@@ -52,4 +56,21 @@
     <ind:pattern operation="pattern match">^.*(selinux|enforcing)=0.*$</ind:pattern>
     <ind:instance datatype="int" operation="equals">1</ind:instance>
   </ind:textfilecontent54_object>
+{{%- if product == "rhel7" %}}
+
+  <!-- On UEFI systems /etc/grub2-efi.cfg links to the grub.cfg in the
+       EFI system partition, which grubby reads. -->
+  <ind:textfilecontent54_test id="test_selinux_grub2_efi_cfg" version="1"
+    check="all" check_existence="none_exist"
+    comment="check value selinux|enforcing=0 in /etc/grub2-efi.cfg, fail if found">
+    <ind:object object_ref="object_selinux_grub2_efi_cfg"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_selinux_grub2_efi_cfg" version="1"
+    comment="check value selinux|enforcing=0 in /etc/grub2-efi.cfg, fail if found">
+    <ind:filepath>/etc/grub2-efi.cfg</ind:filepath>
+    <ind:pattern operation="pattern match">^.*(selinux|enforcing)=0.*$</ind:pattern>
+    <ind:instance datatype="int" operation="equals">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{%- endif %}}
 </def-group>

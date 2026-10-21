@@ -7,7 +7,11 @@
 for ARCH in "${RULE_ARCHS[@]}"
 do
 	ACTION_ARCH_FILTERS="-a always,exit -F arch=$ARCH"
+{{%- if product == "rhel7" %}}
+	OTHER_FILTERS=""
+{{%- else %}}
 	OTHER_FILTERS="-F a0=0x0"
+{{%- endif %}}
 	AUID_FILTERS=""
 	SYSCALL="clock_settime"
 	KEY="time-change"

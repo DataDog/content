@@ -26,4 +26,13 @@ if grep "^ExecStart=.*" "$service_file" ; then
 else
     echo "ExecStart=-$sulogin" >> "$service_file"
 fi
+{{%- if product == "rhel7" %}}
+
+# An ExecStart in a drop-in replaces the one of the unit file.
+for f in /etc/systemd/system/emergency.service.d/*.conf; do
+    if [ -e "$f" ]; then
+        sed -i '/^[[:space:]]*ExecStart[[:space:]]*=/d' "$f"
+    fi
+done
+{{%- endif %}}
 {{% endif %}}

@@ -95,7 +95,12 @@ function check_sysctl_configuration()
     return 1
 }
 
-{{% if IPV6 == "true" -%}}
+{{% if IPV6 == "true" and product == "rhel7" -%}}
+# pass if the ipv6 module is disabled, as in the CIS audits
+if ! grep -qs '^[[:space:]]*0' /sys/module/ipv6/parameters/disable ; then
+    exit $XCCDF_RESULT_PASS
+fi
+{{% elif IPV6 == "true" -%}}
 # pass if IPv6 is disabled
 check_sysctl_configuration "net.ipv6.conf.all.disable_ipv6" "1"
 if [[ $? == 0 ]] ; then

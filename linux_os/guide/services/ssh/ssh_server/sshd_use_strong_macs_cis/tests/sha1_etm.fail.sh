@@ -1,6 +1,11 @@
 #!/bin/bash
 # packages = openssh-server
-# platform = Red Hat Enterprise Linux 10
+# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 10
+
+{{% if product == "rhel7" %}}
+# sshd -T needs host keys, which RHEL 7 creates when sshd starts.
+ssh-keygen -A
+{{% endif %}}
 
 # On RHEL 8 the crypto policy on the sshd command line takes precedence
 # over sshd_config. Opt out so that the line below applies.

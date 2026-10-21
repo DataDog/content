@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = multi_platform_rhel
+# platform = Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10
 authselect create-profile hardening -b sssd
 CUSTOM_PROFILE="custom/hardening"
 authselect select $CUSTOM_PROFILE --force

@@ -1,5 +1,6 @@
 #!/bin/bash
 # check = sce
+# packages = nftables
 # variables = var_nftables_family=inet,var_nftables_table=filter
 
 var_nftables_family="inet"

@@ -2,6 +2,13 @@
   <definition class="compliance" id="no_shelllogin_for_systemaccounts" version="2">
     {{{ oval_metadata("The root account is the only system account that should have
       a login shell.", rule_title=rule_title) }}}
+{{#- The CIS RHEL 7 audit reads every account below UID_MIN, and useradd -r gives out SYS_UID_MAX first. #}}
+{{%- if product == "rhel7" %}}
+    <criteria operator="AND">
+      <criterion comment="Test shell defined for UID from &lt;0, UID_MIN -1&gt;"
+      test_ref="test_shell_defined_default_uid_range" />
+    </criteria>
+{{%- else %}}
     <criteria operator="OR">
       <!-- If SYS_UID_MIN and SYS_UID_MAX is not defined in /etc/login.defs or drop-in files
            perform the check that any /etc/passwd entry with shell defined
@@ -69,6 +76,7 @@
       </criteria>
       {{% endif %}}
     </criteria>
+{{%- endif %}}
   </definition>
 
   <!-- First define OVAL entities used by both criteria above -->

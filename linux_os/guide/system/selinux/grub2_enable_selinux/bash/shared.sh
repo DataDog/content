@@ -2,3 +2,8 @@
 
 sed -i --follow-symlinks "s/selinux=0//gI" /etc/default/grub /etc/grub2.cfg /etc/grub.d/*
 sed -i --follow-symlinks "s/enforcing=0//gI" /etc/default/grub /etc/grub2.cfg /etc/grub.d/*
+{{%- if product == "rhel7" %}}
+if [ -e /etc/grub2-efi.cfg ]; then
+    sed -i --follow-symlinks "s/selinux=0//gI;s/enforcing=0//gI" /etc/grub2-efi.cfg
+fi
+{{%- endif %}}

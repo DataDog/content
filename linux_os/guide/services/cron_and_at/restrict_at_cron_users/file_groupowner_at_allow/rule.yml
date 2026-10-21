@@ -1,10 +1,16 @@
 documentation_complete: true
 
+{{%- if product == "rhel7" %}}
+{{%- set at_groups = "root|daemon" %}}
+{{%- else %}}
+{{%- set at_groups = "root" %}}
+{{%- endif %}}
+
 title: 'Verify Group Who Owns /etc/at.allow file'
 
 description: |-
-    If <tt>/etc/at.allow</tt> exists, it must be group-owned by <tt>root</tt>.
-    {{{ describe_file_group_owner(file="/etc/at.allow", group="root") }}}
+    If <tt>/etc/at.allow</tt> exists, it must be group-owned by <tt>{{{ at_groups|replace("|", "</tt> or <tt>") }}}</tt>.
+    {{{ describe_file_group_owner(file="/etc/at.allow", group=at_groups) }}}
 
 rationale: |-
     If the owner of the at.allow file is not set to root, the possibility exists for an
@@ -26,10 +32,10 @@ references:
     cis@sle12: 5.1.9
     cis@sle15: 5.1.9
 
-ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/at.allow", group="root") }}}'
+ocil_clause: '{{{ ocil_clause_file_group_owner(file="/etc/at.allow", group=at_groups) }}}'
 
 ocil: |-
-    {{{ ocil_file_group_owner(file="/etc/at.allow", group="root") }}}
+    {{{ ocil_file_group_owner(file="/etc/at.allow", group=at_groups) }}}
 
 platform: package[at]
 
@@ -37,4 +43,8 @@ template:
     name: file_groupowner
     vars:
         filepath: /etc/at.allow
+{{%- if product == "rhel7" %}}
+        gid_or_name: 'root|daemon'
+{{%- else %}}
         gid_or_name: '0'
+{{%- endif %}}

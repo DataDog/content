@@ -11,3 +11,10 @@ readarray -t systemaccounts < <(awk -F: \
 for systemaccount in "${systemaccounts[@]}"; do
     usermod -L "$systemaccount"
 done
+{{%- if product == "rhel7" %}}
+
+readarray -t nologinaccounts < <(awk -F: '($1 != "root" && $7 ~ /nologin/) { print $1 }' /etc/passwd)
+for nologinaccount in "${nologinaccounts[@]}"; do
+    usermod -L "$nologinaccount"
+done
+{{%- endif %}}

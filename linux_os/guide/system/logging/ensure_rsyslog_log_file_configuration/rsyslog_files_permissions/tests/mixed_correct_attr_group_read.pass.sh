@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = rsyslog
 # platform = multi_platform_sle,multi_platform_ubuntu
 
 # Declare variables used for the tests and define the create_rsyslog_test_logs function

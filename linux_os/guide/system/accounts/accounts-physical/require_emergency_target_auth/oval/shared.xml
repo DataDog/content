@@ -94,7 +94,24 @@
     <unix:path operation="equals">/etc/systemd/system</unix:path>
     <unix:filename operation="pattern match">^emergency.target$</unix:filename>
   </unix:file_object>
+{{% if product == "rhel7" %}}
+  <!-- CIS RHEL 7 1.3.3 audits the unit file. A drop-in fails the check
+       only when it replaces ExecStart. -->
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_drop_in_config_exist"
+                  comment="Look for an ExecStart in drop in config files for emergency.service"
+                  version="1"
+                  check="all"
+                  check_existence="at_least_one_exists">
+     <ind:object object_ref="object_{{{ rule_id }}}_drop_in_config_exist" />
+  </ind:textfilecontent54_test>
 
+  <ind:textfilecontent54_object id="object_{{{ rule_id }}}_drop_in_config_exist" version="1">
+    <ind:path>/etc/systemd/system/emergency.service.d</ind:path>
+    <ind:filename operation="pattern match">^.*\.conf$</ind:filename>
+    <ind:pattern operation="pattern match">^[\s]*ExecStart[\s]*=</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+{{% else %}}
   <unix:file_test id="test_{{{ rule_id }}}_drop_in_config_exist"
                   comment="Look for drop in config files for emergency.service"
                   version="1"
@@ -109,5 +126,6 @@
     <unix:path operation="equals">/etc/systemd/system/emergency.service.d</unix:path>
     <unix:filename operation="pattern match">^.*\.conf$</unix:filename>
 </unix:file_object>
+{{%- endif %}}
 
 </def-group>
