@@ -27,6 +27,7 @@ identifiers:
 
 references:
     srg: SRG-OS-000063-GPOS-00032
+    stigid@ubuntu2004: UBTU-20-010134
 
 ocil: |-
     {{{ describe_file_owner(file="/etc/audit/", owner="root") }}}
