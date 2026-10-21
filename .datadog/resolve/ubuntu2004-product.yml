@@ -1,0 +1,33 @@
+# Conflicts of ubuntu2004-product when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+linux_os/guide/system/permissions/files/permissions_local_var_log/rule.yml:
+  - |2
+            excluded_files@al2023: ['[bw]tmp', '[bw]tmp.*', '[bw]tmp-*', 'lastlog', 'lastlog.*']
+            excluded_files@ubuntu2004: ['history.log*', 'eipp.log.xz*', '[bw]tmp', '[bw]tmp.*', '[bw]tmp-*', 'lastlog', 'lastlog.*']
+  - |2
+            recursive@al2023: 'true'
+            recursive@ubuntu2004: 'true'
+linux_os/guide/services/ssh/ssh_server/sshd_use_approved_kex_ordered_stig/oval/shared.xml:
+  - "{{% elif product in ['ol7', 'rhel7', 'sle12', 'sle15', 'slmicro5', 'slmicro6', 'ubuntu2004'] %}}"
+linux_os/guide/services/ssh/ssh_server/sshd_use_approved_kex_ordered_stig/tests/common.sh:
+  - "{{% elif product in ['ol7', 'rhel7', 'sle12', 'sle15', 'slmicro5', 'slmicro6', 'ubuntu2004', 'ubuntu2204'] %}}"
+shared/macros/01-general.jinja:
+  - '{{%- if product in ["almalinux9", "debian12", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404"] %}}'
+shared/templates/audit_rules_privileged_commands/ansible.template:
+  - '{{%- if product in ["almalinux9", "debian12", "debian13", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "sle16", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404"] %}}'
+shared/templates/audit_rules_privileged_commands/bash.template:
+  - '{{%- if product in ["almalinux9", "debian12", "debian13", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "sle16", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404"] %}}'
+shared/templates/audit_rules_privileged_commands/oval.template:
+  - '{{%- if product in ["almalinux9", "debian12", "debian13", "fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "sle16", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404"] %}}'
+shared/templates/audit_rules_privileged_commands/tests/common.sh:
+  - '{{%- if product in ["fedora", "ol7", "ol8", "ol9", "ol10", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404"] %}}'
+shared/templates/sysctl/ansible.template:
+  - '{{% if product not in ["fedora", "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "sle16", "slmicro5", "slmicro6", "ubuntu2004", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}'
+shared/templates/sysctl/oval.template:
+  - '{{% if product not in [ "almalinux8", "almalinux9", "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "ubuntu2004", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}'
+  - "{{% if (product not in [ \"ol7\", \"ol8\", \"ol9\", \"rhcos4\", \"ubuntu2004\", \"ubuntu2204\", \"ubuntu2404\", \"ubuntu2604\"] or 'rhel' in product or 'almalinux' in product) and product != \"rhel7\" %}}"
+shared/templates/sysctl/sce-bash.template:
+  - |
+    {{% if product in [ "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "ubuntu2004", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}
+    FILES_NOT_MANAGED_BY_PACKAGES=("/etc/sysctl.conf" "/etc/sysctl.d/*.conf" "/usr/local/lib/sysctl.d/*.conf" "/run/sysctl.d/*.conf")
+    {{% elif product == "almalinux9" %}}
