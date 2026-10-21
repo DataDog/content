@@ -41,6 +41,7 @@ references:
     stigid@ol7: OL07-00-040310
     stigid@ol8: OL08-00-040160
     stigid@sle12: SLES-12-030100
+    stigid@ubuntu2004: UBTU-20-010042
 
 ocil: |-
     {{{ ocil_service_enabled(service="sshd") }}}
@@ -51,6 +52,7 @@ template:
     name: service_enabled
     vars:
         servicename: sshd
+        servicename@ubuntu2004: ssh
         servicename@ubuntu2204: ssh
         servicename@ubuntu2404: ssh
         packagename: openssh-server

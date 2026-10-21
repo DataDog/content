@@ -21,3 +21,15 @@ default:
     - audisp-remote
     - audispd-zos-remote
     {{% endif %}}
+
+overrides:
+{{% if product == 'ubuntu2004' %}}
+  aide_audit_binaries:
+    - "auditctl"
+    - "auditd"
+    - "ausearch"
+    - "aureport"
+    - "autrace"
+    - "audispd"
+    - "augenrules"
+{{% endif %}}

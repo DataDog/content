@@ -37,6 +37,7 @@ references:
     srg: SRG-OS-000342-GPOS-00133,SRG-OS-000479-GPOS-00224
     stigid@ol7: OL07-00-030300
     stigid@sle12: SLES-12-020090
+    stigid@ubuntu2004: UBTU-20-010216
 
 ocil_clause: 'audispd is not sending logs to a remote system'
 

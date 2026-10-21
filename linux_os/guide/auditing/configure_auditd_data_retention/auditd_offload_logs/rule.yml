@@ -17,6 +17,7 @@ severity: medium
 
 references:
     srg: SRG-OS-000479-GPOS-00224
+    stigid@ubuntu2004: UBTU-20-010300
 
 warnings:
     - general: |-
