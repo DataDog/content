@@ -1,5 +1,6 @@
 #!/bin/bash
 # platform = multi_platform_rhel,multi_platform_fedora
+# packages = sudo
 
 # Package libselinux cannot be uninstalled normally
 # as it would cause removal of sudo package which is

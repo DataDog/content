@@ -1,0 +1,89 @@
+{{#- The firewall utilities of CIS RHEL 7 3.4.1.2: the package of each and
+its services. ip6tables counts only while IPv6 is enabled, as in the
+audit. -#}}
+{{%- set utilities = [
+    ("firewalld", "firewalld", ["firewalld"]),
+    ("nftables", "nftables", ["nftables"]),
+    ("iptables", "iptables-services", ["iptables", "ip6tables"]),
+] %}}
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Exactly one of the firewalld, nftables and iptables utilities has a service enabled and active, and the services of the other two are neither enabled nor active.", rule_title=rule_title) }}}
+    <criteria operator="OR">
+{{%- for name, package, services in utilities %}}
+      <criteria operator="AND" comment="{{{ name }}} is the one utility in use">
+{{%- for other, other_package, other_services in utilities %}}
+        <extend_definition definition_ref="{{{ rule_id }}}_{{{ other }}}_enabled"{{% if other != name %}} negate="true"{{% endif %}}
+          comment="{{{ other }}} has {{% if other != name %}}no {{% endif %}}service enabled"/>
+        <extend_definition definition_ref="{{{ rule_id }}}_{{{ other }}}_active"{{% if other != name %}} negate="true"{{% endif %}}
+          comment="{{{ other }}} has {{% if other != name %}}no {{% endif %}}service active"/>
+{{%- endfor %}}
+      </criteria>
+{{%- endfor %}}
+    </criteria>
+  </definition>
+{{%- for name, package, services in utilities %}}
+{{%- for property, state in [("enabled", "UnitFileState"), ("active", "ActiveState")] %}}
+
+  <definition class="compliance" id="{{{ rule_id }}}_{{{ name }}}_{{{ property }}}" version="1">
+    {{{ oval_metadata("Package " + package + " is installed and one of its services is " + property + ".", title="A service of " + name + " is " + property) }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_{{{ rule_id }}}_{{{ name }}}_installed"
+        comment="package {{{ package }}} is installed"/>
+      <criteria operator="OR">
+{{%- for s in services %}}
+{{%- if s == "ip6tables" %}}
+        <criteria operator="AND">
+          <criterion test_ref="test_{{{ rule_id }}}_{{{ s }}}_{{{ property }}}"
+            comment="{{{ s }}}.service is {{{ property }}}"/>
+          <criterion test_ref="test_{{{ rule_id }}}_ipv6_enabled"
+            comment="the ipv6 module is enabled"/>
+        </criteria>
+{{%- else %}}
+        <criterion test_ref="test_{{{ rule_id }}}_{{{ s }}}_{{{ property }}}"
+          comment="{{{ s }}}.service is {{{ property }}}"/>
+{{%- endif %}}
+{{%- endfor %}}
+      </criteria>
+    </criteria>
+  </definition>
+{{%- for s in services %}}
+
+  <linux:systemdunitproperty_test id="test_{{{ rule_id }}}_{{{ s }}}_{{{ property }}}" version="1"
+    check="at least one" check_existence="at_least_one_exists"
+    comment="{{{ s }}}.service is {{{ property }}}">
+    <linux:object object_ref="obj_{{{ rule_id }}}_{{{ s }}}_{{{ property }}}"/>
+    <linux:state state_ref="ste_{{{ rule_id }}}_{{{ property }}}"/>
+  </linux:systemdunitproperty_test>
+
+  <linux:systemdunitproperty_object id="obj_{{{ rule_id }}}_{{{ s }}}_{{{ property }}}" version="1">
+    <linux:unit>{{{ s }}}.service</linux:unit>
+    <linux:property>{{{ state }}}</linux:property>
+  </linux:systemdunitproperty_object>
+{{%- endfor %}}
+{{%- endfor %}}
+  {{{ oval_test_package_installed(package=package, test_id="test_" + rule_id + "_" + name + "_installed") }}}
+{{%- endfor %}}
+
+  <linux:systemdunitproperty_state id="ste_{{{ rule_id }}}_enabled" version="1"
+    comment="UnitFileState is enabled or enabled-runtime, as systemctl is-enabled prints it">
+    <linux:value operation="pattern match">^enabled</linux:value>
+  </linux:systemdunitproperty_state>
+
+  <linux:systemdunitproperty_state id="ste_{{{ rule_id }}}_active" version="1"
+    comment="ActiveState is active">
+    <linux:value>active</linux:value>
+  </linux:systemdunitproperty_state>
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_ipv6_enabled" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="the ipv6 module is enabled">
+    <ind:object object_ref="obj_{{{ rule_id }}}_ipv6_enabled"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_ipv6_enabled" version="1">
+    <ind:filepath>/sys/module/ipv6/parameters/disable</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*0\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

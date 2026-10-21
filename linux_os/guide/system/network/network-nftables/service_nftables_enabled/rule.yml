@@ -31,7 +31,11 @@ ocil: |-
 fixtext: |-
     {{{ fixtext_service_enabled("nftables") }}}
 
+{{% if product == "rhel7" %}}
+platform: system_with_kernel and firewall_applicable[nftables]
+{{% else %}}
 platform: system_with_kernel and package[nftables] and service_disabled[firewalld]
+{{% endif %}}
 
 {{%- if product in [ "sle12", "sle15", "ubuntu2404" ] %}}
 template:

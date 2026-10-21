@@ -1,0 +1,13 @@
+# platform = Red Hat Enterprise Linux 7
+# reboot = false
+# strategy = configure
+# complexity = low
+# disruption = low
+
+{{{ ansible_pam_pwhistory_enable('/etc/pam.d/system-auth', 'requisite', '^password.*requisite.*pam_pwquality\.so', rule_title=rule_title) }}}
+
+{{{ ansible_pam_pwhistory_parameter_value('/etc/pam.d/system-auth', 'enforce_for_root', rule_title=rule_title, rule_id=rule_id) }}}
+
+{{{ ansible_pam_pwhistory_enable('/etc/pam.d/password-auth', 'requisite', '^password.*requisite.*pam_pwquality\.so', rule_title=rule_title) }}}
+
+{{{ ansible_pam_pwhistory_parameter_value('/etc/pam.d/password-auth', 'enforce_for_root', rule_title=rule_title, rule_id=rule_id) }}}
