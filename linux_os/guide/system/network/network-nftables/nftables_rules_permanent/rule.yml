@@ -16,7 +16,11 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "rhel7" %}}
+platform: firewall_applicable[nftables]
+{{% else %}}
 platform: package[nftables] and service_disabled[firewalld]
+{{% endif %}}
 
 identifiers:
     cce@rhel7: CCE-86625-1

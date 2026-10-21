@@ -1306,6 +1306,8 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 
 #}}
 {{%- macro ansible_pam_pwhistory_parameter_value(pam_file, parameter, pwhistory_var_name='', rule_title=None, rule_id=None) -%}}
+{{#- pam_pwhistory of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
 - name: '{{{ rule_title }}} - Check the presence of {{{ pwhistory_path }}} file'
   ansible.builtin.stat:
     path: {{{ pwhistory_path }}}
@@ -1330,6 +1332,7 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
         {{{ ansible_remove_pam_module_option_configuration(pam_file, 'password', '', 'pam_pwhistory.so', parameter, rule_title=rule_title) | indent(8) }}}
   when:
     - result_pwhistory_conf_check.stat.exists
+{{%- endif %}}
 
 - name: '{{{ rule_title }}} - pam_pwhistory.so parameters are configured in PAM files'
   block:
@@ -1339,8 +1342,10 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
       when:
         - result_authselect_present.stat.exists
         - (result_pam_{{{ parameter }}}_add is defined and result_pam_{{{ parameter }}}_add.changed) or (result_pam_{{{ parameter }}}_edit is defined and result_pam_{{{ parameter }}}_edit.changed)
+{{%- if product != "rhel7" %}}
   when:
     - not result_pwhistory_conf_check.stat.exists
+{{%- endif %}}
 {{%- endmacro -%}}
 
 

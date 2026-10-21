@@ -929,7 +929,12 @@ do
         sed -i --follow-symlinks '/^auth.*required.*pam_deny\.so.*/i auth        required      pam_faillock.so authfail' "$pam_file"
         sed -i --follow-symlinks '/^account.*required.*pam_unix\.so.*/i account     required      pam_faillock.so' "$pam_file"
     fi
+{{#- authconfig makes system-auth and password-auth symbolic links to its -ac files on RHEL 7. #}}
+{{%- if product == "rhel7" %}}
+    sed -Ei --follow-symlinks 's/(auth.*)(\[default=die\])(.*pam_faillock\.so)/\1required     \3/g' "$pam_file"
+{{%- else %}}
     sed -Ei 's/(auth.*)(\[default=die\])(.*pam_faillock\.so)/\1required     \3/g' "$pam_file"
+{{%- endif %}}
 done
 {{% endif %}}
 {{%- endmacro -%}}
@@ -1145,6 +1150,8 @@ fi
 
 #}}
 {{%- macro bash_pam_pwhistory_parameter_value(pam_file, option, value='') -%}}
+{{#- pam_pwhistory of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" -%}}
 PWHISTORY_CONF="{{{ pwhistory_path }}}"
 if [ -f $PWHISTORY_CONF ]; then
     {{%- if value == '' %}}
@@ -1165,6 +1172,7 @@ if [ -f $PWHISTORY_CONF ]; then
     {{%- endif %}}
     {{{ bash_remove_pam_module_option_configuration(pam_file, 'password', '', 'pam_pwhistory.so', option ) | indent(4) }}}
 else
+{{%- endif %}}
     PAM_FILE_PATH="{{{ pam_file }}}"
     if [ -f /usr/bin/authselect ]; then
         {{# the following macro updates the PAM_FILE_PATH variable in aligment to the authselect profile #}}
@@ -1174,7 +1182,9 @@ else
     if [ -f /usr/bin/authselect ]; then
         {{{ bash_apply_authselect_changes() | indent(8) }}}
     fi
+{{%- if product != "rhel7" %}}
 fi
+{{%- endif %}}
 {{%- endmacro -%}}
 
 
@@ -1198,8 +1208,12 @@ AUTH_FILES=("/etc/pam.d/common-auth")
 SKIP_FAILLOCK_CHECK=true
 {{% else %}}
 AUTH_FILES=("/etc/pam.d/system-auth" "/etc/pam.d/password-auth")
+{{%- if product != "rhel7" %}}
 SKIP_FAILLOCK_CHECK=false
+{{%- endif %}}
 {{% endif %}}
+{{#- pam_faillock of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
 FAILLOCK_CONF="{{{ pam_faillock_conf_path }}}"
 if [ -f $FAILLOCK_CONF ] || [ "$SKIP_FAILLOCK_CHECK" = "true" ]; then
     {{%- if value == '' %}}
@@ -1225,6 +1239,7 @@ if [ -f $FAILLOCK_CONF ] || [ "$SKIP_FAILLOCK_CHECK" = "true" ]; then
     done
     {{% endif %}}
 else
+{{%- endif %}}
     for pam_file in "${AUTH_FILES[@]}"
     do
         if ! grep -qE '^\s*auth.*pam_faillock\.so\s+(preauth|authfail).*{{{ option }}}' "$pam_file"; then
@@ -1250,7 +1265,9 @@ else
         fi
         {{%- endif %}}
     done
+{{%- if product != "rhel7" %}}
 fi
+{{%- endif %}}
 {{%- endmacro -%}}
 
 
@@ -2009,11 +2026,16 @@ if [ "$skip" -ne 0 ]; then
         # Build full_rule while avoid adding double spaces when other_filters is empty
         if [ "${#syscall_a[@]}" -gt 0 ]
         then
+{{%- if product == "rhel7" %}}
+            # The CIS Benchmark writes the syscalls of a rule as one comma separated list
+            syscall_string=" -S $(IFS=,; echo "${syscall_a[*]}")"
+{{%- else %}}
             syscall_string=""
             for syscall in "${syscall_a[@]}"
             do
                 syscall_string+=" -S $syscall"
             done
+{{%- endif %}}
         fi
         other_string=$([[ {{{ other_filters }}} ]] && echo " {{{ other_filters }}}") || /bin/true
         auid_string=$([[ {{{ auid_filters }}} ]] && echo " {{{ auid_filters }}}") || /bin/true
@@ -2023,12 +2045,22 @@ if [ "$skip" -ne 0 ]; then
     else
         # Check if the syscalls are declared as a comma separated list or
         # as multiple -S parameters
+{{%- if product == "rhel7" %}}
+        # A rule with a single syscall takes the others as a comma separated list
+        if [ "$(grep -o -- "-S " <<< "${rule_syscalls_to_edit}" | wc -l)" -gt 1 ]
+        then
+            delimiter=" -S "
+        else
+            delimiter=","
+        fi
+{{%- else %}}
         if grep -q -- "," <<< "${rule_syscalls_to_edit}"
         then
             delimiter=","
         else
             delimiter=" -S "
         fi
+{{%- endif %}}
         new_grouped_syscalls="${rule_syscalls_to_edit}"
         for syscall in "${syscall_a[@]}"
         do

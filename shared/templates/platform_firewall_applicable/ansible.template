@@ -1,0 +1,12 @@
+{{#- As in Bash, the nftables and iptables tasks run where their utility
+is in use, and the firewalld tasks also where no utility is. Playbooks
+gather the service facts once, before the service tasks, so this keeps a
+host without a firewall to the firewalld tasks. -#}}
+{{%- macro in_use(u) -%}}
+("{{{ u.package }}}" in ansible_facts.packages and ({{% for s in u.services %}}(((ansible_facts.services | default({}))["{{{ s }}}.service"] | default({})).status | default("")) in ["enabled", "enabled-runtime"]{{% if not loop.last %}} or {{% endif %}}{{% endfor %}}))
+{{%- endmacro -%}}
+{{%- if ARG == "firewalld" -%}}
+({{{ in_use(UTILITY) }}} or not ({{% for u in OTHERS %}}{{{ in_use(u) }}}{{% if not loop.last %}} or {{% endif %}}{{% endfor %}}))
+{{%- else -%}}
+{{{ in_use(UTILITY) }}}
+{{%- endif -%}}
