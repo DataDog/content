@@ -4,9 +4,16 @@ title: 'Ensure the Root Bash Umask is Set Correctly'
 
 description: |-
     To ensure the root user's umask of the Bash shell is set properly,
+{{%- if product == "ubuntu2004" %}}
+    add or correct the <tt>umask</tt> setting in <tt>/root/.bash_profile</tt>
+    and <tt>/root/.bashrc</tt>, and the <tt>UMASK</tt> setting in
+    <tt>/etc/login.defs</tt>, to read as follows:
+    <pre>umask 0027</pre>
+{{%- else %}}
     add or correct the <tt>umask</tt> setting in <tt>/root/.bashrc</tt>
     or <tt>/root/.profile</tt> to read as follows:
     <pre>umask 0027</pre>
+{{%- endif %}}
 
 rationale: |-
     The umask value influences the permissions assigned to files when they are created.
