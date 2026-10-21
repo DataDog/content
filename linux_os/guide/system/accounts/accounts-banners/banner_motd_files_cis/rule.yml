@@ -3,10 +3,15 @@ documentation_complete: true
 title: 'Ensure MOTD Files Do Not Disclose System Information'
 
 description: |-
+    {{% if product == "ubuntu2004" -%}}
+    The message of the day shown after login comes from <tt>/etc/motd</tt>,
+    and the CIS audit also reads the files in <tt>/etc/motd.d</tt>.
+    {{% else -%}}
     The message of the day shown after login comes from the files
     <tt>/etc/motd</tt>, <tt>/run/motd</tt> and <tt>/usr/lib/motd</tt>,
     from the files in <tt>/etc/motd.d</tt>, <tt>/run/motd.d</tt> and
     <tt>/usr/lib/motd.d</tt>, and from the scripts in <tt>/etc/update-motd.d</tt>.
+    {{% endif -%}}
     None of these files may contain the escape sequences <tt>\m</tt>,
     <tt>\r</tt>, <tt>\s</tt> or <tt>\v</tt>, or the operating system
     identifier, the <tt>ID</tt> of <tt>/etc/os-release</tt>, as a word in
@@ -32,5 +37,9 @@ ocil_clause: 'a MOTD file contains system information'
 
 ocil: |-
     Run the following command:
+    {{% if product == "ubuntu2004" -%}}
+    <pre>$ grep -Psi -- "(\\\v|\\\r|\\\m|\\\s|\b$(grep ^ID= /etc/os-release | cut -d= -f2 | sed -e 's/"//g')\b)" /etc/motd /etc/motd.d/*</pre>
+    {{% else -%}}
     <pre>$ grep -Psi -- "(\\\v|\\\r|\\\m|\\\s|\b$(grep ^ID= /etc/os-release | cut -d= -f2 | sed -e 's/"//g')\b)" /etc/motd /run/motd /usr/lib/motd /etc/motd.d/* /run/motd.d/* /usr/lib/motd.d/* /etc/update-motd.d/*</pre>
+    {{% endif -%}}
     Nothing should be returned.

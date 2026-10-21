@@ -1,4 +1,7 @@
 #!/bin/bash
+{{% if PACKAGE_FOR_TESTING %}}
+# packages = {{{ PACKAGE_FOR_TESTING }}}
+{{% endif %}}
 {{% if not VENDOR_DROPIN_DIRS %}}
 # platform = Not Applicable
 {{% else %}}
