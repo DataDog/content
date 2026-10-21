@@ -1,8 +1,15 @@
 #!/bin/bash
 # packages = gdm
-{{% if product == "rhel7" %}}
+{{% if product in ["rhel7", "ubuntu2004"] %}}
 # platform = Not Applicable
 {{% endif %}}
+{{% if 'ubuntu' in product %}}
+{{% set gdm_conf_path = "/etc/gdm3/custom.conf" %}}
+{{% elif 'debian' in product %}}
+{{% set gdm_conf_path = "/etc/gdm3/daemon.conf" %}}
+{{% else %}}
+{{% set gdm_conf_path = "/etc/gdm/custom.conf" %}}
+{{% endif %}}
 
-mkdir -p /etc/gdm
-rm -f /etc/gdm/custom.conf
+mkdir -p "$(dirname {{{ gdm_conf_path }}})"
+rm -f {{{ gdm_conf_path }}}

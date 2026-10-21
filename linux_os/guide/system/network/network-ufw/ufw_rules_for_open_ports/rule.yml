@@ -12,7 +12,11 @@ rationale: |-
 
 severity: medium
 
+{{% if product == "ubuntu2004" -%}}
+platform: deb_firewall_applicable[ufw]
+{{%- else -%}}
 platform: package[ufw]
+{{%- endif %}}
 
 ocil_clause: 'open ports are denied connection'
 
