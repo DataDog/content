@@ -8,9 +8,15 @@ description: |-
     and ensure consistent packet filtering. Only one of the following services should
     be enabled and active at any time:
     <ul>
+    {{%- if product == "rhel7" %}}
+        <li>firewalld: the firewalld service</li>
+        <li>nftables: the nftables service</li>
+        <li>iptables: the iptables and ip6tables services of iptables-services</li>
+    {{%- else %}}
         <li>ufw - Uncomplicated Firewall (Ubuntu/Debian default)</li>
         <li>iptables - Classic Linux firewall</li>
         <li>nftables - Next Generation Firewall replacement for iptables</li>
+    {{%- endif %}}
     </ul>
     Having zero active firewalls leaves the system vulnerable, while having multiple
     active firewalls can lead to rule conflicts and security gaps.

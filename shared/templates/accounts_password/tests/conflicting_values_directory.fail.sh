@@ -1,6 +1,6 @@
 #!/bin/bash
 # This test only applies to platforms that check the pwquality.conf.d directory
-# platform = Oracle Linux 8,Oracle Linux 9,multi_platform_almalinux,multi_platform_rhel,multi_platform_ubuntu
+# platform = Oracle Linux 8,Oracle Linux 9,multi_platform_almalinux,Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10,multi_platform_ubuntu
 # variables = var_password_pam_{{{ VARIABLE }}}={{{ TEST_VAR_VALUE }}}
 
 truncate -s 0 "{{{ pwquality_path }}}"

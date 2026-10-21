@@ -1,7 +1,7 @@
 {{% set rx_beg = "^[\s]*-a[\s]+always,exit[\s]+" %}}
 {{% set rx_b32 = "-F[\s]+arch=b32[\s]+" %}}
 {{% set rx_b64 = "-F[\s]+arch=b64[\s]+" %}}
-{{% set rx_uid = "-S[\s]+execve[\s]+-C[\s]+euid!=uid[\s]+-F[\s]+auid!=unset[\s]+" %}}
+{{% set rx_uid = "(?=(?:\S+[\s]+\S+[\s]+){0,2}-S[\s]+execve[\s])(?=(?:\S+[\s]+\S+[\s]+){0,2}-C[\s]+(?:euid!=uid|uid!=euid)[\s])(?=(?:\S+[\s]+\S+[\s]+){0,2}-F[\s]+auid!=(?:unset|-1|4294967295)[\s])(?:(?:-S[\s]+execve|-C[\s]+(?:euid!=uid|uid!=euid)|-F[\s]+auid!=(?:unset|-1|4294967295))[\s]+){3}" if product == "rhel7" else "-S[\s]+execve[\s]+-C[\s]+euid!=uid[\s]+-F[\s]+auid!=unset[\s]+" %}}{{# CIS RHEL 7 v4.0.0 5.2.3.2 takes the three fields in any order #}}
 {{% set rx_end = "(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$" %}}
 <def-group>
   <definition class="compliance" id="audit_rules_suid_auid_privilege_function" version="1">
