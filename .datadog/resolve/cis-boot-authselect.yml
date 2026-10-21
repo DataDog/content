@@ -1,0 +1,20 @@
+# Conflicts of cis-boot-authselect when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+shared/references/cce-redhat-avail.txt:
+  - ''
+  - ''
+  - ''
+tests/data/profile_stability/rhel8/cis_server_l1.profile:
+  - |
+    file_permissions_var_log_cloud-init
+    file_permissions_var_log_lastlog
+    file_permissions_var_log_localmessages
+    file_permissions_var_log_waagent
+    file_permissions_var_log_wbtmp
+tests/data/profile_stability/rhel8/cis_workstation_l1.profile:
+  - |
+    file_permissions_var_log_cloud-init
+    file_permissions_var_log_lastlog
+    file_permissions_var_log_localmessages
+    file_permissions_var_log_waagent
+    file_permissions_var_log_wbtmp
