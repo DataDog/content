@@ -1,0 +1,25 @@
+# Conflicts of rhel7-product when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+CMakeLists.txt:
+  - "if(SSG_PRODUCT_FEDORA OR SSG_PRODUCT_RHEL7 OR SSG_PRODUCT_RHEL8 OR SSG_PRODUCT_RHEL9 OR SSG_PRODUCT_RHEL10 OR SSG_PRODUCT_UBUNTU2004 OR SSG_PRODUCT_UBUNTU2204 OR SSG_PRODUCT_UBUNTU2404 OR SSG_PRODUCT_UBUNTU2604)"
+linux_os/guide/services/obsolete/package_rsync_removed/rule.yml:
+  - "{{% if ('rhel' in product and product != 'rhel7') or product in ['al2023', 'almalinux9', 'ol8','ol9', 'hummingbird'] -%}}"
+linux_os/guide/services/ssh/ssh_server/sshd_set_idle_timeout/oval/shared.xml:
+  - |2
+            {{%- if (product != "ubuntu2604" and product not in ["al2023", "almalinux9", "ol8", "ol9"] and "rhel" not in product) or product == "rhel7" %}}
+            <extend_definition comment="The SSH ClientAliveCountMax is set correctly" definition_ref="sshd_set_keepalive" />
+linux_os/guide/system/accounts/accounts-restrictions/root_logins/accounts_root_gid_zero/oval/shared.xml:
+  - "      {{% if 'ubuntu' in product or ('rhel' in product and product != 'rhel7') or 'almalinux' in product or 'fedora' in product %}}"
+  - "  {{% if 'ubuntu' in product or ('rhel' in product and product != 'rhel7') or 'almalinux' in product or 'fedora' in product %}}"
+shared/templates/grub2_bootloader_argument_absent/tests/mising_arg_invalid_rescue.pass.sh:
+  - "# platform = AlmaLinux OS 9,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10,Red Hat Enterprise Linux 7"
+shared/templates/sysctl/ansible.template:
+  - '{{% if product not in ["fedora", "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "sle12", "sle15", "sle16", "slmicro5", "slmicro6", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}'
+shared/templates/sysctl/oval.template:
+  - '{{% if product not in [ "almalinux8", "almalinux9", "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}'
+  - "{{% if (product not in [ \"ol7\", \"ol8\", \"ol9\", \"rhcos4\", \"ubuntu2204\", \"ubuntu2404\", \"ubuntu2604\"] or 'rhel' in product or 'almalinux' in product) and product != \"rhel7\" %}}"
+shared/templates/sysctl/sce-bash.template:
+  - |
+    {{% if product in [ "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9", "rhel10", "ubuntu2204", "ubuntu2404", "ubuntu2604"] %}}
+    FILES_NOT_MANAGED_BY_PACKAGES=("/etc/sysctl.conf" "/etc/sysctl.d/*.conf" "/usr/local/lib/sysctl.d/*.conf" "/run/sysctl.d/*.conf")
+    {{% elif product == "almalinux9" %}}
