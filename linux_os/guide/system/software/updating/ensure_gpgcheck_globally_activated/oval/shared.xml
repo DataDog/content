@@ -22,7 +22,12 @@
   
   <ind:textfilecontent54_object id="object_ensure_gpgcheck_globally_activated" comment="gpgcheck set in {{{ pkg_manager_config_file }}}" version="1">
     <ind:filepath>{{{ pkg_manager_config_file }}}</ind:filepath>
+{{%- if product == "rhel7" %}}
+    <!-- CIS RHEL 7 and Amazon Linux 2 1.2.2: gpgcheck is set to 1. -->
+    <ind:pattern operation="pattern match">^\s*gpgcheck\s*=\s*1\s*$</ind:pattern>
+{{%- else %}}
     <ind:pattern operation="pattern match">^\s*gpgcheck\s*=\s*(1|True|yes)\s*$</ind:pattern>
+{{%- endif %}}
     <ind:instance datatype="int" operation="equals">1</ind:instance>
   </ind:textfilecontent54_object>  
 

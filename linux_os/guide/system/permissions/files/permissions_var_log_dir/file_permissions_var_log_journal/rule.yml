@@ -1,0 +1,24 @@
+documentation_complete: true
+
+title: 'Verify Permissions on /var/log/*.journal(~) Files'
+
+description: |-
+    {{{ describe_file_permissions(file="/var/log/*.journal(~)", perms="0640") }}}
+
+rationale: |-
+    The <tt>/var/log/*.journal(~)</tt> files are system logs managed by the "systemd" service.
+
+severity: medium
+
+ocil_clause: '{{{ ocil_clause_file_permissions(file="/var/log/*.journal(~)", perms="-rw-r-----") }}}'
+
+ocil: |-
+    {{{ ocil_file_permissions(file="/var/log/*.journal(~)", perms="-rw-r-----") }}}
+
+template:
+    name: file_permissions
+    vars:
+        filepath: /var/log/
+        file_regex: ^.*\.journal~?$
+        filemode: '0640'
+        recursive: 'true'
