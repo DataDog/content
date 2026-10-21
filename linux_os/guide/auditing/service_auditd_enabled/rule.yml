@@ -55,6 +55,7 @@ references:
     stigid@ol7: OL07-00-030000
     stigid@ol8: OL08-00-030181
     stigid@sle12: SLES-12-020010
+    stigid@ubuntu2004: UBTU-20-010182
 
 ocil_clause: 'the auditd service is not running'
 
@@ -81,5 +82,6 @@ template:
         packagename@debian11: auditd
         packagename@debian12: auditd
         packagename@debian13: auditd
+        packagename@ubuntu2004: auditd
         packagename@ubuntu2204: auditd
         packagename@ubuntu2404: auditd

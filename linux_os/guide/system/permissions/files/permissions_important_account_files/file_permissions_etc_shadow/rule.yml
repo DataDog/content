@@ -74,6 +74,7 @@ template:
         filemode@sle12: '0640'
         filemode@sle15: '0640'
         filemode@sle16: '0640'
+        filemode@ubuntu2004: '0640'
         filemode@ubuntu2204: '0640'
         filemode@ubuntu2404: '0640'
         filemode@ubuntu2604: '0640'
