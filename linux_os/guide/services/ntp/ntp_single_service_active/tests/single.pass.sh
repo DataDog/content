@@ -1,12 +1,9 @@
 #!/bin/bash
+# packages = chrony
 
-{{{ bash_package_install("chrony") }}}
-{{{ bash_package_install("systemd-timesyncd") }}}
-
-systemctl stop chrony.service
-systemctl stop systemd-timesyncd.service
-systemctl disable chrony.service
-systemctl disable systemd-timesyncd.service
-
-systemctl start chrony.service
+# Installing chrony removes systemd-timesyncd, whose daemon keeps running
+# where policy-rc.d denies service actions to package scripts.
+systemctl stop systemd-timesyncd.service || true
+systemctl unmask chrony.service
 systemctl enable chrony.service
+systemctl start chrony.service

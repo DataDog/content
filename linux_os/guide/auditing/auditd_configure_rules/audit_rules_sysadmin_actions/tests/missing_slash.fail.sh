@@ -11,5 +11,8 @@ echo "-a always,exit -F arch=b32 -F dir=/etc/sudoers.d -F perm=wa -F key=actions
 echo "-a always,exit -F arch=b64 -F dir=/etc/sudoers.d -F perm=wa -F key=actions" >> /etc/audit/rules.d/actions.rules
 {{% else %}}
 echo "-w /etc/sudoers -p wa -k actions" >> /etc/audit/rules.d/actions.rules
+{{#- Ubuntu 20.04 accepts the watch of /etc/sudoers.d without the slash, as CIS writes it. #}}
+{{%- if product != "ubuntu2004" %}}
 echo "-w /etc/sudoers.d -p wa -k actions" >> /etc/audit/rules.d/actions.rules
+{{%- endif %}}
 {{% endif %}}

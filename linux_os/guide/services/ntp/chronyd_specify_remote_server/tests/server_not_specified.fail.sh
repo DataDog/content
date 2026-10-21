@@ -1,6 +1,6 @@
 #!/bin/bash
 # packages = chrony
-# platform = multi_platform_fedora,multi_platform_ol,multi_platform_rhel,multi_platform_almalinux
+# platform = multi_platform_fedora,multi_platform_ol,multi_platform_rhel,multi_platform_almalinux,Ubuntu 20.04
 
 rm -rf /etc/chrony/conf.d
 rm -rf /etc/chrony/sources.d

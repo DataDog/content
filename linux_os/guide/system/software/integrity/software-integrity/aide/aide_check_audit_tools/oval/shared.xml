@@ -3,9 +3,25 @@
     {{{ oval_metadata("The " ~ full_name ~ " operating system file integrity tool must be configured to protect the integrity of the audit tools.", title="Configure AIDE to Verify the Audit Tools", rule_title=rule_title) }}}
     <criteria operator="AND">
       <extend_definition comment="Aide is installed" definition_ref="package_aide_installed" />
+{{%- if product == "ubuntu2004" %}}
+      <criteria operator="OR">
+        <criteria operator="AND" comment="every audit tool is checked in {{{ aide_conf_path }}}">
+          {{% for audit_tool in aide_audit_binaries -%}}
+          <criterion comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}}" test_ref="test_aide_verify_{{{ audit_tool }}}" />
+          {{% endfor %}}
+        </criteria>
+        <criteria operator="AND" comment="the audit tools of the CIS Benchmark are checked in {{{ aide_conf_path }}} or its drop-in directory">
+          <criterion comment="the audit tools of the CIS Benchmark suffice" test_ref="test_aide_audit_tools_cis" />
+          {{% for audit_tool in aide_audit_binaries if audit_tool != "audispd" -%}}
+          <criterion comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}} or its drop-in directory" test_ref="test_aide_verify_{{{ audit_tool }}}_cis" />
+          {{% endfor %}}
+        </criteria>
+      </criteria>
+{{%- else %}}
       {{% for audit_tool in aide_audit_binaries -%}}
       <criterion comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}}" test_ref="test_aide_verify_{{{ audit_tool }}}" />
       {{% endfor %}}
+{{%- endif %}}
     </criteria>
   </definition>
 
@@ -24,4 +40,36 @@
   {{% for audit_tool in aide_audit_binaries %}}
     {{{ oval_test_aide_audit_tools(audit_tool) }}}
   {{%- endfor %}}
+{{%- if product == "ubuntu2004" %}}
+
+  {{#- CIS Ubuntu 20.04 v3.0.0 6.1.3 names six audit tools, without audispd,
+      and reads the drop-in directory too. -#}}
+  {{% for audit_tool in aide_audit_binaries if audit_tool != "audispd" %}}
+  <ind:textfilecontent54_test id="test_aide_verify_{{{ audit_tool }}}_cis"
+  comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}} or its drop-in directory" check="all"
+  check_existence="all_exist" version="1">
+    <ind:object object_ref="object_aide_verify_{{{ audit_tool }}}_cis" />
+    <ind:state state_ref="state_aide_check_attributes" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_aide_verify_{{{ audit_tool }}}_cis" version="1">
+    <ind:filepath operation="pattern match">^/etc/aide/aide\.conf(\.d/[^/]+)?$</ind:filepath>
+    <ind:pattern operation="pattern match">^(?:/usr)?/sbin/{{{ audit_tool }}}\s+([^\n]+)$</ind:pattern>
+    <ind:instance datatype="int" operation="equals">1</ind:instance>
+  </ind:textfilecontent54_object>
+  {{% endfor %}}
+
+  <ind:variable_test id="test_aide_audit_tools_cis" version="1" check="all"
+  check_existence="all_exist" comment="the audit tools of the CIS Benchmark suffice">
+    <ind:object object_ref="obj_aide_audit_tools_cis" />
+    <ind:state state_ref="state_aide_audit_tools_cis" />
+  </ind:variable_test>
+  <ind:variable_object id="obj_aide_audit_tools_cis" version="1">
+    <ind:var_ref>var_aide_audit_tools_cis</ind:var_ref>
+  </ind:variable_object>
+  <ind:variable_state id="state_aide_audit_tools_cis" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+  <external_variable id="var_aide_audit_tools_cis" datatype="boolean" version="1"
+  comment="the audit tools of the CIS Benchmark suffice" />
+{{%- endif %}}
 </def-group>

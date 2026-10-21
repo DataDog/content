@@ -1,3 +1,88 @@
+{{%- if product == "ubuntu2004" -%}}
+{{#- CIS Ubuntu 20.04 5.4.2.8: every account but root whose shell is no entry of
+    /etc/shells other than nologin is locked, as passwd -S reports L for a
+    password field that starts with ! or *. #}}
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure Accounts Without Valid Login Shell Are Locked", rule_title=rule_title) }}}
+    <criteria>
+      <criterion comment="no unlocked account other than root has a shell that is no valid login shell"
+        test_ref="test_{{{ rule_id }}}_unlocked_invalid_shell" negate="true" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test id="test_{{{ rule_id }}}_unlocked_invalid_shell" version="1" check="at least one"
+    comment="an unlocked account other than root has a shell that is no valid login shell">
+    <ind:object object_ref="obj_{{{ rule_id }}}_unlocked_shells" />
+    <ind:state state_ref="state_{{{ rule_id }}}_invalid_shell" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_valid_shells" version="1">
+    <ind:filepath>/etc/shells</ind:filepath>
+    <ind:pattern operation="pattern match">^(/[^\s#]*)[ \t]*$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+    <filter action="exclude">state_{{{ rule_id }}}_nologin</filter>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_nologin" version="1">
+    <ind:subexpression operation="pattern match">/nologin$</ind:subexpression>
+  </ind:textfilecontent54_state>
+
+  <local_variable id="var_{{{ rule_id }}}_valid_shells" datatype="string" version="1"
+    comment="the valid login shells">
+    <object_component item_field="subexpression" object_ref="obj_{{{ rule_id }}}_valid_shells" />
+  </local_variable>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_locked" version="1">
+    <ind:filepath>/etc/shadow</ind:filepath>
+    <ind:pattern operation="pattern match">^([^:#\n]+):[!*]</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <local_variable id="var_{{{ rule_id }}}_locked" datatype="string" version="1"
+    comment="the locked accounts">
+    <object_component item_field="subexpression" object_ref="obj_{{{ rule_id }}}_locked" />
+  </local_variable>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_unlocked" version="1">
+    <ind:filepath>/etc/passwd</ind:filepath>
+    <ind:pattern operation="pattern match">^([^:#\n]+):</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+    <filter action="exclude">state_{{{ rule_id }}}_root</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_locked</filter>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_root" version="1">
+    <ind:subexpression operation="equals">root</ind:subexpression>
+  </ind:textfilecontent54_state>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_locked" version="1">
+    <ind:subexpression operation="equals" var_check="at least one" var_ref="var_{{{ rule_id }}}_locked" />
+  </ind:textfilecontent54_state>
+
+  <local_variable id="var_{{{ rule_id }}}_unlocked_regex" datatype="string" version="1"
+    comment="the /etc/passwd lines of the unlocked accounts, capturing the shell">
+    <concat>
+      <literal_component>^</literal_component>
+      <escape_regex>
+        <object_component item_field="subexpression" object_ref="obj_{{{ rule_id }}}_unlocked" />
+      </escape_regex>
+      <literal_component>:(?:[^:\n]*:){5}([^:\n]*)$</literal_component>
+    </concat>
+  </local_variable>
+
+  <ind:textfilecontent54_object id="obj_{{{ rule_id }}}_unlocked_shells" version="1">
+    <ind:filepath>/etc/passwd</ind:filepath>
+    <ind:pattern operation="pattern match" var_ref="var_{{{ rule_id }}}_unlocked_regex" var_check="at least one" />
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_state id="state_{{{ rule_id }}}_invalid_shell" version="1">
+    <ind:subexpression datatype="string" operation="not equal" var_check="all"
+      var_ref="var_{{{ rule_id }}}_valid_shells" />
+  </ind:textfilecontent54_state>
+</def-group>
+{{%- else -%}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("Ensure Accounts Without Valid Login Shell Are Locked", rule_title=rule_title) }}}
@@ -78,3 +163,4 @@
   </ind:textfilecontent54_object>
 
 </def-group>
+{{%- endif %}}

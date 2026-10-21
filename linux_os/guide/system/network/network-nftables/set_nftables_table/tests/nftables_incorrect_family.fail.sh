@@ -1,4 +1,7 @@
 #!/bin/bash
+{{%- if product == "ubuntu2004" %}}
+# platform = Not Applicable
+{{%- endif %}}
 # check = sce
 # packages = nftables
 # platform = multi_platform_ubuntu,Red Hat Enterprise Linux 8,Red Hat Enterprise Linux 9,Red Hat Enterprise Linux 10

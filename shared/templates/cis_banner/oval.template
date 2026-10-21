@@ -29,10 +29,9 @@
     <ind:object object_ref="obj_{{{ rule_id }}}" />
   </ind:textfilecontent54_test>
 
-{{% if product == "rhel7" %}}
-  <!-- CIS RHEL 7 v4.0.0 1.6.1 to 1.6.3 grep -E -i for the escape
-       sequences and the ID of /etc/os-release, which is rhel, centos or
-       amzn among the systems that read this content. -->
+{{% if product in ["rhel7", "ubuntu2004"] %}}
+  <!-- CIS RHEL 7 v4.0.0 and Ubuntu 20.04 v3.0.0 1.6.1 to 1.6.3 grep in any
+       letter case for the escape sequences and the ID of /etc/os-release. -->
   <ind:textfilecontent54_object id="obj_{{{ rule_id }}}" version="1">
     <ind:filepath>{{{ FILEPATH }}}</ind:filepath>
     <ind:pattern operation="pattern match" var_ref="var_{{{ rule_id }}}_system_information" />

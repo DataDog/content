@@ -1,6 +1,7 @@
 #!/bin/bash
 # platform = multi_platform_ubuntu
 # packages = pam
+# remediation = none
 
 # Multiple instances of pam_unix.so in auth section may, intentionally or not, interfere
 # in the expected behaviour of pam_faillock.so. Remediation does not solve this automatically

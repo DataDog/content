@@ -11,7 +11,11 @@ if [[ -n "$os_id" ]]; then
 fi
 pattern="$pattern)"
 
+{{% if product == "ubuntu2004" -%}}
+for motd_file in /etc/motd /etc/motd.d/*; do
+{{%- else -%}}
 for motd_file in /etc/motd /run/motd /usr/lib/motd /etc/motd.d/* /run/motd.d/* /usr/lib/motd.d/* /etc/update-motd.d/*; do
+{{%- endif %}}
     if [[ -f "$motd_file" ]] && grep -Psqi -- "$pattern" "$motd_file"; then
         rm -f "$motd_file"
     fi
