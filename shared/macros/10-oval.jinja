@@ -608,9 +608,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type missing_config_file_fail: bool
 :param dropin_dirs: If set, the dropin directories to search, in place of dropin_dir.
 :type dropin_dirs: list
+:param missing_parameter_pass_definition: If set, the ID of an OVAL definition. On a system where it is true, the check passes as with missing_parameter_pass, and elsewhere it requires the parameter.
+:type missing_parameter_pass_definition: str
 #}}
 
-{{%- macro oval_check_dropin_file(path, dropin_dir, section='', parameter='', value='', application='', no_quotes=false, missing_parameter_pass=false, multi_value=false, missing_config_file_fail=false, prefix_regex='^[ \\t]*', separator_regex='=', rule_id=None, rule_title=None, dropin_dirs=[]) %}}
+{{%- macro oval_check_dropin_file(path, dropin_dir, section='', parameter='', value='', application='', no_quotes=false, missing_parameter_pass=false, multi_value=false, missing_config_file_fail=false, prefix_regex='^[ \\t]*', separator_regex='=', rule_id=None, rule_title=None, dropin_dirs=[], missing_parameter_pass_definition='') %}}
 {{%- if dropin_dirs %}}
 {{%- set dropin_dirs_var = "var_" ~ rule_id ~ "_dropin_dirs" %}}
 {{%- set dropin_desc = dropin_dirs|join(", ") %}}
@@ -635,6 +637,33 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
         <criteria comment="Check files in the dropin directory" operator="OR">
             {{{ oval_line_in_directory_criterion(dropin_desc, parameter, rule_id=rule_id) }}}
             {{{ oval_line_in_directory_criterion(dropin_desc, parameter, missing_parameter_pass, rule_id=rule_id) }}}
+        </criteria>
+    </criteria>
+    {{%- elif missing_parameter_pass_definition %}}
+    <criteria comment="{{{ application }}} is configured correctly"
+    operator="OR">
+        <criteria comment="{{{ parameter }}} is required where {{{ missing_parameter_pass_definition }}} is false" operator="AND">
+            <extend_definition comment="{{{ missing_parameter_pass_definition }}} is false"
+            definition_ref="{{{ missing_parameter_pass_definition }}}" negate="true" />
+            <criteria operator="OR">
+                {{{ oval_line_in_directory_criterion(dropin_desc, parameter, rule_id=rule_id) }}}
+                <criteria comment="No dropin sets {{{ parameter }}}, so the main config file decides" operator="AND">
+                    {{{- oval_line_in_file_criterion(path, parameter, rule_id=rule_id) }}}
+                    {{{ oval_line_in_directory_criterion(dropin_desc, parameter, true, rule_id=rule_id) }}}
+                </criteria>
+            </criteria>
+        </criteria>
+        <criteria comment="{{{ parameter }}} may be absent where {{{ missing_parameter_pass_definition }}} is true" operator="AND">
+            <extend_definition comment="{{{ missing_parameter_pass_definition }}} is true"
+            definition_ref="{{{ missing_parameter_pass_definition }}}" />
+            <criteria comment="Check the main config file" operator="OR">
+                {{{- oval_line_in_file_criterion(path, parameter, rule_id=rule_id) }}}
+                {{{- oval_line_in_file_criterion(path, parameter, true, rule_id=rule_id) }}}
+            </criteria>
+            <criteria comment="Check files in the dropin directory" operator="OR">
+                {{{ oval_line_in_directory_criterion(dropin_desc, parameter, rule_id=rule_id) }}}
+                {{{ oval_line_in_directory_criterion(dropin_desc, parameter, true, rule_id=rule_id) }}}
+            </criteria>
         </criteria>
     </criteria>
     {{%- else %}}
@@ -666,9 +695,9 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
   {{{ oval_line_in_directory_state(value, multi_value, quotes, rule_id=rule_id) }}}
   {{{ oval_line_in_directory_test(dropin_desc, parameter, true, rule_id=rule_id) }}}
   {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var) }}}
-  {{%- if missing_parameter_pass %}}
-  {{{ oval_line_in_file_test(path, parameter, missing_parameter_pass, rule_id=rule_id) }}}
-  {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, missing_parameter_pass, multi_value, rule_id=rule_id) }}}
+  {{%- if missing_parameter_pass or missing_parameter_pass_definition %}}
+  {{{ oval_line_in_file_test(path, parameter, true, rule_id=rule_id) }}}
+  {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id) }}}
   {{%- endif %}}
   {{%- if dropin_dirs %}}
   <constant_variable id="{{{ dropin_dirs_var }}}" datatype="string" version="1"
