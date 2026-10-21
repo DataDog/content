@@ -43,10 +43,14 @@
             <criterion
                 test_ref="test_{{{ rule_id }}}_even_deny_root_parameter_pamd_password"
                 comment="Check the even_deny_root parameter in auth section of password-auth file"/>
+{{%- if product != "rhel7" %}}
             <criterion
                 test_ref="test_{{{ rule_id }}}_even_deny_root_parameter_no_faillock_conf"
                 comment="Ensure {{{ pam_faillock_conf_path }}} is not used together with pam files"/>
+{{%- endif %}}
           </criteria>
+{{#- pam_faillock of PAM 1.1.8 (RHEL 7) reads its options from the PAM lines only. #}}
+{{%- if product != "rhel7" %}}
           <criteria operator="AND"
                 comment="Check expected pam_faillock.so even_deny_root parameter in {{{ pam_faillock_conf_path }}}">
             <criterion
@@ -59,6 +63,7 @@
                 test_ref="test_{{{ rule_id }}}_even_deny_root_parameter_faillock_conf"
                 comment="Ensure the even_deny_root parameter is present in {{{ pam_faillock_conf_path }}}"/>
           </criteria>
+{{%- endif %}}
         </criteria>
 
         <criteria operator="OR"
@@ -71,10 +76,13 @@
             <criterion
                 test_ref="test_{{{ rule_id }}}_root_unlock_time_parameter_pamd_password"
                 comment="Check root_unlock_time >= var_accounts_passwords_pam_faillock_root_unlock_time in auth section of password-auth file"/>
+{{%- if product != "rhel7" %}}
             <criterion
                 test_ref="test_{{{ rule_id }}}_root_unlock_time_parameter_no_faillock_conf"
                 comment="Ensure root_unlock_time is not in {{{ pam_faillock_conf_path }}} together with pam files"/>
+{{%- endif %}}
           </criteria>
+{{%- if product != "rhel7" %}}
           <criteria operator="AND"
                 comment="Check pam_faillock.so root_unlock_time parameter in {{{ pam_faillock_conf_path }}}">
             <criterion
@@ -87,6 +95,7 @@
                 test_ref="test_{{{ rule_id }}}_root_unlock_time_parameter_faillock_conf"
                 comment="Ensure root_unlock_time >= var_accounts_passwords_pam_faillock_root_unlock_time in {{{ pam_faillock_conf_path }}}"/>
           </criteria>
+{{%- endif %}}
         </criteria>
       </criteria>
     </criteria>
@@ -102,7 +111,11 @@
   <constant_variable id="var_{{{ rule_id }}}_pam_faillock_auth_regex"
                 datatype="string" version="1"
                 comment="regex to identify pam_faillock.so entries in auth section of pam files">
+{{%- if product == "rhel7" %}}
+    <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[default=die\]|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
+{{%- else %}}
     <value>^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+preauth[\s\S]*^[\s]*auth[\s]+(sufficient|\[(?=.*\bsuccess=done\b)(?=.*?\bnew_authtok_reqd=done\b)(?=.*?\bdefault=ignore\b).*\])[\s]+pam_unix\.so[\s\S]*^[\s]*auth[\s]+(required|\[(?=.*?\bsuccess=ok\b)(?=.*?\bnew_authtok_reqd=ok\b)(?=.*?\bignore=ignore\b)(?=.*?\bdefault=bad\b).*\])[\s]+pam_faillock\.so[\s\w\d=]+authfail</value>
+{{%- endif %}}
   </constant_variable>
 
   <constant_variable id="var_{{{ rule_id }}}_pam_faillock_account_regex"
