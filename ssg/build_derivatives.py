@@ -196,7 +196,21 @@ def profile_handling(tree_root, namespace):
             tree_root.remove(profile)
 
 
-def replace_platform(tree_root, namespace, product):
+def replace_platform(tree_root, namespace, product, old="Red Hat Enterprise Linux"):
     for oval in tree_root.findall(".//{%s}oval_definitions" % (namespace)):
         for platform in oval.findall(".//{%s}platform" % (namespace)):
-            platform.text = (platform.text).replace("Red Hat Enterprise Linux", product)
+            platform.text = (platform.text).replace(old, product)
+
+
+def rename_product(tree_root, namespace, old, new):
+    """
+    Replaces the product name old with new in the text of every XCCDF
+    Benchmark (its titles, descriptions, notices and rules), leaving OVAL,
+    CPE and identifiers alone.
+    """
+    for benchmark in tree_root.iter("{%s}Benchmark" % namespace):
+        for elem in benchmark.iter():
+            if elem.text and old in elem.text:
+                elem.text = elem.text.replace(old, new)
+            if elem is not benchmark and elem.tail and old in elem.tail:
+                elem.tail = elem.tail.replace(old, new)
