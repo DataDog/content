@@ -5,7 +5,8 @@
        active, but will consider absence of the mount point configuration as a failure unless
        MOUNT_HAS_TO_EXIST is set to `true` (the name is a bit controversial: it means that
        the mount point has to exist in the configuration file to be checked, and we don't care
-       about it if it is not configured). -->
+       about it if it is not configured). FSTAB_ENTRY_OPTIONAL makes the configuration
+       optional in the check alone, so the Bash remediation can still add the entry. -->
 
   <definition class="compliance" id="{{{ _RULE_ID }}}" version="2">
     {{{ oval_metadata(MOUNTPOINT ~ " should be mounted with mount option " ~ MOUNTOPTION ~ ".", rule_title=rule_title) }}}
@@ -20,7 +21,7 @@
       <criteria operator="OR">
          <criterion comment="{{{ MOUNTOPTION }}} on {{{ MOUNTPOINT }}} in /etc/fstab"
            test_ref="test_{{{ local_id }}}_in_fstab"/>
-    {{% if MOUNT_HAS_TO_EXIST %}}
+    {{% if MOUNT_HAS_TO_EXIST or FSTAB_ENTRY_OPTIONAL %}}
          <criterion comment="{{{ MOUNTPOINT }}} does not exist in /etc/fstab"
            test_ref="test_{{{ local_id }}}_exist_in_fstab"
            negate="true" />
@@ -117,7 +118,7 @@
 {{% endif %}}
   </linux:partition_test>
 
-{{% if MOUNT_HAS_TO_EXIST %}}
+{{% if MOUNT_HAS_TO_EXIST or FSTAB_ENTRY_OPTIONAL %}}
   <ind:textfilecontent54_test check="all" check_existence="all_exist" version="1"
     comment="{{{ MOUNTPOINT }}} exists in /etc/fstab"
     id="test_{{{ local_id }}}_exist_in_fstab">

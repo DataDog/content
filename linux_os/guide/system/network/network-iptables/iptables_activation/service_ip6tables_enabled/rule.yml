@@ -25,7 +25,11 @@ references:
     nist: AC-4,CM-7(b),CA-3(5),SC-7(21),CM-6(a)
     nist-csf: DE.AE-1,ID.AM-3,PR.AC-5,PR.DS-5,PR.IP-1,PR.PT-3,PR.PT-4
 
+{{% if product == "rhel7" %}}
+platform: system_with_kernel and firewall_applicable[iptables] and ipv6[enabled]
+{{% else %}}
 platform: package[iptables] and system_with_kernel
+{{% endif %}}
 
 ocil: |-
     If IPv6 is disabled, this is not applicable.
@@ -46,4 +50,5 @@ template:
     vars:
         servicename: ip6tables
         packagename: iptables-ipv6
+        packagename@rhel7: iptables-services
 {{%- endif %}}

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # packages = nss-altfiles
-{{% if 'ubuntu' in product %}}
+{{% if 'ubuntu' in product or product == "rhel7" %}}
 # platform = Not Applicable
 {{% endif %}}
 

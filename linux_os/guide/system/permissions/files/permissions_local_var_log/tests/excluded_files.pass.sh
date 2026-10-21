@@ -9,6 +9,8 @@ excluded_files=('btmp' 'btmp.1' 'btmp-1' 'wtmp' 'wtmp.1' 'wtmp-1' 'lastlog' 'las
                 'cloud-init.log' 'cloud-init.log2' 'localmessages' 'localmessages2' 'waagent.log' 'waagent.log2')
 {{% elif product in ['sle12', 'sle15'] %}}
 excluded_files=('btmp', 'wtmp', 'lastlog')
+{{% elif product == 'rhel7' %}}
+excluded_files=('btmp' 'btmp.1' 'btmp-1' 'wtmp' 'wtmp.1' 'wtmp-1' 'lastlog' 'lastlog.1' 'README')
 {{% endif %}}
 
 for f in ${excluded_files[@]}
