@@ -1,0 +1,6 @@
+# Conflicts of cis-sshd-algorithms when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+shared/references/cce-redhat-avail.txt:
+  - ''
+  - ''
+  - ''

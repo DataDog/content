@@ -1,0 +1,8 @@
+# Conflicts of systemd-dropin-vendor-override when .datadog/datadog.py picks it onto datadog:
+# the texts that replace each conflict block, in order.
+shared/macros/10-oval.jinja:
+  - |2
+      {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var, exclude_states=masked_states) }}}
+      {{%- if missing_parameter_pass or missing_parameter_pass_definition %}}
+      {{{ oval_line_in_file_test(path, parameter, true, rule_id=rule_id) }}}
+      {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id) }}}
