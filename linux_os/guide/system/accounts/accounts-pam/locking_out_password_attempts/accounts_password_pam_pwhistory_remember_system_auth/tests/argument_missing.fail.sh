@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = Oracle Linux 7,Red Hat Virtualization 4
+# platform = Oracle Linux 7,Red Hat Enterprise Linux 7,Red Hat Virtualization 4
 # packages = pam
 
 config_file=/etc/pam.d/system-auth

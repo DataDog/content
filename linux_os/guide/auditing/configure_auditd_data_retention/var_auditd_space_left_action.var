@@ -18,6 +18,9 @@ options:
     syslog: syslog
     rotate: rotate
     ignore: ignore
+{{% if product == "rhel7" %}}
+    cis_rhel7: email|exec|single|halt
+{{% endif %}}
     cis_rhel8: email|exec|single|halt
     cis_rhel9: email|exec|single|halt
     cis_rhel10: email|exec|single|halt
