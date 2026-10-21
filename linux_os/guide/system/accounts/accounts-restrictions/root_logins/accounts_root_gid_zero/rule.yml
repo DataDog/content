@@ -11,6 +11,7 @@ rationale: |-
 severity: high
 
 identifiers:
+    cce@rhel7: CCE-86296-1
     cce@rhel8: CCE-86297-9
     cce@rhel9: CCE-86298-7
     cce@rhel10: CCE-90244-5

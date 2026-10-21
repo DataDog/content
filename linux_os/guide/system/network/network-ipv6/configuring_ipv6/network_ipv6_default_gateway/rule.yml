@@ -14,3 +14,6 @@ description: |-
 rationale: ""
 
 severity: unknown
+
+identifiers:
+    cce@rhel7: CCE-80186-0
