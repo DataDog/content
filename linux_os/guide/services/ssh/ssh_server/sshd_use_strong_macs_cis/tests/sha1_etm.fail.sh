@@ -5,6 +5,8 @@
 {{% if product == "rhel7" %}}
 # sshd -T needs host keys, which RHEL 7 creates when sshd starts.
 ssh-keygen -A
+# The check allows the MAC on Amazon Linux 2, which reads this content.
+sed -i 's/^ID=.*/ID="rhel"/' /etc/os-release
 {{% endif %}}
 
 # On RHEL 8 the crypto policy on the sshd command line takes precedence
