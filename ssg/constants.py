@@ -334,6 +334,9 @@ RHEL_AMZN_CPE_MAPPING = {
     "cpe:/o:redhat:enterprise_linux:7": "cpe:/o:amazon:amazon_linux:2",
 }
 
+# The Amazon Linux 2 derivative keeps the profiles of its own CIS benchmark.
+AMZN_PROFILES = ["cis_amzn2", "cis_amzn2_server_l1"]
+
 RHEL_CENTOS_CPE_MAPPING = {
     "cpe:/o:redhat:enterprise_linux:8": "cpe:/o:centos:centos:8",
     "cpe:/o:redhat:enterprise_linux:9": "cpe:/o:centos:centos:9",

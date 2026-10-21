@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = passwd
 
 USER="cac_user"
 useradd -M -r $USER

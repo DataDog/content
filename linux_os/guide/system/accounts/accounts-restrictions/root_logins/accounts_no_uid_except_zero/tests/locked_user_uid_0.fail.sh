@@ -1,4 +1,5 @@
 #!/bin/bash
+# packages = passwd
 # platform = Red Hat Enterprise Linux 7
 # remediation = none
 
