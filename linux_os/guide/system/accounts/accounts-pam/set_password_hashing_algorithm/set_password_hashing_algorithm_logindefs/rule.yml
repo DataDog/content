@@ -3,9 +3,10 @@ documentation_complete: true
 title: 'Set Password Hashing Algorithm in {{{ login_defs_path }}}'
 
 description: |-
-    In <tt>{{{ login_defs_path }}}</tt>, add or update the following line to ensure the system will use
-    {{{ xccdf_value("var_password_hashing_algorithm") }}} as the hashing algorithm:
-    <pre>ENCRYPT_METHOD {{{ xccdf_value("var_password_hashing_algorithm") }}}</pre>
+    In <tt>{{{ login_defs_path }}}</tt>, add or update the <tt>ENCRYPT_METHOD</tt> line to name
+    one hashing algorithm of <tt>{{{ xccdf_value("var_password_hashing_algorithm") }}}</tt>,
+    which lists one algorithm, or several separated by a vertical bar. The remediation writes
+    the first algorithm it lists.
 
 rationale: |-
     Passwords need to be protected at all times, and encryption is the standard method for
