@@ -2642,11 +2642,14 @@ fi
     Macro used to force re-select the current authselect profile, overwriting any manual modifications.
     This can fix integrity check failures caused by manual PAM file edits.
     The --force flag will overwrite modified files without prompting.
+    It runs only where /usr/bin/authselect exists.
 
 #}}
 {{% macro bash_authselect_force_reselect() -%}}
-read -ra authselect_args < <(authselect current --raw)
-authselect select "${authselect_args[@]}" --force
+if [ -f /usr/bin/authselect ]; then
+    read -ra authselect_args < <(authselect current --raw)
+    authselect select "${authselect_args[@]}" --force
+fi
 {{%- endmacro %}}
 
 

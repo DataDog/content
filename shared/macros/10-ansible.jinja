@@ -1063,23 +1063,27 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 {{#
     Macro used to force reselect the current authselect profile. This is equivalent to running
     'authselect select $(authselect current --raw) --force' which reapplies the current profile
-    with the --force option.
+    with the --force option. Both tasks run only where /usr/bin/authselect exists.
 
 :param rule_title:        The title of the rule using this macro.
 :type rule_title: str
 
 #}}
 {{% macro ansible_authselect_force_reselect(rule_title=None) -%}}
+{{{ ansible_check_authselect_presence(rule_title=rule_title) }}}
+
 - name: '{{{ rule_title }}} - Get current authselect profile'
   ansible.builtin.command:
     cmd: authselect current --raw
   register: authselect_current_profile
   changed_when: false
+  when: result_authselect_present.stat.exists
 
 - name: '{{{ rule_title }}} - Force reselect authselect profile'
   ansible.builtin.command:
     cmd: "authselect select {{ authselect_current_profile.stdout }} --force"
   changed_when: true
+  when: result_authselect_present.stat.exists
 {{%- endmacro %}}
 
 {{#
