@@ -11,7 +11,8 @@
     section=SECTION,
     key=PARAM,
     value="$" ~ REMEDIATION_XCCDF_VARIABLE,
-    no_quotes=NO_QUOTES
+    no_quotes=NO_QUOTES,
+    remove_wrong_entries=true
 ) }}}
 {{% else %}}
 {{{ bash_ensure_ini_config(
@@ -19,6 +20,7 @@
     section=SECTION,
     key=PARAM,
     value=VALUE,
-    no_quotes=NO_QUOTES
+    no_quotes=NO_QUOTES,
+    remove_wrong_entries=true
 ) }}}
 {{% endif %}}
