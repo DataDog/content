@@ -16,7 +16,7 @@ then
   # No CRC error, safe to proceed
   if [ "${GPG_RESULT}" -eq "0" ]
   then
-    echo "${GPG_OUT[*]}" | grep -vE "${ALMALINUX_RELEASE_FINGERPRINT}" || {
+    printf '%s\n' "${GPG_OUT[@]}" | grep -vxF "${ALMALINUX_RELEASE_FINGERPRINT}" || {
       # If $ALMALINUX_RELEASE_KEY file doesn't contain any keys with unknown fingerprint, import it
       rpm --import "${ALMALINUX_RELEASE_KEY}"
     }

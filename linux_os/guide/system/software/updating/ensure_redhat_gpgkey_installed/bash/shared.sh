@@ -19,7 +19,7 @@ then
 {{% if "rhel" in families  and major_version_ordinal >= 10 %}}
     if {{{ bash_os_linux_conditional("rhel", expected_ver="10.1", op=">=") | trim }}}
     then
-      readarray -t GPG_OUT < <(sq inspect "$REDHAT_RELEASE_KEY" | grep Fingerprint: | cut -d ":" -f 2)
+      readarray -t GPG_OUT < <(sq inspect "$REDHAT_RELEASE_KEY" | grep Fingerprint: | cut -d ":" -f 2 | tr -d " ")
     else
       readarray -t GPG_OUT < <(gpg --show-keys --with-fingerprint --with-colons "$REDHAT_RELEASE_KEY" | grep -A1 "^pub" | grep "^fpr" | cut -d ":" -f 10)
     fi
@@ -34,12 +34,12 @@ then
 {{% if "rhel" in families  and major_version_ordinal >= 10 %}}
     if {{{ bash_os_linux_conditional("rhel", expected_ver="10.1", op=">=") | trim }}}
     then
-      echo "${GPG_OUT[*]}" | grep -vE "${REDHAT_RELEASE_FINGERPRINT}|${REDHAT_AUXILIARY_FINGERPRINT}|${REDHAT_PQC_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
+      printf '%s\n' "${GPG_OUT[@]}" | grep -vxF -e "${REDHAT_RELEASE_FINGERPRINT}" -e "${REDHAT_AUXILIARY_FINGERPRINT}" -e "${REDHAT_PQC_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
     else
-      echo "${GPG_OUT[*]}" | grep -vE "${REDHAT_RELEASE_FINGERPRINT}|${REDHAT_AUXILIARY_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
+      printf '%s\n' "${GPG_OUT[@]}" | grep -vxF -e "${REDHAT_RELEASE_FINGERPRINT}" -e "${REDHAT_AUXILIARY_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
     fi
 {{% else %}}
-    echo "${GPG_OUT[*]}" | grep -vE "${REDHAT_RELEASE_FINGERPRINT}|${REDHAT_AUXILIARY_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
+    printf '%s\n' "${GPG_OUT[@]}" | grep -vxF -e "${REDHAT_RELEASE_FINGERPRINT}" -e "${REDHAT_AUXILIARY_FINGERPRINT}" || rpm --import "${REDHAT_RELEASE_KEY}"
 {{% endif %}}
   fi
 fi
