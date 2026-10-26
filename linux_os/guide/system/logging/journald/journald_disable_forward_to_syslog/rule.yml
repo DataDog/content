@@ -49,6 +49,8 @@ template:
         value: no
         no_quotes: 'true'
         missing_config_file_fail: 'false'
+        vendor_dropin_dirs@rhel8: 'true'
+        vendor_dropin_dirs@rhel10: 'true'
 {{% else %}}
 template:
     name: shell_lineinfile
