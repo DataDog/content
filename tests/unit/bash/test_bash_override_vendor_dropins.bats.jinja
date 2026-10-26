@@ -1,0 +1,130 @@
+#!/bin/bash
+
+set -pu
+
+function call_bash_override_vendor_dropins {
+    {{{ bash_override_vendor_dropins(["etc.d", "run.d", "lib.d"], "Journal", "ForwardToSyslog", "yes") | indent(4) }}}
+}
+
+is_old_bats=0
+
+setup() {
+    if [[ -z "${BATS_TEST_TMPDIR:-}" ]] || [[ ! -d "${BATS_TEST_TMPDIR}" ]]; then
+        BATS_TEST_TMPDIR="$(mktemp -d)"  # 1.4.0
+        # shellcheck disable=SC2034
+        BATS_TEARDOWN_STARTED=  # 1.3.0
+        is_old_bats=1
+    else
+        is_old_bats=0
+    fi
+    pushd "${BATS_TEST_TMPDIR}" || exit 1
+}
+
+teardown() {
+    if (( is_old_bats )); then
+        if [[ -z "${BATS_TEST_TMPDIR:-}" ]] || [[ ! -d "${BATS_TEST_TMPDIR}" ]]; then
+            >&2 echo "INTERNAL ERROR"
+            exit 3
+        fi
+        local tmppath xpwd
+        tmppath="$(readlink -f -- "${BATS_TEST_TMPDIR}")"
+        if [[ ! "${tmppath}" =~ ^/tmp/ ]] || [[ ! -d "${tmppath}" ]]; then
+            >&2 echo "INTERNAL ERROR"
+            exit 3
+        fi
+        xpwd="$(readlink -f -- .)"
+        if [[ "${tmppath}" != "${xpwd}" ]]; then
+            >&2 echo "INTERNAL ERROR"
+            exit 3
+        fi
+        popd || exit 1
+        rm -rf -- "${tmppath}"
+        BATS_TEST_TMPDIR=""
+    fi
+}
+
+@test "bash_override_vendor_dropins - Copy a vendor dropin in effect with another value" {
+    mkdir -p lib.d
+    printf "# vendor\n[Journal]\nForwardToSyslog=no\nStorage=auto\n" > lib.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    run diff etc.d/syslog.conf lib.d/syslog.conf
+    [ "$status" -eq 0 ]
+}
+
+@test "bash_override_vendor_dropins - Copy a dropin whose last value is another" {
+    mkdir -p lib.d
+    printf "[Journal]\nForwardToSyslog=yes\nForwardToSyslog=no\n" > lib.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    run diff etc.d/syslog.conf lib.d/syslog.conf
+    [ "$status" -eq 0 ]
+}
+
+@test "bash_override_vendor_dropins - Copy the runtime dropin that masks a vendor one" {
+    mkdir -p run.d lib.d
+    printf "[Journal]\nForwardToSyslog=no\n" > run.d/zz.conf
+    printf "[Journal]\nForwardToSyslog=yes\n" > lib.d/zz.conf
+
+    call_bash_override_vendor_dropins
+
+    run diff etc.d/zz.conf run.d/zz.conf
+    [ "$status" -eq 0 ]
+}
+
+@test "bash_override_vendor_dropins - Leave a vendor dropin with the value" {
+    mkdir -p lib.d
+    printf "[Journal]\nForwardToSyslog = yes\n" > lib.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    [ ! -e etc.d/syslog.conf ]
+}
+
+@test "bash_override_vendor_dropins - Leave a vendor dropin that a local dropin masks" {
+    mkdir -p etc.d lib.d
+    printf "[Journal]\nForwardToSyslog=no\n" > lib.d/syslog.conf
+    printf "[Journal]\nStorage=auto\n" > etc.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    run diff etc.d/syslog.conf <(printf "[Journal]\nStorage=auto\n")
+    [ "$status" -eq 0 ]
+}
+
+@test "bash_override_vendor_dropins - Leave a vendor dropin that a link to /dev/null masks" {
+    mkdir -p etc.d lib.d
+    printf "[Journal]\nForwardToSyslog=no\n" > lib.d/syslog.conf
+    ln -s /dev/null etc.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    [ -L etc.d/syslog.conf ]
+}
+
+@test "bash_override_vendor_dropins - Leave a vendor dropin that a runtime dropin masks" {
+    mkdir -p run.d lib.d
+    printf "[Journal]\nStorage=persistent\n" > run.d/zz.conf
+    printf "[Journal]\nForwardToSyslog=no\n" > lib.d/zz.conf
+
+    call_bash_override_vendor_dropins
+
+    [ ! -e etc.d/zz.conf ]
+}
+
+@test "bash_override_vendor_dropins - Leave the key of another section and a comment" {
+    mkdir -p lib.d
+    printf "[Other]\nForwardToSyslog=no\n[Journal]\n#ForwardToSyslog=no\nStorage=auto\n" > lib.d/syslog.conf
+
+    call_bash_override_vendor_dropins
+
+    [ ! -e etc.d/syslog.conf ]
+}
+
+@test "bash_override_vendor_dropins - Do nothing without dropins" {
+    call_bash_override_vendor_dropins
+
+    [ ! -e etc.d ]
+}

@@ -9,6 +9,73 @@
 {{% set VALUE = "{{" + REMEDIATION_XCCDF_VARIABLE + "}}" %}}
 {{% endif %}}
 
+{{% if DROPIN_DIRS %}}
+{{% if REMEDIATION_XCCDF_VARIABLE %}}
+{{% set VALUE_REGEX = "{{ " + REMEDIATION_XCCDF_VARIABLE + " | regex_escape }}" %}}
+{{% else %}}
+{{% set VALUE_REGEX = VALUE | escape_regex %}}
+{{% endif %}}
+{{% if not NO_QUOTES %}}
+{{% set VALUE_REGEX = '"' + VALUE_REGEX + '"' %}}
+{{% endif %}}
+- name: "{{{ rule_title }}} - Find the dropins of each dropin directory"
+  ansible.builtin.find:
+    paths: "{{ item }}"
+    patterns: '*.conf'
+    file_type: any
+  register: systemd_dropins_by_dir
+  loop:
+{{%- for dir in DROPIN_DIRS %}}
+    - {{{ dir }}}
+{{%- endfor %}}
+
+- name: "{{{ rule_title }}} - Find the vendor dropins that set {{{ PARAM }}} to another value"
+  ansible.builtin.find:
+    paths:
+{{%- for dir in DROPIN_DIRS[1:] %}}
+      - {{{ dir }}}
+{{%- endfor %}}
+    patterns: '*.conf'
+    contains: '(?m)^[ \t]*\[{{{ SECTION }}}\].*(?:\n(?![ \t]*\[).*)*\n[ \t]*{{{ PARAM }}}[ \t]*=(?![ \t]*{{{ VALUE_REGEX }}}[ \t]*$)'
+    read_whole_file: true
+  register: systemd_vendor_dropins_wrong
+
+- name: "{{{ rule_title }}} - Ensure {{{ DROPIN_DIR }}} exists"
+  ansible.builtin.file:
+    path: {{{ DROPIN_DIR }}}
+    state: directory
+    mode: '0755'
+  when: systemd_vendor_dropins_wrong.matched | int > 0
+
+# A dropin in {{{ DROPIN_DIR }}} masks the dropins of the same name in
+# {{{ DROPIN_DIRS[1:]|join(", ") }}}.
+- name: "{{{ rule_title }}} - Copy into {{{ DROPIN_DIR }}} the vendor dropins in effect that set {{{ PARAM }}} to another value"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{{ DROPIN_DIR }}}/{{ item | basename }}"
+    remote_src: true
+    force: false
+    mode: '0644'
+  register: systemd_vendor_dropin_copies
+  loop: "{{ systemd_vendor_dropins_wrong.files | map(attribute='path') | list }}"
+  when: item == (systemd_dropins_by_dir.results | map(attribute='files') | flatten | map(attribute='path') | select('search', '/' ~ (item | basename | regex_escape) ~ '$') | first)
+
+- name: "{{{ rule_title }}} - Set {{{ PARAM }}} in the copies of the vendor dropins"
+  community.general.ini_file:
+    path: "{{ item }}"
+    section: {{{ SECTION }}}
+    option: {{{ PARAM }}}
+{{% if NO_QUOTES %}}
+    value: "{{{ VALUE }}}"
+{{% else %}}
+    value: '"{{{ VALUE }}}"'
+{{% endif %}}
+    state: present
+    no_extra_spaces: true
+    create: false
+  loop: "{{ systemd_vendor_dropin_copies.results | selectattr('changed') | map(attribute='dest') | list }}"
+{{% endif %}}
+
 
 - name: "{{{ rule_title }}} - Search for a section in files"
   ansible.builtin.find:
