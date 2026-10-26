@@ -6,6 +6,9 @@
 
 {{% if REMEDIATION_XCCDF_VARIABLE %}}
 {{{ bash_instantiate_variables(REMEDIATION_XCCDF_VARIABLE) }}}
+{{%- if DROPIN_DIRS %}}
+{{{ bash_override_vendor_dropins(DROPIN_DIRS, SECTION, PARAM, "$" ~ REMEDIATION_XCCDF_VARIABLE, no_quotes=NO_QUOTES) }}}
+{{%- endif %}}
 {{{ bash_ensure_ini_config(
     files=DROPIN_DIR+"/complianceascode_hardening.conf "+DROPIN_DIR+"/*.conf "+MASTER_CFG_FILE,
     section=SECTION,
@@ -15,6 +18,9 @@
     remove_wrong_entries=true
 ) }}}
 {{% else %}}
+{{%- if DROPIN_DIRS %}}
+{{{ bash_override_vendor_dropins(DROPIN_DIRS, SECTION, PARAM, VALUE, no_quotes=NO_QUOTES) }}}
+{{%- endif %}}
 {{{ bash_ensure_ini_config(
     files=DROPIN_DIR+"/complianceascode_hardening.conf "+DROPIN_DIR+"/*.conf "+MASTER_CFG_FILE,
     section=SECTION,
