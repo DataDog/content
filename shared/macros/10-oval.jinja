@@ -261,9 +261,11 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type id_stem: str
 :param path_var_ref: If specified together with `filename_regex`, the ID of an OVAL variable that holds the directories to search, in place of `path_or_filepath`.
 :type path_var_ref: str
+:param exclude_states: IDs of OVAL states. The object leaves out the items that one of them matches.
+:type exclude_states: list
 
 #}}
-{{%- macro oval_line_in_file_object(path_or_filepath='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, filename_regex='', id_stem='', rule_id=None, path_var_ref='') -%}}
+{{%- macro oval_line_in_file_object(path_or_filepath='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, filename_regex='', id_stem='', rule_id=None, path_var_ref='', exclude_states=[]) -%}}
 {{%- set id_stem = id_stem or rule_id -%}}
 {{%- set suffix_id = "" -%}}
 {{%- if multi_value -%}}
@@ -310,6 +312,9 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 {{%- endif %}}
   <ind:pattern operation="pattern match">{{{ regex }}}</ind:pattern>
   <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+{{%- for state in exclude_states %}}
+  <filter action="exclude">{{{ state }}}</filter>
+{{%- endfor %}}
 </ind:textfilecontent54_object>
 {{%- endmacro %}}
 
@@ -368,8 +373,8 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 {{%- endmacro %}}
 
 
-{{%- macro oval_line_in_directory_object(path='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, rule_id=None, path_var_ref='') -%}}
-{{{- oval_line_in_file_object(path_or_filepath=path, section=section, prefix_regex=prefix_regex, parameter=parameter, separator_regex=separator_regex, missing_parameter_pass=missing_parameter_pass, multi_value=multi_value, filename_regex=".*\.conf$", id_stem=rule_id ~ "_config_dir", rule_id=rule_id, path_var_ref=path_var_ref) -}}}
+{{%- macro oval_line_in_directory_object(path='', section='', prefix_regex='^[ \\t]*', parameter='', separator_regex='[ \\t]+', missing_parameter_pass=false, multi_value=false, rule_id=None, path_var_ref='', exclude_states=[]) -%}}
+{{{- oval_line_in_file_object(path_or_filepath=path, section=section, prefix_regex=prefix_regex, parameter=parameter, separator_regex=separator_regex, missing_parameter_pass=missing_parameter_pass, multi_value=multi_value, filename_regex=".*\.conf$", id_stem=rule_id ~ "_config_dir", rule_id=rule_id, path_var_ref=path_var_ref, exclude_states=exclude_states) -}}}
 {{%- endmacro %}}
 
 
@@ -606,7 +611,7 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 :type multi_value: bool
 :param missing_config_file_fail: If set, the check will fail if the configuration file doesn't exist in the system.
 :type missing_config_file_fail: bool
-:param dropin_dirs: If set, the dropin directories to search, in place of dropin_dir.
+:param dropin_dirs: If set, the dropin directories to search, in place of dropin_dir, in the order of precedence. A dropin masks the dropins of the same name in the directories after its own, as systemd reads them.
 :type dropin_dirs: list
 :param missing_parameter_pass_definition: If set, the ID of an OVAL definition. On a system where it is true, the check passes as with missing_parameter_pass, and elsewhere it requires the parameter.
 :type missing_parameter_pass_definition: str
@@ -620,6 +625,10 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
 {{%- set dropin_dirs_var = "" %}}
 {{%- set dropin_desc = dropin_dir %}}
 {{%- endif %}}
+{{%- set masked_states = [] %}}
+{{%- for i in range(1, dropin_dirs|length) %}}
+{{{- masked_states.append("state_" ~ rule_id ~ "_masked_dropin_" ~ i) or "" }}}
+{{%- endfor %}}
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("Ensure '" + parameter + "' is configured with value '" + value | replace("(?i)", "") | replace("(?-i)", "") + ("' in section '" + section if section else "") + "' in " + path, rule_title=rule_title) }}}
@@ -691,10 +700,10 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
   {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id) }}}
   {{{ oval_line_in_file_state(value, multi_value, quotes, rule_id=rule_id) }}}
   {{{ oval_line_in_directory_test(dropin_desc, parameter, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var) }}}
+  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, false, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var, exclude_states=masked_states) }}}
   {{{ oval_line_in_directory_state(value, multi_value, quotes, rule_id=rule_id) }}}
   {{{ oval_line_in_directory_test(dropin_desc, parameter, true, rule_id=rule_id) }}}
-  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var) }}}
+  {{{ oval_line_in_directory_object(dropin_dir, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id, path_var_ref=dropin_dirs_var, exclude_states=masked_states) }}}
   {{%- if missing_parameter_pass or missing_parameter_pass_definition %}}
   {{{ oval_line_in_file_test(path, parameter, true, rule_id=rule_id) }}}
   {{{ oval_line_in_file_object(path, section, prefix_regex, parameter, separator_regex, true, multi_value, rule_id=rule_id) }}}
@@ -706,6 +715,31 @@ Generates the :code:`<affected>` tag for OVAL check using correct product platfo
     <value>{{{ dir }}}</value>
   {{%- endfor %}}
   </constant_variable>
+  {{%- for i in range(1, dropin_dirs|length) %}}
+  {{%- set stem = rule_id ~ "_masked_dropin_" ~ i %}}
+  <ind:textfilecontent54_state id="state_{{{ stem }}}" version="1"
+    comment="a dropin of the same name in {{{ dropin_dirs[:i]|join(", ") }}} masks it">
+    <ind:filepath var_ref="var_{{{ stem }}}" var_check="at least one" />
+  </ind:textfilecontent54_state>
+  <local_variable id="var_{{{ stem }}}" datatype="string" version="1"
+    comment="dropins of {{{ dropin_dirs[i] }}} that a dropin of the same name masks">
+    <concat>
+      <literal_component>{{{ dropin_dirs[i] }}}/</literal_component>
+      <object_component object_ref="obj_{{{ stem }}}" item_field="filename" />
+    </concat>
+  </local_variable>
+  <unix:file_object id="obj_{{{ stem }}}" version="1"
+    comment="dropins of {{{ dropin_dirs[:i]|join(", ") }}}">
+    <unix:path var_ref="var_{{{ stem }}}_dirs" var_check="at least one" />
+    <unix:filename operation="pattern match">.*\.conf$</unix:filename>
+  </unix:file_object>
+  <constant_variable id="var_{{{ stem }}}_dirs" datatype="string" version="1"
+    comment="dropin directories before {{{ dropin_dirs[i] }}}">
+  {{%- for dir in dropin_dirs[:i] %}}
+    <value>{{{ dir }}}</value>
+  {{%- endfor %}}
+  </constant_variable>
+  {{%- endfor %}}
   {{%- endif %}}
   {{%- if missing_config_file_fail %}}
   {{{ oval_config_file_exists_test(path, rule_id=rule_id) }}}
