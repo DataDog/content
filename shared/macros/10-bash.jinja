@@ -2483,6 +2483,49 @@ fi
 
 
 {{#
+    Copy into the first of dropin_dirs each dropin of the other directories
+    that is in effect and sets key in section to another value. A dropin
+    masks the dropins of the same name in the directories after its own,
+    and bash_ensure_ini_config on the first directory then fixes the copies.
+
+Example macro invocation::
+
+    {{{ bash_override_vendor_dropins(["/etc/systemd/journald.conf.d", "/usr/lib/systemd/journald.conf.d"], "Journal", "ForwardToSyslog", "yes") }}}
+
+:param dropin_dirs: dropin directories in the order of precedence, the first one being the local one
+:type dropin_dirs: list
+:param section: section of key
+:type section: str
+:param key: key
+:type key: str
+:param value: value
+:type value: str
+:param no_quotes: if false, the value is quoted with double quotes
+:type no_quotes: bool
+
+#}}
+{{% macro bash_override_vendor_dropins(dropin_dirs, section, key, value, no_quotes=true) -%}}
+for f in {{{ dropin_dirs[1:]|join("/*.conf ") }}}/*.conf; do
+    [ -e "$f" ] || continue
+    name=$(basename "$f")
+    for d in {{{ dropin_dirs|join(" ") }}}; do
+        [ -e "$d/$name" ] && break
+    done
+    [ "$d/$name" = "$f" ] || continue
+{{% if no_quotes %}}
+    wrong=$(sed -n "/^[[:space:]]*\[{{{ section }}}\]/,/^[[:space:]]*\[/{/^[[:space:]]*{{{ key }}}[[:blank:]]*=/{ /=[[:blank:]]*{{{ value | replace("/", "\/") }}}"'[[:space:]]*$/!p }}' "$f")
+{{% else %}}
+    wrong=$(sed -n '/^[[:space:]]*\[{{{ section }}}\]/,/^[[:space:]]*\[/{/^[[:space:]]*{{{ key }}}[[:blank:]]*=/{ /=[[:blank:]]*"{{{ value | replace("/", "\/") }}}"[[:space:]]*$/!p }}' "$f")
+{{% endif %}}
+    if [ -n "$wrong" ]; then
+        mkdir -p "{{{ dropin_dirs[0] }}}"
+        cp -p "$f" "{{{ dropin_dirs[0] }}}/$name"
+    fi
+done
+{{%- endmacro %}}
+
+
+{{#
     Ensure pam_unix.so module is enabled in specified PAM files and sections.
     Iterates through the provided PAM files and sections, ensuring that
     the pam_unix.so module is properly configured with the appropriate control flag.
