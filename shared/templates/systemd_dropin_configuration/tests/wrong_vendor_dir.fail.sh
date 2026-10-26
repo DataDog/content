@@ -2,7 +2,6 @@
 {{% if not VENDOR_DROPIN_DIRS %}}
 # platform = Not Applicable
 {{% else %}}
-# remediation = none
 SECTION="{{{ SECTION }}}"
 PARAM="{{{ PARAM }}}"
 VALUE="{{{ VALUE }}}"

@@ -79,3 +79,8 @@ template:
         value: none
         no_quotes: 'true'
         missing_config_file_fail: 'false'
+        vendor_dropin_dirs@almalinux9: 'true'
+        vendor_dropin_dirs@rhel8: 'true'
+        vendor_dropin_dirs@rhel9: 'true'
+        vendor_dropin_dirs@rhel10: 'true'
+        vendor_dropin_dirs@ubuntu2404: 'true'
