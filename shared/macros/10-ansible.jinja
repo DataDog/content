@@ -180,6 +180,15 @@ value: :code:`Setting={{ varname1 }}`
     - {{{ config_dir }}}
     contains: {{{ line_regex }}}
   register: _config_dir_has_parameter
+- name: {{{ rule_title }}} - Count the lines that configure the parameter {{{ parameter }}} in {{{ config_dir }}}
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: {{{ line_regex }}}
+    state: absent
+  check_mode: true
+  changed_when: false
+  loop: "{{ _config_dir_has_parameter.files }}"
+  register: _config_dir_parameter_lines
 - name: {{{ rule_title }}} - Check if {{{ config_file }}} exists
   ansible.builtin.stat:
     path: {{{ config_file }}}
@@ -208,7 +217,7 @@ value: :code:`Setting={{ varname1 }}`
     {{{ ansible_lineinfile("Insert correct line to " + set_file, set_file, mode=mode, regex=line_regex, insensitive=insensitive, new_line=new_line, create=create, state='present', validate=validate, insert_after=insert_after, insert_before=insert_before)|indent }}}
   when:
     - _config_file_correctly is not skipped
-    - (_config_file_correctly.found == 0 and _config_dir_correctly.matched == 0) or ((_config_file_has_parameter.found | int) + (_config_dir_has_parameter.matched | int)) != 1
+    - (_config_file_correctly.found == 0 and _config_dir_correctly.matched == 0) or ((_config_file_has_parameter.found | int) + (_config_dir_parameter_lines.results | map(attribute='found') | map('int') | sum)) != 1
 {{%- endmacro %}}
 
 
