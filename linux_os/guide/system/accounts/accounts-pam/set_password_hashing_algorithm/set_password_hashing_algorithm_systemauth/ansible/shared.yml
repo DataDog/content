@@ -4,6 +4,44 @@
 # complexity = low
 # disruption = medium
 
+{{% if 'ubuntu' in product or 'debian' in product -%}}
+{{{ ansible_instantiate_variables("var_password_hashing_algorithm_pam") }}}
+{{{ ansible_pam_unix_enable(rule_title=rule_title) }}}
+
+- name: '{{{ rule_title }}} - Check if /usr/share/pam-configs/cac_unix is present'
+  ansible.builtin.stat:
+    path: /usr/share/pam-configs/cac_unix
+  register: result_pam_cac_unix_present
+
+- name: '{{{ rule_title }}} - Use only the correct hashing algorithm in /usr/share/pam-configs/cac_unix'
+  block:
+    - name: '{{{ rule_title }}} - Remove the other hashing algorithm options of pam_unix.so'
+      ansible.builtin.replace:
+        path: /usr/share/pam-configs/cac_unix
+        regexp: '^(Password(?:-Initial)?:\s*[^\n]*pam_unix\.so[^\n]*?)\s+{{ item }}\b'
+        replace: '\1'
+      when: item != var_password_hashing_algorithm_pam.split('|')[0]
+      loop:
+        - 'sha512'
+        - 'yescrypt'
+        - 'gost_yescrypt'
+        - 'blowfish'
+        - 'sha256'
+        - 'md5'
+        - 'bigcrypt'
+      register: result_pam_cac_unix_options_removal
+
+    - name: '{{{ rule_title }}} - Add the hashing algorithm option to pam_unix.so'
+      ansible.builtin.replace:
+        path: /usr/share/pam-configs/cac_unix
+        regexp: '^(Password(?:-Initial)?:\s*(?![^\n]*\b{{ var_password_hashing_algorithm_pam.split("|")[0] }}\b)[^\n]*pam_unix\.so[^\n]*)$'
+        replace: '\1 {{ var_password_hashing_algorithm_pam.split("|")[0] }}'
+      register: result_pam_cac_unix_option_addition
+
+    {{{ ansible_apply_pam_auth_update_changes(rule_title=rule_title) | indent(4) }}}
+      when: result_pam_cac_unix_options_removal is changed or result_pam_cac_unix_option_addition is changed
+  when: result_pam_cac_unix_present.stat.exists
+{{%- else -%}}
 {{% if 'sle' in product or 'slmicro' in product -%}}
 {{%- set pam_file="/etc/pam.d/common-password" %}}
 {{%- set control="required" %}}
@@ -53,3 +91,4 @@
         - result_pam_hashing_options_removal is changed
   when:
     - result_pam_auth_file_present.stat.exists
+{{%- endif %}}
