@@ -1059,6 +1059,8 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
     {{%- else %}}
     cmd: pam-auth-update --enable {{{ profile_name }}}
     {{%- endif %}}
+  environment:
+    DEBIAN_FRONTEND: noninteractive
   changed_when: true
 {{%- endmacro %}}
 
@@ -1704,6 +1706,66 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
   when:
     - result_pam_auth_update_present.stat.exists
 
+{{%- endmacro -%}}
+
+
+{{#
+    Enable pam_unix.so PAM module by using pam-auth-update, as bash_pam_unix_enable
+    does: /usr/share/pam-configs/cac_unix starts as a copy of the unix profile of
+    libpam-runtime, when that profile is unmodified, and takes its place.
+#}}
+{{%- macro ansible_pam_unix_enable(rule_title=None) -%}}
+- name: '{{{ rule_title }}} - Check if /usr/share/pam-configs/cac_unix is present'
+  ansible.builtin.stat:
+    path: /usr/share/pam-configs/cac_unix
+  register: result_pam_cac_unix_before
+
+- name: '{{{ rule_title }}} - Check the unix profile of libpam-runtime'
+  ansible.builtin.stat:
+    path: /usr/share/pam-configs/unix
+    checksum_algorithm: md5
+  register: result_pam_unix_profile
+  when: not result_pam_cac_unix_before.stat.exists
+
+- name: '{{{ rule_title }}} - Read the checksums of libpam-runtime'
+  ansible.builtin.slurp:
+    src: /var/lib/dpkg/info/libpam-runtime.md5sums
+  register: result_libpam_runtime_md5sums
+  when:
+    - not result_pam_cac_unix_before.stat.exists
+    - result_pam_unix_profile.stat.exists
+
+- name: '{{{ rule_title }}} - Create /usr/share/pam-configs/cac_unix from the unix profile'
+  block:
+    - name: '{{{ rule_title }}} - Copy the unix profile to cac_unix'
+      ansible.builtin.copy:
+        src: /usr/share/pam-configs/unix
+        dest: /usr/share/pam-configs/cac_unix
+        remote_src: true
+        mode: '0644'
+
+    - name: '{{{ rule_title }}} - Name the cac_unix profile'
+      ansible.builtin.lineinfile:
+        path: /usr/share/pam-configs/cac_unix
+        regexp: '^Name: '
+        line: 'Name: Unix authentication (ComplianceAsCode)'
+
+    - name: '{{{ rule_title }}} - Give the cac_unix profile precedence over unix'
+      ansible.builtin.replace:
+        path: /usr/share/pam-configs/cac_unix
+        regexp: '^Priority: [0-9]+$'
+        replace: "Priority: 257\nConflicts: unix"
+
+    - name: '{{{ rule_title }}} - Enable the cac_unix profile in place of unix'
+      ansible.builtin.command:
+        cmd: pam-auth-update --enable cac_unix --disable unix
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      changed_when: true
+  when:
+    - not result_pam_cac_unix_before.stat.exists
+    - result_pam_unix_profile.stat.exists
+    - result_pam_unix_profile.stat.checksum in (result_libpam_runtime_md5sums.content | b64decode)
 {{%- endmacro -%}}
 
 
