@@ -4,6 +4,9 @@
 conf_file=/usr/share/pam-configs/cac_pwhistory
 if ! grep -qE 'pam_pwhistory\.so\s+[^#]*\buse_authtok\b' "$conf_file"; then
 	sed -i -E '/^Password:/,/^[^[:space:]]/ {
+    /^Password:/! {
+        /^[^[:space:]]/b
+    }
     /pam_pwhistory\.so/ {
         s/$/ use_authtok/g
     }
