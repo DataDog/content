@@ -220,13 +220,16 @@ done
 {{%- set separator_regex = "\s\+" -%}}
 {{%- set hardening_config_basename = config_basename or sshd_hardening_config_basename %}}
 {{%- set line_regex = prefix_regex ~ parameter ~ separator_regex %}}
+{{%- set include_regex = "^\\s*Include\\s+" ~ (sshd_drop_in_dir | replace(".", "\\.")) ~ "/\\*\\.conf" %}}
 mkdir -p {{{ sshd_drop_in_dir }}}
 chmod 0700 {{{ sshd_drop_in_dir }}}
 touch {{{ sshd_drop_in_dir }}}/{{{ hardening_config_basename }}}
 chmod 0600 {{{ sshd_drop_in_dir }}}/{{{ hardening_config_basename }}}
 {{{ lineinfile_absent(sshd_config_path, line_regex, insensitive=true, rule_id=rule_id) }}}
 {{{ lineinfile_absent_in_directory(sshd_drop_in_dir, line_regex, insensitive=true, filename_glob="*.conf") }}}
-{{{ set_config_file(
+# sshd reads {{{ sshd_drop_in_dir }}} through an Include line of {{{ sshd_config_path }}}.
+if grep -Eiqs '{{{ include_regex }}}' {{{ sshd_config_path }}}; then
+    {{{ set_config_file(
         path=sshd_drop_in_dir ~ "/" ~ hardening_config_basename,
         parameter=parameter,
         value=value,
@@ -236,8 +239,11 @@ chmod 0600 {{{ sshd_drop_in_dir }}}/{{{ hardening_config_basename }}}
         insensitive=true,
         separator=" ",
         separator_regex=separator_regex,
-        prefix_regex=prefix_regex, rule_id=rule_id)
+        prefix_regex=prefix_regex, rule_id=rule_id) | indent(4)
     }}}
+else
+    {{{ bash_sshd_config_set(parameter=parameter, value=value, rule_id=rule_id) | indent(4) }}}
+fi
 {{%- else %}}
 {{{ bash_sshd_config_set(parameter=parameter, value=value, rule_id=rule_id) }}}
 {{%- endif %}}
