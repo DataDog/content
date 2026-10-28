@@ -13,6 +13,7 @@ USERS_IGNORED_REGEX='nobody|nfsnobody'
 for (( i=0; i<"${#interactive_users[@]}"; i++ )); do
     if ! grep -qP "$USERS_IGNORED_REGEX" <<< "${interactive_users[$i]}" && \
         [ "${interactive_users_shell[$i]}" != "/sbin/nologin" ] && \
+        [ -e "${interactive_users_home[$i]}/.bash_history" ] && \
         [ ! -L "${interactive_users_home[$i]}/.bash_history" ]; then
 
         chmod u-sx,go= "${interactive_users_home[$i]}/.bash_history"
