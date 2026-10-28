@@ -1668,12 +1668,22 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
 {{#
   This macro ensures the pam_pwquality.so PAM module is enabled.
   It is enabled using the pam-auth-update tool.
+  The module ships in libpam-pwquality. The macro installs the package when it is
+  missing, and writes and enables the profile only once the package is installed.
 
 :param path: The path of pam-auth-update configuration for pam_pwquality.so.
 :type parameter: str
 
 #}}
 {{%- macro ansible_pam_pwquality_enable(path, rule_title=None) -%}}
+
+{{#- Profile playbooks run the package tasks of all rules first, taken out of their
+    blocks (AnsibleSnippetsProcessor in ssg/ansible.py). A top-level task carries the
+    platform conditions and the tags of the rule with it. -#}}
+- name: {{{ rule_title }}} - Ensure libpam-pwquality is installed
+  ansible.builtin.package:
+    name: libpam-pwquality
+    state: present
 
 {{{ ansible_check_pam_auth_update_presence(rule_title=rule_title) }}}
 

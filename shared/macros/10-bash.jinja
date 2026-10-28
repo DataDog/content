@@ -945,11 +945,17 @@ fi
 {{#
     Enable pam_pwquality.so PAM module by using pam-auth-update.
     This option is only recommended when pam-auth-update tool is available for the system.
+    The module ships in libpam-pwquality. The macro installs the package when it is
+    missing, and writes and enables the profile only where the package is installed.
 #}}
 {{%- macro bash_pam_pwquality_enable() -%}}
-conf_name=cac_pwquality
-if [ ! -f /usr/share/pam-configs/"$conf_name" ]; then
-    cat << EOF > /usr/share/pam-configs/"$conf_name"
+if ! {{{ bash_package_installed("libpam-pwquality") }}}; then
+    {{{ bash_package_install("libpam-pwquality") }}}
+fi
+if {{{ bash_package_installed("libpam-pwquality") }}}; then
+    conf_name=cac_pwquality
+    if [ ! -f /usr/share/pam-configs/"$conf_name" ]; then
+        cat << EOF > /usr/share/pam-configs/"$conf_name"
 Name: Pwquality password strength checking
 Default: yes
 Priority: 1025
@@ -958,10 +964,11 @@ Password-Type: Primary
 Password:
     requisite                   pam_pwquality.so retry=3
 EOF
-    chmod 0644 /usr/share/pam-configs/"$conf_name"
-fi
+        chmod 0644 /usr/share/pam-configs/"$conf_name"
+    fi
 
-DEBIAN_FRONTEND=noninteractive pam-auth-update
+    DEBIAN_FRONTEND=noninteractive pam-auth-update
+fi
 {{%- endmacro -%}}
 
 
