@@ -1523,6 +1523,7 @@ controls:
       status: automated
       rules:
           - package_firewalld_installed
+          - var_firewall_accept_other_utility=true
     - id: 4.1.2
       title: Ensure firewalld backend is configured (Automated)
       levels:

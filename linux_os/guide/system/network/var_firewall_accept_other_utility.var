@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Accept Another Firewall Utility'
+
+description: |-
+    Whether a host where another firewall utility is in use passes the
+    rules that install a firewall utility, such as firewalld. The CIS
+    Benchmarks let such a host skip their section for the utility. By
+    default, the package of the utility must be installed.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
