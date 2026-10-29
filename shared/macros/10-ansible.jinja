@@ -96,7 +96,7 @@ value: :code:`Setting={{ varname1 }}`
   Find files matching a particular value. Not a full implementation.
 
 #}}
-{{%- macro ansible_find(msg='', paths='', recurse='yes', follow='no', contains='', register='', when='', rule_title=None) %}}
+{{%- macro ansible_find(msg='', paths='', recurse='yes', follow='no', contains='', patterns='', register='', when='', rule_title=None) %}}
 - name: '{{{ msg or rule_title }}}'
   ansible.builtin.find:
     paths: '{{{ paths }}}'
@@ -104,6 +104,9 @@ value: :code:`Setting={{ varname1 }}`
     follow: '{{{ follow }}}'
     {{%- if contains %}}
     contains: '{{{ contains }}}'
+    {{%- endif %}}
+    {{%- if patterns %}}
+    patterns: '{{{ patterns }}}'
     {{%- endif %}}
   {{%- if register %}}
   register: '{{{ register }}}'
@@ -154,10 +157,11 @@ value: :code:`Setting={{ varname1 }}`
   configuration in a directory. Note this handles generic key-separator-value
   files with no sense of structure. In particular, ini configuration files are
   best served with the ini Ansible module instead of lineinfile-based
-  solutions.
+  solutions. Only the files of the directory that match config_dir_pattern
+  count, since the service includes those alone.
 
 #}}
-{{%- macro ansible_set_config_file_dir(msg, config_file, config_dir, set_file, parameter, separator=' ', separator_regex='\s+', value='', prefix_regex='^\s*', insensitive='false', create='no', validate='', insert_after='', insert_before='', mode='', rule_title=None) %}}
+{{%- macro ansible_set_config_file_dir(msg, config_file, config_dir, set_file, parameter, separator=' ', separator_regex='\s+', value='', prefix_regex='^\s*', insensitive='false', create='no', validate='', insert_after='', insert_before='', mode='', config_dir_pattern='*.conf', rule_title=None) %}}
 {{%- set var_dir = config_dir | replace("/", "_") | replace("-", "_") | replace(".", "_") -%}}
 {{%- set dir_exists = var_dir + "_exists" -%}}
 {{%- set dir_parameter = var_dir + "_has_parameter" -%}}
@@ -179,6 +183,7 @@ value: :code:`Setting={{ varname1 }}`
     paths:
     - {{{ config_dir }}}
     contains: {{{ line_regex }}}
+    patterns: '{{{ config_dir_pattern }}}'
   register: _config_dir_has_parameter
 - name: {{{ rule_title }}} - Check if {{{ config_file }}} exists
   ansible.builtin.stat:
@@ -198,12 +203,13 @@ value: :code:`Setting={{ varname1 }}`
     paths:
     - {{{ config_dir }}}
     contains: {{{ line_regex ~ value ~ "$" }}}
+    patterns: '{{{ config_dir_pattern }}}'
   register: _config_dir_correctly
 - name: '{{{ msg or rule_title }}}'
   block:
     {{{ ansible_lineinfile("Deduplicate values from " + config_file, config_file, mode=mode, regex=line_regex, insensitive=insensitive, create='no', state='absent')|indent }}}
     {{{ ansible_stat("Check if " + config_dir + " exists", path=config_dir, register=dir_exists)|indent }}}
-    {{{ ansible_find("Check if the parameter " + parameter + " is present in " + config_dir, paths=config_dir, contains=line_regex, register=dir_parameter, when=find_when)|indent }}}
+    {{{ ansible_find("Check if the parameter " + parameter + " is present in " + config_dir, paths=config_dir, contains=line_regex, patterns=config_dir_pattern, register=dir_parameter, when=find_when)|indent }}}
     {{{ ansible_lineinfile("Remove parameter from files in " + config_dir, path="{{ item.path }}", mode=mode, regex=line_regex, insensitive=insensitive, state="absent", with_items=lineinfile_items, when=lineinfile_when)|indent }}}
     {{{ ansible_lineinfile("Insert correct line to " + set_file, set_file, mode=mode, regex=line_regex, insensitive=insensitive, new_line=new_line, create=create, state='present', validate=validate, insert_after=insert_after, insert_before=insert_before)|indent }}}
   when:
