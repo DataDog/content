@@ -10,36 +10,23 @@
 - name: Create Rule to Drop Input IP Address from Loopback
   ansible.builtin.command: nft add rule inet filter input ip saddr 127.0.0.0/8 counter drop
 
-- name: Check if IPv6 is Disabled in grub Configuration
+- name: Check if IPv6 is disabled
   ansible.builtin.shell:
     cmd: |-
-      set -o pipefail
-      [ -z "$(grep "^\s*linux" /boot/grub2/grub.cfg | grep -v ipv6.disabled=1)" ]
+      grubfile="{{{ grub2_boot_path }}}/grub.cfg"
+      if [ -f "$grubfile" ] && ! grep "^\s*linux" "$grubfile" | grep -vq "ipv6.disable=1"; then
+          exit 0
+      fi
+      grep -Eq "^\s*net\.ipv6\.conf\.all\.disable_ipv6\s*=\s*1\b(\s+#.*)?$" /etc/sysctl.conf /etc/sysctl.d/*.conf &&
+      grep -Eq "^\s*net\.ipv6\.conf\.default\.disable_ipv6\s*=\s*1\b(\s+#.*)?$" /etc/sysctl.conf /etc/sysctl.d/*.conf &&
+      sysctl net.ipv6.conf.all.disable_ipv6 | grep -Eq "^\s*net\.ipv6\.conf\.all\.disable_ipv6\s*=\s*1\b(\s+#.*)?$" &&
+      sysctl net.ipv6.conf.default.disable_ipv6 | grep -Eq "^\s*net\.ipv6\.conf\.default\.disable_ipv6\s*=\s*1\b(\s+#.*)?$"
     executable: /bin/bash
-  register: ipv6_status
+  register: ipv6_disabled
   changed_when: false
+  failed_when: false
   check_mode: false
-
-- name: Check sysctl value of net.ipv6.conf.all.disable_ipv6
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.all.disable_ipv6
-    state: present
-    value: "1"
-  check_mode: true
-  register: sysctl_ipv6_all
-
-- name: Check sysctl value of net.ipv6.conf.default.disable_ipv6
-  ansible.posix.sysctl:
-    name: net.ipv6.conf.default.disable_ipv6
-    state: present
-    value: "1"
-  check_mode: true
-  register: sysctl_ipv6_default
 
 - name: Implement IPv6 loopback rules
   ansible.builtin.command: nft add rule inet filter input ip6 saddr ::1 counter drop
-  when:
-    - ipv6_status is not skipped
-    - sysctl_ipv6_default is not skipped
-    - sysctl_ipv6_all is not skipped
-    - ipv6_status.rc == 0 or sysctl_ipv6_all.found > 0 or sysctl_ipv6_default.found > 0
+  when: ipv6_disabled.rc != 0
