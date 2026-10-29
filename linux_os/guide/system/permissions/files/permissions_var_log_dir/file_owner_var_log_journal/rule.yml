@@ -2,7 +2,10 @@ documentation_complete: true
 
 title: 'Verify User Who Owns /var/log/*.journal(~) Files'
 
-description: '{{{ describe_file_owner(file="/var/log/*.journal(~)", owner="root") }}}'
+description: |-
+    To properly set the owner of the journal files under <code>/var/log</code>,
+    <code>*.journal</code> and <code>*.journal~</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec chown root {} +</pre>
 
 rationale: |-
     The <tt>/var/log/*.journal(~)</tt> files are system logs managed by the "systemd" service.
@@ -12,10 +15,15 @@ severity: medium
 ocil_clause: '{{{ ocil_clause_file_owner(file="/var/log/*.journal(~)", owner="root") }}}'
 
 ocil: |-
-    {{{ ocil_file_owner(file="/var/log/*.journal(~)", owner="root") }}}
+    To check the ownership of the journal files under <code>/var/log</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec ls -lL {} +</pre>
+    If properly configured, the output should indicate the following owner:
+    <code>root</code>
 
 fixtext: |-
-    {{{ describe_file_owner(file="/var/log/*.journal(~)", owner="root") }}}
+    To properly set the owner of the journal files under <code>/var/log</code>,
+    <code>*.journal</code> and <code>*.journal~</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec chown root {} +</pre>
 
 srg_requirement: '{{{ srg_requirement_file_owner("/var/log/*.journal(~)", owner="root") }}}'
 
