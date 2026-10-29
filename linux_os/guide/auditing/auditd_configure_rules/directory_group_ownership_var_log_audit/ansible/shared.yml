@@ -11,5 +11,5 @@
 
 - name: '{{{ rule_title }}} - Set Permissions Custom Location'
   ansible.builtin.file:
-    group: "{{ auditd_config_slurp['content'] | b64decode | regex_findall('\nlog_group\\s*=\\s*(.+)') | default(['root',], boolean=True) | first }}"
+    group: "{{ auditd_config_slurp['content'] | b64decode | regex_findall('\nlog_group\\s*=\\s*(.+)') | default(['root',], boolean=True) | first | trim }}"
     path: "{{ auditd_config_slurp['content'] | b64decode | regex_findall('\nlog_file\\s*=\\s*(.+)') | default(['/var/log/audit/audit.log',], boolean=True) | first | dirname }}"
