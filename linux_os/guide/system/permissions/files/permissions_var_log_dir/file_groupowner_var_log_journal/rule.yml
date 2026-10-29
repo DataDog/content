@@ -2,7 +2,11 @@ documentation_complete: true
 
 title: 'Verify Group Who Owns /var/log/*.journal(~) File'
 
-description: '{{{ describe_file_group_owner(file="/var/log/*.journal(~)", group="systemd-journal|root") }}}'
+description: |-
+    To properly set the group owner of the journal files under <code>/var/log</code>,
+    <code>*.journal</code> and <code>*.journal~</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec chgrp systemd-journal {} +</pre>
+    The group <code>root</code> is accepted as well.
 
 rationale: |-
     The <tt>/var/log/*.journal(~)</tt> files are system logs managed by the "systemd" service.
@@ -12,7 +16,10 @@ severity: medium
 ocil_clause: '{{{ ocil_clause_file_group_owner(file="/var/log/*.journal(~)", group="systemd-journal|root") }}}'
 
 ocil: |-
-    {{{ ocil_file_group_owner(file="/var/log/*.journal(~)", group="systemd-journal|root") }}}
+    To check the group ownership of the journal files under <code>/var/log</code>, run the command:
+    <pre>$ sudo find /var/log -type f \( -name '*.journal' -o -name '*.journal~' \) -exec ls -lL {} +</pre>
+    If properly configured, the output should indicate the following group-owner:
+    <code>systemd-journal</code> or <code>root</code>
 
 template:
     name: file_groupowner
