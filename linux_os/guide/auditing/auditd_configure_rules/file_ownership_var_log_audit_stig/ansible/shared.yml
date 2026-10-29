@@ -13,7 +13,7 @@
 
 - name: "{{{ rule_title }}} - Set audit log file fact"
   ansible.builtin.set_fact:
-      log_file_line: "{{ log_file_exists.stdout | split(' ') | last }}"
+      log_file_line: "{{ log_file_exists.stdout_lines | default([''], true) | last | regex_replace('^[^=]*=', '') | trim }}"
 
 - name: "{{{ rule_title }}} - Set default log_file if not configured in /etc/audit/auditd.conf"
   ansible.builtin.set_fact:

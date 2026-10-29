@@ -13,7 +13,7 @@
 
 - name: "{{{ rule_title }}} - Set Log File Facts"
   ansible.builtin.set_fact:
-      log_file_line: "{{ log_file_exists.stdout | split(' ') | last }}"
+      log_file_line: "{{ log_file_exists.stdout_lines | default([''], true) | last | regex_replace('^[^=]*=', '') | trim }}"
 
 - name: "{{{ rule_title }}} - Set Default log_file if Not Set"
   ansible.builtin.set_fact:
@@ -41,7 +41,7 @@
 
 - name: "{{{ rule_title }}} - Set Log Group Facts"
   ansible.builtin.set_fact:
-      log_group_line: "{{ log_group_exists.stdout | split(' ') | last }}"
+      log_group_line: "{{ log_group_exists.stdout_lines | default([''], true) | last | regex_replace('^[^=]*=', '') | trim }}"
 
 - name: "{{{ rule_title }}} - Set Default log_group if Not Set"
   ansible.builtin.set_fact:
