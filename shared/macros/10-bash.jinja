@@ -922,9 +922,13 @@ DEBIAN_FRONTEND=noninteractive pam-auth-update
 AUTH_FILES=("/etc/pam.d/system-auth" "/etc/pam.d/password-auth")
 for pam_file in "${AUTH_FILES[@]}"
 do
-    if ! grep -qE '^\s*auth\s+required\s+pam_faillock\.so\s+(preauth silent|authfail).*$' "$pam_file" ; then
+    if ! grep -qE '^\s*auth\s+required\s+pam_faillock\.so\s+preauth\b' "$pam_file" ; then
         sed -i --follow-symlinks '/^auth.*sufficient.*pam_unix\.so.*/i auth        required      pam_faillock.so preauth silent' "$pam_file"
+    fi
+    if ! grep -qE '^\s*auth\s+(required|\[default=die\])\s+pam_faillock\.so\s+authfail\b' "$pam_file" ; then
         sed -i --follow-symlinks '/^auth.*required.*pam_deny\.so.*/i auth        required      pam_faillock.so authfail' "$pam_file"
+    fi
+    if ! grep -qE '^\s*account\s+required\s+pam_faillock\.so\b' "$pam_file" ; then
         sed -i --follow-symlinks '/^account.*required.*pam_unix\.so.*/i account     required      pam_faillock.so' "$pam_file"
     fi
     sed -Ei 's/(auth.*)(\[default=die\])(.*pam_faillock\.so)/\1required     \3/g' "$pam_file"
