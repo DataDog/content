@@ -2584,7 +2584,9 @@ done
 :type pam_file: str
 :param group:           PAM management group: auth, account, password or session. Also known as "type".
 :type group: str
-:param control:         PAM control flags.
+:param control:         PAM control flags. A control held in a shell variable, such as
+                        "$var_password_pam_remember_control_flag", is matched as the
+                        variable's value.
 :type control: str
 :param module:          PAM module name.
 :type module: str
@@ -2594,7 +2596,7 @@ done
 
 #}}
 {{%- macro bash_ensure_pam_module_line(pam_file, group, control, module, after_match='') -%}}
-{{% set control_regex = control | escape_regex %}}
+{{% set control_regex = control if control.startswith("$") else (control | escape_regex) %}}
 if ! grep -qP "^\s*{{{ group }}}\s+{{{ control_regex }}}\s+{{{ module }}}\s*.*" "{{{ pam_file }}}"; then
     # Line matching group + control + module was not found. Check group + module.
     if [ "$(grep -cP '^\s*{{{ group }}}\s+.*\s+{{{ module }}}\s*' "{{{ pam_file }}}")" -eq 1 ]; then
