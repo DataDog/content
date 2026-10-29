@@ -1522,50 +1522,71 @@ The following macro remediates Audit syscall rule in :code:`/etc/audit/audit.rul
       when:
         - result_pam_faillock_acount_is_enabled.found == 0
 {{% else %}}
-    - name: {{{ rule_title }}} - Check if pam_faillock.so is already enabled
+    - name: {{{ rule_title }}} - Check if pam_faillock.so preauth is already enabled
       ansible.builtin.lineinfile:
-        path: /etc/pam.d/system-auth
-        regexp: .*auth.*pam_faillock\.so (preauth|authfail)
+        path: '{{ item }}'
+        regexp: ^\s*auth\s+required\s+pam_faillock\.so\s+preauth\b
         state: absent
       check_mode: yes
       changed_when: false
-      register: result_pam_faillock_is_enabled
+      register: result_pam_faillock_preauth_is_enabled
+      loop:
+        - /etc/pam.d/system-auth
+        - /etc/pam.d/password-auth
 
     - name: {{{ rule_title }}} - Enable pam_faillock.so preauth editing PAM files
       ansible.builtin.lineinfile:
-        path: '{{ item }}'
+        path: '{{ item.item }}'
         line: auth        required      pam_faillock.so preauth
         insertbefore: ^auth.*sufficient.*pam_unix\.so.*
         state: present
+      loop: '{{ result_pam_faillock_preauth_is_enabled.results }}'
+      when:
+        - item.found == 0
+
+    - name: {{{ rule_title }}} - Check if pam_faillock.so authfail is already enabled
+      ansible.builtin.lineinfile:
+        path: '{{ item }}'
+        regexp: ^\s*auth\s+(required|\[default=die\])\s+pam_faillock\.so\s+authfail\b
+        state: absent
+      check_mode: yes
+      changed_when: false
+      register: result_pam_faillock_authfail_is_enabled
       loop:
         - /etc/pam.d/system-auth
         - /etc/pam.d/password-auth
-      when:
-        - result_pam_faillock_is_enabled.found == 0
 
     - name: {{{ rule_title }}} - Enable pam_faillock.so authfail editing PAM files
       ansible.builtin.lineinfile:
-        path: '{{ item }}'
+        path: '{{ item.item }}'
         line: auth        required      pam_faillock.so authfail
         insertbefore: ^auth.*required.*pam_deny\.so.*
         state: present
+      loop: '{{ result_pam_faillock_authfail_is_enabled.results }}'
+      when:
+        - item.found == 0
+
+    - name: {{{ rule_title }}} - Check if pam_faillock.so in the account section is already enabled
+      ansible.builtin.lineinfile:
+        path: '{{ item }}'
+        regexp: ^\s*account\s+required\s+pam_faillock\.so\b
+        state: absent
+      check_mode: yes
+      changed_when: false
+      register: result_pam_faillock_account_is_enabled
       loop:
         - /etc/pam.d/system-auth
         - /etc/pam.d/password-auth
-      when:
-        - result_pam_faillock_is_enabled.found == 0
 
-    - name: {{{ rule_title }}} - Enable pam_faillock.so account section editing PAM files
+    - name: {{{ rule_title }}} - Enable pam_faillock.so in the account section editing PAM files
       ansible.builtin.lineinfile:
-        path: '{{ item }}'
+        path: '{{ item.item }}'
         line: account     required      pam_faillock.so
         insertbefore: ^account.*required.*pam_unix\.so.*
         state: present
-      loop:
-        - /etc/pam.d/system-auth
-        - /etc/pam.d/password-auth
+      loop: '{{ result_pam_faillock_account_is_enabled.results }}'
       when:
-        - result_pam_faillock_is_enabled.found == 0
+        - item.found == 0
   when:
     - not result_authselect_present.stat.exists
 {{% endif %}}
