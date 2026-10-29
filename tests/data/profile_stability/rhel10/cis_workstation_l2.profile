@@ -496,6 +496,7 @@ var_auditd_max_log_file=8
 var_auditd_max_log_file_action=keep_logs
 var_auditd_space_left_action=cis_rhel10
 var_authselect_profile=local
+var_firewall_accept_other_utility=true
 var_kernel_module_absent_disabled=true
 var_multiple_time_servers=rhel
 var_pam_wheel_group_for_su=cis
