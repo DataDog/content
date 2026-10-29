@@ -369,6 +369,7 @@ var_accounts_passwords_pam_faillock_unlock_time=900
 var_accounts_tmout=15_min
 var_accounts_user_umask=027
 var_authselect_profile=local
+var_firewall_accept_other_utility=true
 var_kernel_module_absent_disabled=true
 var_multiple_time_servers=rhel
 var_pam_wheel_group_for_su=cis
