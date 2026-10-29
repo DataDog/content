@@ -1,0 +1,71 @@
+{{#-
+The package of the utility is installed, or var_firewall_accept_other_utility
+is true and another utility is in use: its package is installed and a .wants
+directory of /etc/systemd/system links one of its services, as systemctl
+enable leaves it, which the check reads without systemd (agentless scans of
+snapshots, containers).
+-#}}
+<def-group>
+  <definition class="compliance" id="{{{ _RULE_ID }}}" version="1">
+    {{{ oval_metadata("The " + pkg_system|upper + " package " + PACKAGE + " is installed, or another firewall utility is in use and var_firewall_accept_other_utility accepts it.", affected_platforms=["multi_platform_all"], rule_title=rule_title) }}}
+    <criteria operator="OR" comment="package {{{ PACKAGE }}} is installed, or another firewall utility is in use and accepted">
+      <criterion test_ref="test_package_{{{ PACKAGE }}}_installed"
+        comment="package {{{ PACKAGE }}} is installed"/>
+      <criteria operator="AND" comment="another firewall utility is in use and accepted">
+        <criterion test_ref="test_{{{ _RULE_ID }}}_accept_other_utility"
+          comment="var_firewall_accept_other_utility is true"/>
+        <criteria operator="OR" comment="another firewall utility is in use">
+{{%- for u in OTHERS %}}
+          <criteria operator="AND" comment="{{{ u.name }}} is in use">
+            <criterion test_ref="test_{{{ _RULE_ID }}}_{{{ u.name }}}_installed"
+              comment="package {{{ u.package }}} is installed"/>
+            <criteria operator="OR" comment="a service of {{{ u.name }}} is enabled">
+{{%- for s in u.services %}}
+              <criterion test_ref="test_{{{ _RULE_ID }}}_{{{ s }}}_enabled"
+                comment="{{{ s }}}.service is enabled"/>
+{{%- endfor %}}
+            </criteria>
+          </criteria>
+{{%- endfor %}}
+        </criteria>
+      </criteria>
+    </criteria>
+  </definition>
+  {{{ oval_test_package_installed(package=PACKAGE, test_id="test_package_" + PACKAGE + "_installed") }}}
+
+  <ind:variable_test id="test_{{{ _RULE_ID }}}_accept_other_utility" version="1"
+    check="all" check_existence="all_exist"
+    comment="var_firewall_accept_other_utility is true">
+    <ind:object object_ref="obj_{{{ _RULE_ID }}}_accept_other_utility"/>
+    <ind:state state_ref="state_{{{ _RULE_ID }}}_accept_other_utility"/>
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_{{{ _RULE_ID }}}_accept_other_utility" version="1">
+    <ind:var_ref>var_firewall_accept_other_utility</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_{{{ _RULE_ID }}}_accept_other_utility" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+
+  <external_variable id="var_firewall_accept_other_utility" datatype="boolean" version="1"
+    comment="another firewall utility in use is accepted"/>
+{{%- for u in OTHERS %}}
+
+  {{{ oval_test_package_installed(package=u.package, test_id="test_" + _RULE_ID + "_" + u.name + "_installed") }}}
+{{%- for s in u.services %}}
+
+  <unix:file_test id="test_{{{ _RULE_ID }}}_{{{ s }}}_enabled" version="1"
+    check="all" check_existence="at_least_one_exists"
+    comment="{{{ s }}}.service is enabled">
+    <unix:object object_ref="obj_{{{ _RULE_ID }}}_{{{ s }}}_enabled"/>
+  </unix:file_test>
+
+  <unix:file_object id="obj_{{{ _RULE_ID }}}_{{{ s }}}_enabled" version="1"
+    comment="the link of {{{ s }}}.service in a .wants directory of /etc/systemd/system">
+    <unix:path operation="pattern match">^/etc/systemd/system/[^/]+\.wants$</unix:path>
+    <unix:filename>{{{ s }}}.service</unix:filename>
+  </unix:file_object>
+{{%- endfor %}}
+{{%- endfor %}}
+</def-group>

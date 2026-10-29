@@ -1,0 +1,43 @@
+# platform = multi_platform_all
+# reboot = false
+# strategy = enable
+# complexity = low
+# disruption = low
+
+{{{ ansible_instantiate_variables("var_firewall_accept_other_utility") }}}
+
+{{#- Another utility is in use as in the OVAL check: its package is
+installed and a .wants directory of /etc/systemd/system links one of its
+services. #}}
+- name: "{{{ rule_title }}} - Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+  when: var_firewall_accept_other_utility | bool
+
+- name: "{{{ rule_title }}} - Find the enabled services of other firewall utilities"
+  ansible.builtin.find:
+    paths: /etc/systemd/system
+    recurse: true
+    file_type: link
+    patterns:
+{{%- for u in OTHERS %}}
+{{%- for s in u.services %}}
+      - "{{{ s }}}.service"
+{{%- endfor %}}
+{{%- endfor %}}
+  register: firewall_other_utility_links
+  when: var_firewall_accept_other_utility | bool
+
+- name: "{{{ rule_title }}} - Ensure {{{ PACKAGE }}} is installed"
+  ansible.builtin.package:
+    name: "{{{ PACKAGE }}}"
+    state: present
+  when: >-
+    not (var_firewall_accept_other_utility | bool and (
+{{%- for u in OTHERS %}}
+    ("{{{ u.package }}}" in ansible_facts.packages and
+    firewall_other_utility_links.files | map(attribute="path")
+    | select("search", "[.]wants/({{{ u.services | join("|") }}})[.]service$") | list | length > 0)
+{{%- if not loop.last %}} or{{% endif %}}
+{{%- endfor %}}
+    ))

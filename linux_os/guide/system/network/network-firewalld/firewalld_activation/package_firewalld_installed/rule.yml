@@ -5,6 +5,10 @@ title: 'Install firewalld Package'
 
 description: |-
     {{{ describe_package_install(package="firewalld") }}}
+    {{% if product in ["rhel8", "rhel9", "rhel10", "almalinux9"] %}}
+    When <tt>var_firewall_accept_other_utility</tt> is true, as in the CIS
+    profiles, a host where nftables or iptables is in use passes as well.
+    {{% endif %}}
 
 rationale: |-
     "Firewalld" provides an easy and effective way to block/limit remote access to the system via ports, services, and protocols.
@@ -51,6 +55,11 @@ template:
         pkgname: firewalld
         variable: var_network_filtering_service
         value: firewalld
+{{%- elif product in ["rhel8", "rhel9", "rhel10", "almalinux9"] %}}
+template:
+    name: firewall_utility_installed
+    vars:
+        utility: firewalld
 {{%- else %}}
 template:
     name: package_installed
