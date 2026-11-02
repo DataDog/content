@@ -1,0 +1,1601 @@
+---
+policy: Canonical Ubuntu 20.04 LTS Security Technical Implementation Guide (STIG)
+title: Canonical Ubuntu 20.04 LTS Security Technical Implementation Guide (STIG)
+id: stig_ubuntu2004
+version: V2R4
+source: https://www.cyber.mil/stigs/downloads/
+
+levels:
+    - id: high
+    - id: medium
+    - id: low
+
+reference_type: stigid
+product: ubuntu2004
+
+controls:
+    - id: UBTU-20-010000
+      title: Ubuntu 20.04 LTS must provision temporary user accounts with an expiration time of 72 hours
+          or less.
+      levels:
+          - medium
+      rules:
+          - account_temp_expire_date
+      status: manual
+
+    - id: UBTU-20-010001
+      title: Ubuntu 20.04 LTS must be a vendor-supported release.
+      levels:
+          - high
+      status: manual
+
+    - id: UBTU-20-010002
+      title: Ubuntu 20.04 LTS must enable the graphical user logon banner to display the Standard Mandatory
+          DoD Notice and Consent Banner before granting local access to the system via a graphical user
+          logon.
+      levels:
+          - medium
+      rules:
+          - dconf_gnome_banner_enabled
+          - enable_dconf_user_profile
+      status: automated
+
+    - id: UBTU-20-010003
+      title: Ubuntu 20.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+          granting local access to the system via a graphical user logon.
+      levels:
+          - medium
+      rules:
+          - dconf_login_banner_text=dod_banners
+          - dconf_login_banner_contents=dod_default
+          - dconf_gnome_login_banner_text
+      status: automated
+
+    - id: UBTU-20-010004
+      title: Ubuntu 20.04 LTS must retain a user's session lock until that user reestablishes access
+          using established identification and authentication procedures.
+      levels:
+          - medium
+      rules:
+          - dconf_gnome_screensaver_lock_enabled
+      status: automated
+
+    - id: UBTU-20-010005
+      title: Ubuntu 20.04 LTS must allow users to directly initiate a session lock for all connection
+          types.
+      levels:
+          - medium
+      rules:
+          - vlock_installed
+      status: automated
+
+    - id: UBTU-20-010006
+      title: Ubuntu 20.04 LTS must map the authenticated identity to the user or group account for PKI-based
+          authentication.
+      levels:
+          - high
+      rules:
+          - verify_use_mappers
+      status: automated
+
+    - id: UBTU-20-010007
+      title: Ubuntu 20.04 LTS must enforce 24 hours/1 day as the minimum password lifetime. Passwords
+          for new users must have a 24 hours/1 day minimum password lifetime restriction.
+      levels:
+          - low
+      rules:
+          - var_accounts_minimum_age_login_defs=1
+          - accounts_minimum_age_login_defs
+      status: automated
+
+    - id: UBTU-20-010008
+      title: Ubuntu 20.04 LTS must enforce a 60-day maximum password lifetime restriction. Passwords
+          for new users must have a 60-day maximum password lifetime restriction.
+      levels:
+          - low
+      rules:
+          - var_accounts_maximum_age_login_defs=60
+          - accounts_maximum_age_login_defs
+      status: automated
+
+    - id: UBTU-20-010009
+      title: Ubuntu 20.04 LTS when booted must require authentication upon booting into single-user and
+          maintenance modes.
+      levels:
+          - high
+      rules:
+          - grub2_password
+          - grub2_uefi_password
+      status: automated
+
+    - id: UBTU-20-010010
+      title: Ubuntu 20.04 LTS must uniquely identify interactive users.
+      levels:
+          - medium
+      rules:
+          - no_duplicate_uids
+      status: automated
+
+    - id: UBTU-20-010012
+      title: Ubuntu 20.04 LTS must ensure only users who need access to security functions are part of
+          sudo group.
+      levels:
+          - high
+      rules:
+          - ensure_sudo_group_restricted
+      status: automated
+
+    - id: UBTU-20-010013
+      title: Ubuntu 20.04 LTS must automatically terminate a user session after inactivity timeouts have
+          expired.
+      levels:
+          - medium
+      rules:
+          - var_accounts_tmout=10_min
+          - accounts_tmout
+      status: automated
+
+    - id: UBTU-20-010014
+      title: Ubuntu 20.04 LTS must require users to reauthenticate for privilege escalation or when changing
+          roles.
+      levels:
+          - medium
+      rules:
+          - sudo_remove_no_authenticate
+      status: automated
+
+    - id: UBTU-20-010015
+      title: Ubuntu 20.04 LTS must require users to provide a password for privilege escalation.
+      levels:
+          - medium
+      rules:
+          - sudo_remove_nopasswd
+      status: automated
+
+    - id: UBTU-20-010016
+      title: Ubuntu 20.04 LTS default filesystem permissions must be defined in such a way that all authenticated
+          users can read and modify only their own files.
+      levels:
+          - medium
+      rules:
+          - var_accounts_user_umask=077
+          - accounts_umask_etc_login_defs
+      status: automated
+
+    - id: UBTU-20-010017
+      title: Ubuntu 20.04 LTS must restrict privilege elevation to authorized personnel.
+      levels:
+          - medium
+      rules:
+          - sudo_restrict_privilege_elevation_to_authorized
+      status: automated
+
+    - id: UBTU-20-010018
+      title: Ubuntu 20.04 LTS must have the "SSSD" package installed.
+      levels:
+          - medium
+      rules:
+          - package_nss_sss_installed
+          - package_pam_sss_installed
+          - package_sssd_installed
+      status: automated
+
+    - id: UBTU-20-010019
+      title: Ubuntu 20.04 LTS must use the "SSSD" package for multifactor authentication services.
+      levels:
+          - medium
+      rules:
+          - service_sssd_enabled
+      status: automated
+
+    - id: UBTU-20-010020
+      title: Ubuntu 20.04 LTS must ensure SSSD performs certificate path validation, including revocation
+          checking, against a trusted anchor for PKI-based authentication.
+      levels:
+          - medium
+      rules:
+          - sssd_certification_path_trust_anchor
+          - sssd_enable_pam_services
+          - sssd_enable_smartcards
+      status: automated
+
+    - id: UBTU-20-010021
+      title: Ubuntu 20.04 LTS must be configured such that Pluggable Authentication Module (PAM) prohibits
+          the use of cached authentications after one day.
+      levels:
+          - low
+      rules:
+          - sssd_offline_cred_expiration
+      status: automated
+
+    - id: UBTU-20-010022
+      title: Ubuntu 20.04 LTS must map the authenticated identity to the user or group account for PKI-based
+          authentication.
+      levels:
+          - high
+      rules:
+          - sssd_enable_user_cert
+      status: automated
+
+    - id: UBTU-20-010033
+      title: Ubuntu 20.04 LTS must implement smart card logins for multifactor authentication for local
+          and network access to privileged and nonprivileged accounts.
+      levels:
+          - medium
+      rules:
+          - smartcard_pam_enabled
+          - sshd_enable_pubkey_auth
+      status: automated
+
+    - id: UBTU-20-010035
+      title: Ubuntu 20.04 LTS must use strong authenticators in establishing nonlocal maintenance and
+          diagnostic sessions.
+      levels:
+          - medium
+      rules:
+          - sshd_enable_pam
+      status: automated
+
+    - id: UBTU-20-010036
+      title: Ubuntu 20.04 LTS must immediately terminate all network connections associated with SSH
+          traffic after a period of inactivity.
+      levels:
+          - medium
+      rules:
+          - var_sshd_set_keepalive=1
+          - sshd_set_keepalive
+      status: automated
+
+    - id: UBTU-20-010037
+      title: Ubuntu 20.04 LTS must immediately terminate all network connections associated with SSH
+          traffic at the end of the session or after 10 minutes of inactivity.
+      levels:
+          - medium
+      rules:
+          - sshd_idle_timeout_value=10_minutes
+          - sshd_set_idle_timeout
+      status: automated
+
+    - id: UBTU-20-010038
+      title: Ubuntu 20.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+          granting any local or remote connection to the system.
+      levels:
+          - medium
+      rules:
+          - remote_login_banner_text=dod_banners
+          - remote_login_banner_contents=dod_default
+          - banner_etc_issue_net
+          - sshd_enable_warning_banner_net
+      status: automated
+
+    - id: UBTU-20-010042
+      title: Ubuntu 20.04 LTS must use SSH to protect the confidentiality and integrity of transmitted
+          information.
+      levels:
+          - high
+      rules:
+          - package_openssh-server_installed
+          - service_sshd_enabled
+      status: automated
+
+    - id: UBTU-20-010043
+      title: Ubuntu 20.04 LTS must configure the SSH daemon to use Message Authentication Codes (MACs)
+          employing FIPS 140-2 approved cryptographic hashes to prevent the unauthorized disclosure of
+          information and/or detect changes to information during transmission.
+      levels:
+          - medium
+      rules:
+          - sshd_use_approved_macs_ordered_stig
+      status: automated
+
+    - id: UBTU-20-010044
+      title: Ubuntu 20.04 LTS must configure the SSH daemon to use FIPS 140-2 approved ciphers to prevent
+          the unauthorized disclosure of information and/or detect changes to information during transmission.
+      levels:
+          - medium
+      rules:
+          - sshd_use_approved_ciphers_ordered_stig
+      status: automated
+
+    - id: UBTU-20-010045
+      title: Ubuntu 20.04 LTS SSH server must be configured to use only FIPS-validated key exchange algorithms.
+      levels:
+          - medium
+      rules:
+          - sshd_use_approved_kex_ordered_stig
+      status: automated
+
+    - id: UBTU-20-010047
+      title: Ubuntu 20.04 LTS must not allow unattended or automatic login via SSH.
+      levels:
+          - high
+      rules:
+          - sshd_disable_empty_passwords
+          - sshd_do_not_permit_user_env
+      status: automated
+
+    - id: UBTU-20-010048
+      title: Ubuntu 20.04 LTS must be configured so that remote X connections are disabled, unless to
+          fulfill documented and validated mission requirements.
+      levels:
+          - high
+      rules:
+          - sshd_disable_x11_forwarding
+      status: automated
+
+    - id: UBTU-20-010049
+      title: Ubuntu 20.04 LTS SSH daemon must prevent remote hosts from connecting to the proxy display.
+      levels:
+          - medium
+      rules:
+          - sshd_x11_use_localhost
+      status: automated
+
+    - id: UBTU-20-010050
+      title: Ubuntu 20.04 LTS must enforce password complexity by requiring that at least one upper-case
+          character be used.
+      levels:
+          - low
+      rules:
+          - var_password_pam_ucredit=1
+          - accounts_password_pam_ucredit
+      status: automated
+
+    - id: UBTU-20-010051
+      title: Ubuntu 20.04 LTS must enforce password complexity by requiring that at least one lower-case
+          character be used.
+      levels:
+          - low
+      rules:
+          - var_password_pam_lcredit=1
+          - accounts_password_pam_lcredit
+      status: automated
+
+    - id: UBTU-20-010052
+      title: Ubuntu 20.04 LTS must enforce password complexity by requiring that at least one numeric
+          character be used.
+      levels:
+          - low
+      rules:
+          - var_password_pam_dcredit=1
+          - accounts_password_pam_dcredit
+      status: automated
+
+    - id: UBTU-20-010053
+      title: Ubuntu 20.04 LTS must require the change of at least 8 characters when passwords are changed.
+      levels:
+          - low
+      rules:
+          - var_password_pam_difok=8
+          - accounts_password_pam_difok
+      status: automated
+
+    - id: UBTU-20-010054
+      title: Ubuntu 20.04 LTS must enforce a minimum 15-character password length.
+      levels:
+          - medium
+      rules:
+          - var_password_pam_minlen=15
+          - accounts_password_pam_minlen
+      status: automated
+
+    - id: UBTU-20-010055
+      title: Ubuntu 20.04 LTS must enforce password complexity by requiring that at least one special
+          character be used.
+      levels:
+          - low
+      rules:
+          - var_password_pam_ocredit=1
+          - accounts_password_pam_ocredit
+      status: automated
+
+    - id: UBTU-20-010056
+      title: Ubuntu 20.04 LTS must prevent the use of dictionary words for passwords.
+      levels:
+          - medium
+      rules:
+          - var_password_pam_dictcheck=1
+          - accounts_password_pam_dictcheck
+      status: automated
+
+    - id: UBTU-20-010057
+      title: Ubuntu 20.04 LTS must be configured so that when passwords are changed or new passwords
+          are established, pwquality must be used.
+      levels:
+          - medium
+      rules:
+          - var_password_pam_retry=3
+          - accounts_password_pam_enforcing
+          - accounts_password_pam_retry
+          - package_pam_pwquality_installed
+      status: automated
+
+    - id: UBTU-20-010060
+      title: Ubuntu 20.04 LTS, for PKI-based authentication, must validate certificates by constructing
+          a certification path (which includes status information) to an accepted trust anchor.
+      levels:
+          - medium
+      rules:
+          - smartcard_configure_ca
+      status: automated
+
+    - id: UBTU-20-010063
+      title: Ubuntu 20.04 LTS must implement multifactor authentication for remote access to privileged
+          accounts in such a way that one of the factors is provided by a device separate from the system
+          gaining access.
+      levels:
+          - medium
+      rules:
+          - install_smartcard_packages
+      status: automated
+
+    - id: UBTU-20-010064
+      title: Ubuntu 20.04 LTS must accept Personal Identity Verification (PIV) credentials.
+      levels:
+          - medium
+      rules:
+          - package_opensc_installed
+      status: automated
+
+    - id: UBTU-20-010065
+      title: Ubuntu 20.04 LTS must electronically verify Personal Identity Verification (PIV) credentials.
+      levels:
+          - medium
+      rules:
+          - smartcard_configure_cert_checking
+      status: automated
+
+    - id: UBTU-20-010066
+      title: Ubuntu 20.04 LTS for PKI-based authentication, must implement a local cache of revocation
+          data in case of the inability to access revocation information via the network.
+      levels:
+          - medium
+      rules:
+          - smartcard_configure_crl
+      status: automated
+
+    - id: UBTU-20-010070
+      title: Ubuntu 20.04 LTS must prohibit password reuse for a minimum of five generations.
+      levels:
+          - low
+      rules:
+          - var_password_pam_unix_remember=5
+          - accounts_password_pam_unix_remember
+      status: automated
+
+    - id: UBTU-20-010072
+      title: Ubuntu 20.04 LTS must automatically lock an account until the locked account is released
+          by an administrator when three unsuccessful logon attempts have been made.
+      levels:
+          - low
+      rules:
+          - var_accounts_passwords_pam_faillock_deny=3
+          - var_accounts_passwords_pam_faillock_fail_interval=900
+          - var_accounts_passwords_pam_faillock_unlock_time=never
+          - accounts_passwords_pam_faillock_audit
+          - accounts_passwords_pam_faillock_deny
+          - accounts_passwords_pam_faillock_interval
+          - accounts_passwords_pam_faillock_silent
+          - accounts_passwords_pam_faillock_unlock_time
+      status: automated
+
+    - id: UBTU-20-010074
+      title: Ubuntu 20.04 LTS must be configured so that the script which runs each 30 days or less to
+          check file integrity is the default one.
+      levels:
+          - medium
+      rules:
+          - aide_periodic_cron_checking
+      status: automated
+
+    - id: UBTU-20-010075
+      title: Ubuntu 20.04 LTS must enforce a delay of at least 4 seconds between logon prompts following
+          a failed logon attempt.
+      levels:
+          - low
+      rules:
+          - var_password_pam_delay=4000000
+          - accounts_passwords_pam_faildelay_delay
+      status: automated
+
+    - id: UBTU-20-010100
+      title: Ubuntu 20.04 LTS must generate audit records for all account creations, modifications, disabling,
+          and termination events that affect /etc/passwd.
+      levels:
+          - medium
+      rules:
+          - audit_rules_usergroup_modification_passwd
+      status: automated
+
+    - id: UBTU-20-010101
+      title: Ubuntu 20.04 LTS must generate audit records for all account creations, modifications, disabling,
+          and termination events that affect /etc/group.
+      levels:
+          - medium
+      rules:
+          - audit_rules_usergroup_modification_group
+      status: automated
+
+    - id: UBTU-20-010102
+      title: Ubuntu 20.04 LTS must generate audit records for all account creations, modifications, disabling,
+          and termination events that affect /etc/shadow.
+      levels:
+          - medium
+      rules:
+          - audit_rules_usergroup_modification_shadow
+      status: automated
+
+    - id: UBTU-20-010103
+      title: Ubuntu 20.04 LTS must generate audit records for all account creations, modifications, disabling,
+          and termination events that affect /etc/gshadow.
+      levels:
+          - medium
+      rules:
+          - audit_rules_usergroup_modification_gshadow
+      status: automated
+
+    - id: UBTU-20-010104
+      title: Ubuntu 20.04 LTS must generate audit records for all account creations, modifications, disabling,
+          and termination events that affect /etc/opasswd.
+      levels:
+          - medium
+      rules:
+          - audit_rules_usergroup_modification_opasswd
+      status: automated
+
+    - id: UBTU-20-010105
+      title: Ubuntu 20.04 LTS must audit any script or executable called by cron as root or by any privileged
+          user.
+      levels:
+          - medium
+      rules:
+          - audit_rules_etc_cron_d
+          - audit_rules_var_spool_cron
+      status: automated
+
+    - id: UBTU-20-010117
+      title: Ubuntu 20.04 LTS must alert the ISSO and SA (at a minimum) in the event of an audit processing
+          failure.
+      levels:
+          - medium
+      rules:
+          - var_auditd_action_mail_acct=root
+          - auditd_data_retention_action_mail_acct
+      status: automated
+
+    - id: UBTU-20-010118
+      title: Ubuntu 20.04 LTS must shut down by default upon audit failure (unless availability is an
+          overriding concern).
+      levels:
+          - medium
+      rules:
+          - var_auditd_disk_full_action=halt
+          - auditd_data_disk_full_action
+      status: automated
+
+    - id: UBTU-20-010122
+      title: Ubuntu 20.04 LTS must be configured so that audit log files are not read or write-accessible
+          by unauthorized users.
+      levels:
+          - medium
+      rules:
+          - file_permissions_var_log_audit_stig
+      status: automated
+
+    - id: UBTU-20-010123
+      title: Ubuntu 20.04 LTS must be configured to permit only authorized users ownership of the audit
+          log files.
+      levels:
+          - medium
+      rules:
+          - file_ownership_var_log_audit_stig
+      status: automated
+
+    - id: UBTU-20-010124
+      title: Ubuntu 20.04 LTS must permit only authorized groups ownership of the audit log files.
+      levels:
+          - medium
+      rules:
+          - file_group_ownership_var_log_audit_stig
+      status: automated
+
+    - id: UBTU-20-010128
+      title: Ubuntu 20.04 LTS must be configured so that the audit log directory is not write-accessible
+          by unauthorized users.
+      levels:
+          - medium
+      rules:
+          - directory_permissions_var_log_audit
+      status: automated
+
+    - id: UBTU-20-010133
+      title: Ubuntu 20.04 LTS must be configured so that audit configuration files are not write-accessible
+          by unauthorized users.
+      levels:
+          - medium
+      rules:
+          - file_permissions_etc_audit_auditd
+          - file_permissions_etc_audit_rules
+          - file_permissions_etc_audit_rulesd
+      status: automated
+
+    - id: UBTU-20-010134
+      title: Ubuntu 20.04 LTS must permit only authorized accounts to own the audit configuration files.
+      levels:
+          - medium
+      rules:
+          - file_ownership_audit_configuration
+      status: automated
+
+    - id: UBTU-20-010135
+      title: Ubuntu 20.04 LTS must permit only authorized groups to own the audit configuration files.
+      levels:
+          - medium
+      rules:
+          - file_groupownership_audit_configuration
+      status: automated
+
+    - id: UBTU-20-010136
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the su
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_su
+      status: automated
+
+    - id: UBTU-20-010137
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chfn
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_chfn
+      status: automated
+
+    - id: UBTU-20-010138
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the mount
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_mount
+      status: automated
+
+    - id: UBTU-20-010139
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the umount
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_umount
+      status: automated
+
+    - id: UBTU-20-010140
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the ssh-agent
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_ssh_agent
+      status: automated
+
+    - id: UBTU-20-010141
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the ssh-keysign
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_ssh_keysign
+      status: automated
+
+    - id: UBTU-20-010142
+      title: Ubuntu 20.04 LTS must generate audit records for any use of the setxattr, fsetxattr, lsetxattr,
+          removexattr, fremovexattr, and lremovexattr system calls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_dac_modification_fremovexattr
+          - audit_rules_dac_modification_fsetxattr
+          - audit_rules_dac_modification_lremovexattr
+          - audit_rules_dac_modification_lsetxattr
+          - audit_rules_dac_modification_removexattr
+          - audit_rules_dac_modification_setxattr
+      status: automated
+
+    - id: UBTU-20-010148
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chown,
+          fchown, fchownat, and lchown system calls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_dac_modification_chown
+          - audit_rules_dac_modification_fchown
+          - audit_rules_dac_modification_fchownat
+          - audit_rules_dac_modification_lchown
+      status: automated
+
+    - id: UBTU-20-010152
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chmod,
+          fchmod, and fchmodat system calls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_dac_modification_chmod
+          - audit_rules_dac_modification_fchmod
+          - audit_rules_dac_modification_fchmodat
+      status: automated
+
+    - id: UBTU-20-010155
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the creat,
+          open, openat, open_by_handle_at, truncate, and ftruncate system calls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_unsuccessful_file_modification_creat
+          - audit_rules_unsuccessful_file_modification_ftruncate
+          - audit_rules_unsuccessful_file_modification_open
+          - audit_rules_unsuccessful_file_modification_open_by_handle_at
+          - audit_rules_unsuccessful_file_modification_openat
+          - audit_rules_unsuccessful_file_modification_truncate
+      status: automated
+
+    - id: UBTU-20-010161
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the sudo
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_sudo
+      status: automated
+
+    - id: UBTU-20-010162
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the sudoedit
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_sudoedit
+      status: automated
+
+    - id: UBTU-20-010163
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chsh
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_chsh
+      status: automated
+
+    - id: UBTU-20-010164
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the newgrp
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_newgrp
+      status: automated
+
+    - id: UBTU-20-010165
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chcon
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_execution_chcon
+      status: automated
+
+    - id: UBTU-20-010166
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the apparmor_parser
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_apparmor_parser
+      status: automated
+
+    - id: UBTU-20-010167
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the setfacl
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_execution_setfacl
+      status: automated
+
+    - id: UBTU-20-010168
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chacl
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_execution_chacl
+      status: automated
+
+    - id: UBTU-20-010169
+      title: Ubuntu 20.04 LTS must generate audit records for the use and modification of the tallylog
+          file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_login_events_tallylog
+      status: automated
+
+    - id: UBTU-20-010170
+      title: Ubuntu 20.04 LTS must generate audit records for the use and modification of faillog file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_login_events_faillog
+      status: automated
+
+    - id: UBTU-20-010171
+      title: Ubuntu 20.04 LTS must generate audit records for the use and modification of the lastlog
+          file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_login_events_lastlog
+      status: automated
+
+    - id: UBTU-20-010172
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the passwd
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_passwd
+      status: automated
+
+    - id: UBTU-20-010173
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the unix_update
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_unix_update
+      status: automated
+
+    - id: UBTU-20-010174
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the gpasswd
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_gpasswd
+      status: automated
+
+    - id: UBTU-20-010175
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the chage
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_chage
+      status: automated
+
+    - id: UBTU-20-010176
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the usermod
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_usermod
+      status: automated
+
+    - id: UBTU-20-010177
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the crontab
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_crontab
+      status: automated
+
+    - id: UBTU-20-010178
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the pam_timestamp_check
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_pam_timestamp_check
+      status: automated
+
+    - id: UBTU-20-010179
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the init_module
+          and finit_module syscalls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_kernel_module_loading_finit
+          - audit_rules_kernel_module_loading_init
+      status: automated
+
+    - id: UBTU-20-010181
+      title: Ubuntu 20.04 LTS must generate audit records for successful/unsuccessful uses of the delete_module
+          syscall.
+      levels:
+          - medium
+      rules:
+          - audit_rules_kernel_module_loading_delete
+      status: automated
+
+    - id: UBTU-20-010182
+      title: Ubuntu 20.04 LTS must produce audit records and reports containing information to establish
+          when, where, what type, the source, and the outcome for all DoD-defined auditable events and
+          actions in near real time.
+      levels:
+          - medium
+      rules:
+          - package_audit_installed
+          - service_auditd_enabled
+      status: automated
+
+    - id: UBTU-20-010198
+      title: Ubuntu 20.04 LTS must initiate session audits at system start-up.
+      levels:
+          - medium
+      rules:
+          - grub2_audit_argument
+      status: automated
+
+    - id: UBTU-20-010199
+      title: Ubuntu 20.04 LTS must configure audit tools with a mode of 0755 or less permissive.
+      levels:
+          - medium
+      rules:
+          - file_permissions_audit_binaries
+      status: automated
+
+    - id: UBTU-20-010200
+      title: Ubuntu 20.04 LTS must configure audit tools to be owned by root.
+      levels:
+          - medium
+      rules:
+          - file_ownership_audit_binaries
+      status: automated
+
+    - id: UBTU-20-010201
+      title: Ubuntu 20.04 LTS must configure the audit tools to be group-owned by root.
+      levels:
+          - medium
+      rules:
+          - file_groupownership_audit_binaries
+      status: automated
+
+    - id: UBTU-20-010205
+      title: Ubuntu 20.04 LTS must use cryptographic mechanisms to protect the integrity of audit tools.
+      levels:
+          - medium
+      rules:
+          - aide_check_audit_tools
+      status: automated
+
+    - id: UBTU-20-010211
+      title: Ubuntu 20.04 LTS must prevent all software from executing at higher privilege levels than
+          users executing the software and the audit system must be configured to audit the execution
+          of privileged functions.
+      levels:
+          - medium
+      rules:
+          - audit_rules_suid_privilege_function
+      status: automated
+
+    - id: UBTU-20-010215
+      title: Ubuntu 20.04 LTS must allocate audit record storage capacity to store at least one weeks'
+          worth of audit records, when audit records are not immediately sent to a central audit record
+          storage facility.
+      levels:
+          - low
+      rules:
+          - auditd_audispd_configure_sufficiently_large_partition
+      status: automated
+
+    - id: UBTU-20-010216
+      title: Ubuntu 20.04 LTS audit event multiplexor must be configured to off-load audit logs onto
+          a different system or storage media from the system being audited.
+      levels:
+          - low
+      rules:
+          - auditd_audispd_configure_remote_server
+          - package_audit-audispd-plugins_installed
+      status: automated
+
+    - id: UBTU-20-010217
+      title: Ubuntu 20.04 LTS must immediately notify the SA and ISSO (at a minimum) when allocated audit
+          record storage volume reaches 75% of the repository maximum audit record storage capacity.
+      levels:
+          - low
+      rules:
+          - var_auditd_space_left_percentage=25pc
+          - var_auditd_space_left_action=email
+          - auditd_data_retention_space_left_action
+          - auditd_data_retention_space_left_percentage
+      status: automated
+
+    - id: UBTU-20-010230
+      title: Ubuntu 20.04 LTS must record time stamps for audit records that can be mapped to Coordinated
+          Universal Time (UTC) or Greenwich Mean Time (GMT).
+      levels:
+          - low
+      rules:
+          - ensure_rtc_utc_configuration
+      status: automated
+
+    - id: UBTU-20-010244
+      title: Ubuntu 20.04 LTS must generate audit records for privileged activities, nonlocal maintenance,
+          diagnostic sessions and other system-level access.
+      levels:
+          - medium
+      rules:
+          - audit_sudo_log_events
+      status: automated
+
+    - id: UBTU-20-010267
+      title: Ubuntu 20.04 LTS must generate audit records for any successful/unsuccessful use of unlink,
+          unlinkat, rename, renameat, and rmdir system calls.
+      levels:
+          - medium
+      rules:
+          - audit_rules_file_deletion_events_rename
+          - audit_rules_file_deletion_events_renameat
+          - audit_rules_file_deletion_events_rmdir
+          - audit_rules_file_deletion_events_unlink
+          - audit_rules_file_deletion_events_unlinkat
+      status: automated
+
+    - id: UBTU-20-010277
+      title: Ubuntu 20.04 LTS must generate audit records for the /var/log/wtmp file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_session_events_wtmp
+      status: automated
+
+    - id: UBTU-20-010278
+      title: Ubuntu 20.04 LTS must generate audit records for the /var/run/utmp file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_session_events_utmp
+      status: automated
+
+    - id: UBTU-20-010279
+      title: Ubuntu 20.04 LTS must generate audit records for the /var/log/btmp file.
+      levels:
+          - medium
+      rules:
+          - audit_rules_session_events_btmp
+      status: automated
+
+    - id: UBTU-20-010296
+      title: Ubuntu 20.04 LTS must generate audit records when successful/unsuccessful attempts to use
+          modprobe command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_modprobe
+      status: automated
+
+    - id: UBTU-20-010297
+      title: Ubuntu 20.04 LTS must generate audit records when successful/unsuccessful attempts to use
+          the kmod command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_kmod
+      status: automated
+
+    - id: UBTU-20-010298
+      title: Ubuntu 20.04 LTS must generate audit records when successful/unsuccessful attempts to use
+          the fdisk command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_fdisk
+      status: automated
+
+    - id: UBTU-20-010300
+      title: Ubuntu 20.04 LTS must have a crontab script running weekly to offload audit events of standalone
+          systems.
+      levels:
+          - low
+      rules:
+          - auditd_offload_logs
+      status: automated
+
+    - id: UBTU-20-010400
+      title: Ubuntu 20.04 LTS must limit the number of concurrent sessions to ten for all accounts and/or
+          account types.
+      levels:
+          - low
+      rules:
+          - var_accounts_max_concurrent_login_sessions=10
+          - accounts_max_concurrent_login_sessions
+      status: automated
+
+    - id: UBTU-20-010401
+      title: Ubuntu 20.04 LTS must restrict access to the kernel message buffer.
+      levels:
+          - low
+      rules:
+          - sysctl_kernel_dmesg_restrict
+      status: automated
+
+    - id: UBTU-20-010403
+      title: Ubuntu 20.04 LTS must monitor remote access methods.
+      levels:
+          - medium
+      rules:
+          - rsyslog_remote_access_monitoring
+      status: automated
+
+    - id: UBTU-20-010404
+      title: Ubuntu 20.04 LTS must encrypt all stored passwords with a FIPS 140-2 approved cryptographic
+          hashing algorithm.
+      levels:
+          - medium
+      rules:
+          - set_password_hashing_algorithm_logindefs
+      status: automated
+
+    - id: UBTU-20-010405
+      title: Ubuntu 20.04 LTS must not have the telnet package installed.
+      levels:
+          - high
+      rules:
+          - package_telnetd_removed
+      status: automated
+
+    - id: UBTU-20-010406
+      title: Ubuntu 20.04 LTS must not have the rsh-server package installed.
+      levels:
+          - high
+      rules:
+          - package_rsh-server_removed
+      status: automated
+
+    - id: UBTU-20-010407
+      title: Ubuntu 20.04 LTS must be configured to prohibit or restrict the use of functions, ports,
+          protocols, and/or services, as defined in the PPSM CAL and vulnerability assessments.
+      levels:
+          - medium
+      rules:
+          - ufw_only_required_services
+      status: automated
+
+    - id: UBTU-20-010408
+      title: Ubuntu 20.04 LTS must prevent direct login into the root account.
+      levels:
+          - medium
+      rules:
+          - prevent_direct_root_logins
+      status: automated
+
+    - id: UBTU-20-010409
+      title: Ubuntu 20.04 LTS must disable account identifiers (individuals, groups, roles, and devices)
+          after 35 days of inactivity.
+      levels:
+          - medium
+      rules:
+          - account_disable_post_pw_expiration
+      status: automated
+
+    - id: UBTU-20-010410
+      title: Ubuntu 20.04 LTS must automatically expire temporary accounts within 72 hours.
+      levels:
+          - low
+      rules:
+          - account_temp_expire_date
+      status: manual
+
+    - id: UBTU-20-010411
+      title: Ubuntu 20.04 LTS must set a sticky bit on all public directories to prevent unauthorized
+          and unintended information transferred via shared system resources.
+      levels:
+          - medium
+      rules:
+          - dir_perms_world_writable_sticky_bits
+      status: automated
+
+    - id: UBTU-20-010412
+      title: Ubuntu 20.04 LTS must be configured to use TCP syncookies.
+      levels:
+          - medium
+      rules:
+          - sysctl_net_ipv4_tcp_syncookies
+      status: automated
+
+    - id: UBTU-20-010413
+      title: Ubuntu 20.04 LTS must disable kernel core dumps so that it can fail to a secure state if
+          system initialization fails, shutdown fails or aborts fail.
+      levels:
+          - medium
+      rules:
+          - service_kdump_disabled
+      status: automated
+
+    - id: UBTU-20-010414
+      title: Ubuntu 20.04 LTS handling data requiring "data at rest" protections must employ cryptographic
+          mechanisms to prevent unauthorized disclosure and modification of the information at rest.
+      levels:
+          - medium
+      rules:
+          - encrypt_partitions
+      status: automated
+
+    - id: UBTU-20-010416
+      title: Ubuntu 20.04 LTS must generate error messages that provide information necessary for corrective
+          actions without revealing information that could be exploited by adversaries.
+      levels:
+          - medium
+      rules:
+          - permissions_local_var_log
+      status: automated
+
+    - id: UBTU-20-010417
+      title: Ubuntu 20.04 LTS must configure the /var/log directory to be group-owned by syslog.
+      levels:
+          - medium
+      rules:
+          - file_groupowner_var_log
+      status: automated
+
+    - id: UBTU-20-010418
+      title: Ubuntu 20.04 LTS must configure the /var/log directory to be owned by root.
+      levels:
+          - medium
+      rules:
+          - file_owner_var_log
+      status: automated
+
+    - id: UBTU-20-010419
+      title: Ubuntu 20.04 LTS must configure the /var/log directory to have mode "0755" or less permissive.
+      levels:
+          - medium
+      rules:
+          - file_permissions_var_log
+      status: automated
+
+    - id: UBTU-20-010420
+      title: Ubuntu 20.04 LTS must configure the /var/log/syslog file to be group-owned by adm.
+      levels:
+          - medium
+      rules:
+          - file_groupowner_var_log_syslog
+      status: automated
+
+    - id: UBTU-20-010421
+      title: Ubuntu 20.04 LTS must configure /var/log/syslog file to be owned by syslog.
+      levels:
+          - medium
+      rules:
+          - file_owner_var_log_syslog
+      status: automated
+
+    - id: UBTU-20-010422
+      title: Ubuntu 20.04 LTS must configure /var/log/syslog file with mode 0640 or less permissive.
+      levels:
+          - medium
+      rules:
+          - file_permissions_var_log_syslog
+      status: automated
+
+    - id: UBTU-20-010423
+      title: Ubuntu 20.04 LTS must have directories that contain system commands set to a mode of 0755
+          or less permissive.
+      levels:
+          - medium
+      rules:
+          - dir_permissions_binary_dirs
+      status: automated
+
+    - id: UBTU-20-010424
+      title: Ubuntu 20.04 LTS must have directories that contain system commands owned by root.
+      levels:
+          - medium
+      rules:
+          - dir_ownership_binary_dirs
+      status: automated
+
+    - id: UBTU-20-010425
+      title: Ubuntu 20.04 LTS must have directories that contain system commands group-owned by root.
+      levels:
+          - medium
+      rules:
+          - dir_groupownership_binary_dirs
+      status: automated
+
+    - id: UBTU-20-010426
+      title: Ubuntu 20.04 LTS library files must have mode 0755 or less permissive.
+      levels:
+          - medium
+      rules:
+          - file_permissions_library_dirs
+      status: automated
+
+    - id: UBTU-20-010427
+      title: Ubuntu 20.04 LTS library directories must have mode 0755 or less permissive.
+      levels:
+          - medium
+      rules:
+          - dir_permissions_library_dirs
+      status: automated
+
+    - id: UBTU-20-010428
+      title: Ubuntu 20.04 LTS library files must be owned by root.
+      levels:
+          - medium
+      rules:
+          - file_ownership_library_dirs
+      status: automated
+
+    - id: UBTU-20-010429
+      title: Ubuntu 20.04 LTS library directories must be owned by root.
+      levels:
+          - medium
+      rules:
+          - dir_ownership_library_dirs
+      status: automated
+
+    - id: UBTU-20-010430
+      title: Ubuntu 20.04 LTS library files must be group-owned by root or a system account.
+      levels:
+          - medium
+      rules:
+          - root_permissions_syslibrary_files
+      status: automated
+
+    - id: UBTU-20-010431
+      title: Ubuntu 20.04 LTS library directories must be group-owned by root.
+      levels:
+          - medium
+      rules:
+          - dir_group_ownership_library_dirs
+      status: automated
+
+    - id: UBTU-20-010432
+      title: Ubuntu 20.04 LTS must be configured to preserve log records from failure events.
+      levels:
+          - medium
+      rules:
+          - service_rsyslog_enabled
+      status: automated
+
+    - id: UBTU-20-010433
+      title: Ubuntu 20.04 LTS must have an application firewall installed in order to control remote
+          access methods.
+      levels:
+          - medium
+      rules:
+          - package_ufw_installed
+      status: automated
+
+    - id: UBTU-20-010434
+      title: Ubuntu 20.04 LTS must enable and run the uncomplicated firewall(ufw).
+      levels:
+          - medium
+      rules:
+          - check_ufw_active
+          - service_ufw_enabled
+      status: automated
+
+    - id: UBTU-20-010435
+      title: Ubuntu 20.04 LTS must, for networked systems, compare internal information system clocks
+          at least every 24 hours with a server which is synchronized to one of the redundant United
+          States Naval Observatory (USNO) time servers, or a time server designated for the appropriate
+          DoD network (NIPRNet/SIPRNet), and/or the Global Positioning System (GPS).
+      levels:
+          - medium
+      rules:
+          - var_time_service_set_maxpoll=18_hours
+          - chronyd_or_ntpd_set_maxpoll
+          - package_chrony_installed
+      status: automated
+
+    - id: UBTU-20-010436
+      title: Ubuntu 20.04 LTS must synchronize internal information system clocks to the authoritative
+          time source when the time difference is greater than one second.
+      levels:
+          - low
+      rules:
+          - chronyd_sync_clock
+      status: automated
+
+    - id: UBTU-20-010438
+      title: Ubuntu 20.04 LTS's Advance Package Tool (APT) must be configured to prevent the installation
+          of patches, service packs, device drivers, or Ubuntu operating system components without verification
+          they have been digitally signed using a certificate that is recognized and approved by the
+          organization.
+      levels:
+          - medium
+      rules:
+          - apt_conf_disallow_unauthenticated
+      status: automated
+
+    - id: UBTU-20-010439
+      title: Ubuntu 20.04 LTS must be configured to use AppArmor.
+      levels:
+          - medium
+      rules:
+          - apparmor_configured
+          - package_apparmor_installed
+      status: automated
+
+    - id: UBTU-20-010441
+      title: Ubuntu 20.04 LTS must be configured such that Pluggable Authentication Module (PAM) prohibits
+          the use of cached authentications after one day.
+      levels:
+          - low
+      rules:
+          - sssd_offline_cred_expiration
+      status: automated
+
+    - id: UBTU-20-010442
+      title: 'Ubuntu 20.04 LTS must implement NIST FIPS-validated cryptography to protect classified
+          information and for the following: To provision digital signatures, to generate cryptographic
+          hashes, and to protect unclassified information requiring confidentiality and cryptographic
+          protection in accordance with applicable federal laws, Executive Orders, directives, policies,
+          regulations, and standards.'
+      levels:
+          - high
+      rules:
+          - is_fips_mode_enabled
+      status: automated
+
+    - id: UBTU-20-010443
+      title: Ubuntu 20.04 LTS must use DoD PKI-established certificate authorities for verification of
+          the establishment of protected sessions.
+      levels:
+          - medium
+      rules:
+          - only_allow_dod_certs
+      status: automated
+
+    - id: UBTU-20-010446
+      title: Ubuntu 20.04 LTS must configure the uncomplicated firewall to rate-limit impacted network
+          interfaces.
+      levels:
+          - medium
+      rules:
+          - ufw_rate_limit
+      status: automated
+
+    - id: UBTU-20-010447
+      title: Ubuntu 20.04 LTS must implement nonexecutable data to protect its memory from unauthorized
+          code execution.
+      levels:
+          - medium
+      rules:
+          - bios_enable_execution_restrictions
+      status: automated
+
+    - id: UBTU-20-010448
+      title: Ubuntu 20.04 LTS must implement address space layout randomization to protect its memory
+          from unauthorized code execution.
+      levels:
+          - medium
+      rules:
+          - sysctl_kernel_randomize_va_space
+      status: automated
+
+    - id: UBTU-20-010449
+      title: Ubuntu 20.04 LTS must be configured so that Advance Package Tool (APT) removes all software
+          components after updated versions have been installed.
+      levels:
+          - medium
+      rules:
+          - clean_components_post_updating
+      status: automated
+
+    - id: UBTU-20-010450
+      title: Ubuntu 20.04 LTS must use a file integrity tool to verify correct operation of all security
+          functions.
+      levels:
+          - medium
+      rules:
+          - aide_build_database
+          - package_aide_installed
+      status: automated
+
+    - id: UBTU-20-010451
+      title: Ubuntu 20.04 LTS must notify designated personnel if baseline configurations are changed
+          in an unauthorized manner. The file integrity tool must notify the System Administrator when
+          changes to the baseline configuration or anomalies in the operation of any security functions
+          are discovered.
+      levels:
+          - medium
+      rules:
+          - aide_disable_silentreports
+      status: automated
+
+    - id: UBTU-20-010453
+      title: Ubuntu 20.04 LTS must display the date and time of the last successful account logon upon
+          logon.
+      levels:
+          - low
+      rules:
+          - display_login_attempts
+      status: automated
+
+    - id: UBTU-20-010454
+      title: Ubuntu 20.04 LTS must have an application firewall enabled.
+      levels:
+          - medium
+      rules:
+          - service_ufw_enabled
+      status: automated
+
+    - id: UBTU-20-010455
+      title: Ubuntu 20.04 LTS must disable all wireless network adapters.
+      levels:
+          - medium
+      rules:
+          - wireless_disable_interfaces
+      status: automated
+
+    - id: UBTU-20-010456
+      title: Ubuntu 20.04 LTS must have system commands set to a mode of 0755 or less permissive.
+      levels:
+          - medium
+      rules:
+          - file_permissions_binary_dirs
+      status: automated
+
+    - id: UBTU-20-010457
+      title: Ubuntu 20.04 LTS must have system commands owned by root or a system account.
+      levels:
+          - medium
+      rules:
+          - file_ownership_binary_dirs
+      status: automated
+
+    - id: UBTU-20-010458
+      title: Ubuntu 20.04 LTS must have system commands group-owned by root or a system account.
+      levels:
+          - medium
+      rules:
+          - file_groupownership_system_commands_dirs
+      status: automated
+
+    - id: UBTU-20-010459
+      title: Ubuntu 20.04 LTS must disable the x86 Ctrl-Alt-Delete key sequence if a graphical user interface
+          is installed.
+      levels:
+          - high
+      rules:
+          - dconf_gnome_disable_ctrlaltdel_reboot
+      status: automated
+
+    - id: UBTU-20-010460
+      title: Ubuntu 20.04 LTS must disable the x86 Ctrl-Alt-Delete key sequence.
+      levels:
+          - high
+      rules:
+          - disable_ctrlaltdel_reboot
+      status: automated
+
+    - id: UBTU-20-010461
+      title: Ubuntu 20.04 LTS must disable automatic mounting of Universal Serial Bus (USB) mass storage
+          driver.
+      levels:
+          - medium
+      rules:
+          - kernel_module_usb-storage_disabled
+      status: automated
+
+    - id: UBTU-20-010462
+      title: Ubuntu 20.04 LTS must not have accounts configured with blank or null passwords.
+      levels:
+          - high
+      rules:
+          - no_empty_passwords_etc_shadow
+      status: automated
+
+    - id: UBTU-20-010463
+      title: Ubuntu 20.04 LTS must not allow accounts configured with blank or null passwords.
+      levels:
+          - high
+      rules:
+          - no_empty_passwords
+      status: automated
