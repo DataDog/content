@@ -2,7 +2,7 @@
 policy: Canonical Ubuntu 22.04 LTS Security Technical Implementation Guide (STIG)
 title: Canonical Ubuntu 22.04 LTS Security Technical Implementation Guide (STIG)
 id: stig_ubuntu2204
-version: V2R8
+version: V2R10
 source: https://www.cyber.mil/stigs/downloads/
 
 levels:
@@ -157,7 +157,6 @@ controls:
       levels:
           - medium
       rules:
-          - package_nfs-common_removed
           - package_nfs-kernel-server_removed
       status: automated
 
@@ -165,7 +164,7 @@ controls:
       title: Ubuntu 22.04 LTS must implement cryptographic mechanisms to prevent unauthorized disclosure
           and modification of all information that requires protection at rest.
       levels:
-          - medium
+          - high
       rules:
           - encrypt_partitions
       status: automated
@@ -457,7 +456,7 @@ controls:
     - id: UBTU-22-252010
       title: Ubuntu 22.04 LTS must, for networked systems, compare internal information system clocks
           at least every 24 hours with a server synchronized to one of the redundant United States Naval
-          Observatory (USNO) time servers, or a time server designated for the appropriate DOD network
+          Observatory (USNO) time servers, or a time server designated for the appropriate DoW network
           (NIPRNet/SIPRNet), and/or the Global Positioning System (GPS).
       levels:
           - low
@@ -546,7 +545,7 @@ controls:
       status: automated
 
     - id: UBTU-22-255020
-      title: Ubuntu 22.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+      title: Ubuntu 22.04 LTS must display the Standard Mandatory DoW Notice and Consent Banner before
           granting any local or remote connection to the system.
       levels:
           - medium
@@ -641,7 +640,7 @@ controls:
 
     - id: UBTU-22-271010
       title: Ubuntu 22.04 LTS must enable the graphical user logon banner to display the Standard Mandatory
-          DOD Notice and Consent Banner before granting local access to the system via a graphical user
+          DoW Notice and Consent Banner before granting local access to the system via a graphical user
           logon.
       levels:
           - medium
@@ -650,7 +649,7 @@ controls:
       status: automated
 
     - id: UBTU-22-271015
-      title: Ubuntu 22.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+      title: Ubuntu 22.04 LTS must display the Standard Mandatory DoW Notice and Consent Banner before
           granting local access to the system via a graphical user logon.
       levels:
           - medium
@@ -670,11 +669,11 @@ controls:
       status: automated
 
     - id: UBTU-22-271025
-      title: Ubuntu 22.04 LTS must initiate a graphical session lock after 15 minutes of inactivity.
+      title: Ubuntu 22.04 LTS must initiate a graphical session lock after 10 minutes of inactivity.
       levels:
           - medium
       rules:
-          - inactivity_timeout_value=15_minutes
+          - inactivity_timeout_value=10_minutes
           - var_screensaver_lock_delay=immediate
           - dconf_gnome_screensaver_idle_delay
           - dconf_gnome_screensaver_lock_delay
@@ -733,12 +732,11 @@ controls:
       status: automated
 
     - id: UBTU-22-411030
-      title: Ubuntu 22.04 LTS must enforce a 60-day maximum password lifetime restriction. Passwords
-          for new users must have a 60-day maximum password lifetime restriction.
+      title: Ubuntu 22.04 LTS must be able to enforce a 180-day maximum password lifetime restriction.
       levels:
           - medium
       rules:
-          - var_accounts_maximum_age_login_defs=60
+          - var_accounts_maximum_age_login_defs=180
           - accounts_maximum_age_login_defs
       status: automated
 
@@ -822,6 +820,14 @@ controls:
       rules:
           - var_accounts_user_umask=077
           - accounts_umask_etc_login_defs
+      status: automated
+
+    - id: UBTU-22-412040
+      title: Ubuntu 22.04 LTS must not assign an interactive login shell for system accounts.
+      levels:
+          - medium
+      rules:
+          - no_shelllogin_for_systemaccounts
       status: automated
 
     - id: UBTU-22-431010
@@ -1044,7 +1050,7 @@ controls:
       status: automated
 
     - id: UBTU-22-631010
-      title: Ubuntu 22.04 LTS must use DOD PKI-established certificate authorities for verification of
+      title: Ubuntu 22.04 LTS must use DoW PKI-established certificate authorities for verification of
           the establishment of protected sessions.
       levels:
           - medium
@@ -1141,7 +1147,7 @@ controls:
 
     - id: UBTU-22-653015
       title: Ubuntu 22.04 LTS must produce audit records and reports containing information to establish
-          when, where, what type, the source, and the outcome for all DOD-defined auditable events and
+          when, where, what type, the source, and the outcome for all DoW-defined auditable events and
           actions in near real time.
       levels:
           - medium
@@ -1488,6 +1494,15 @@ controls:
           - audit_rules_privileged_commands_usermod
       status: automated
 
+    - id: UBTU-22-654126
+      title: Ubuntu 22.04 LTS must generate audit records for successful/unsuccessful uses of the useradd
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_useradd
+      status: automated
+
     - id: UBTU-22-654130
       title: Ubuntu 22.04 LTS must generate audit records for all account creations, modifications, disabling,
           and termination events that affect /etc/group.
@@ -1709,6 +1724,14 @@ controls:
           - medium
       rules:
           - audit_sudo_log_events
+      status: automated
+
+    - id: UBTU-22-654240
+      title: Ubuntu 22.04 LTS audit system must protect auditing rules from unauthorized change.
+      levels:
+          - medium
+      rules:
+          - audit_rules_immutable
       status: automated
 
     - id: UBTU-22-671010
