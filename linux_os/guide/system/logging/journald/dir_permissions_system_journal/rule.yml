@@ -1,14 +1,20 @@
+{{% if product == "ubuntu2404" %}}
+{{% set journal_dir_mode = "2755" %}}
+{{% else %}}
+{{% set journal_dir_mode = "2750" %}}
+{{% endif %}}
+
 documentation_complete: true
 
 title: 'Verify Permissions on the system journal directories'
 
 description: |-
     Verify the /run/log/journal and /var/log/journal directories have
-    permissions set to "2750" or less permissive by using the following command:
+    permissions set to "{{{ journal_dir_mode }}}" or less permissive by using the following command:
     <pre>
     $ sudo find /run/log/journal /var/log/journal  -type d -exec stat -c "%n %a" {} \;
     </pre>
-    If any output returned has a permission set greater than "2750", this is a finding.
+    If any output returned has a permission set greater than "{{{ journal_dir_mode }}}", this is a finding.
 
 rationale: |-
     Any operating system providing too much information in error messages risks
@@ -26,10 +32,10 @@ fixtext: |
     </pre>
     Add or modify the following lines in the "/etc/tmpfiles.d/zzz-systemd-stig.conf" ﬁle:
     <pre>
-    z /run/log/journal 2750 root systemd-journal - -
-    Z /run/log/journal/%m ~2750 root systemd-journal - -
-    z /var/log/journal 2750 root systemd-journal - -
-    z /var/log/journal/%m 2750 root systemd-journal - -
+    z /run/log/journal {{{ journal_dir_mode }}} root systemd-journal - -
+    Z /run/log/journal/%m ~{{{ journal_dir_mode }}} root systemd-journal - -
+    z /var/log/journal {{{ journal_dir_mode }}} root systemd-journal - -
+    z /var/log/journal/%m {{{ journal_dir_mode }}} root systemd-journal - -
     z /var/log/journal/%m/system.journal 2750 root systemd-journal - -
     </pre>
     Note: Restart the system for these settings to take eﬀect.
@@ -41,4 +47,4 @@ template:
             - /run/log/journal/
             - /var/log/journal/
         recursive: 'true'
-        filemode: '2750'
+        filemode: '{{{ journal_dir_mode }}}'
