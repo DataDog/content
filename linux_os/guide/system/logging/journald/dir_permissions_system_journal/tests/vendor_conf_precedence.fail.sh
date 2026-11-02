@@ -1,5 +1,5 @@
 #!/bin/bash
-# platform = multi_platform_ubuntu
+# platform = Ubuntu 22.04
 
 # Precedence dimension: VENDOR configuration in /usr/lib/tmpfiles.d.
 #
