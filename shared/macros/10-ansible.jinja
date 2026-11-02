@@ -220,6 +220,9 @@ value: :code:`Setting={{ varname1 }}`
   -t specifies test and -f allows Ansible to pass a file at a different path.
 
   Set a parameter in ``sshd_main_config_file`` or ``sshd_config_dir``.
+  First remove it from the Match blocks of those files. A Match block runs
+  to the next Match line or to the end of its file, and sshd takes the
+  global value of a parameter from the lines above the first one.
 
 :parameter msg: Message to be set as Task Title, if not set the rule's title will be used instead
 :type msg: str
@@ -255,6 +258,41 @@ value: :code:`Setting={{ varname1 }}`
   loop: "{{ sshd_config_included_files.stdout_lines }}"
 
 {{% endif %}}
+{{%- set match_regex = "(?im)^[ \\t]*Match[ \\t]" %}}
+{{%- set match_sets_parameter_regex = "(?ims)^[ \\t]*Match[ \\t].*^[ \\t]*" ~ parameter ~ "[ \\t]" %}}
+{{%- set parameter_line_regex = "(?i)^[ \\t]*" ~ parameter ~ "[ \\t].*\\n?" %}}
+- name: {{{ rule_title }}} - Find if a Match block of {{{ sshd_main_config }}} sets the parameter {{{ parameter }}}
+  ansible.builtin.find:
+    paths:
+    - {{{ sshd_base_dir }}}
+    patterns: '{{{ sshd_main_config | replace(sshd_base_dir ~ "/", "") }}}'
+    contains: '{{{ match_sets_parameter_regex }}}'
+    read_whole_file: true
+  register: _sshd_main_config_match_sets_parameter
+- name: {{{ rule_title }}} - Remove the parameter {{{ parameter }}} from the Match blocks of {{{ sshd_main_config }}}
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    after: '{{{ match_regex }}}'
+    regexp: '{{{ parameter_line_regex }}}'
+    replace: ''
+  loop: "{{ _sshd_main_config_match_sets_parameter.files }}"
+{{%- if config_is_distributed == "true" %}}
+- name: {{{ rule_title }}} - Find the files of {{{ sshd_drop_in_dir }}} where a Match block sets the parameter {{{ parameter }}}
+  ansible.builtin.find:
+    paths:
+    - {{{ sshd_drop_in_dir }}}
+    patterns: '*.conf'
+    contains: '{{{ match_sets_parameter_regex }}}'
+    read_whole_file: true
+  register: _sshd_config_dir_match_sets_parameter
+- name: {{{ rule_title }}} - Remove the parameter {{{ parameter }}} from the Match blocks of the files of {{{ sshd_drop_in_dir }}}
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    after: '{{{ match_regex }}}'
+    regexp: '{{{ parameter_line_regex }}}'
+    replace: ''
+  loop: "{{ _sshd_config_dir_match_sets_parameter.files }}"
+{{%- endif %}}
 {{%- if config_is_distributed == "true" %}}
 {{% set hardening_config_basename = config_basename or sshd_hardening_config_basename %}}
 {{% set config_dir = sshd_drop_in_dir %}}
