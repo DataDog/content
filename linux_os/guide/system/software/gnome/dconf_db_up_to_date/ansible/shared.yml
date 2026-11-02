@@ -13,6 +13,7 @@
 - name: "{{{ rule_title }}} - Get keyfiles for {{{ db_name }}}"
   ansible.builtin.find:
     paths: '/etc/dconf/db/{{{ db_name }}}.d/'
+    recurse: true
   register: '{{{ db_name }}}_keyfiles'
 
 - name: "{{{ rule_title }}} - Run dconf update for {{{ db_name }}}"
