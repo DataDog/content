@@ -64,7 +64,6 @@ references:
     srg: SRG-OS-000163-GPOS-00072,SRG-OS-000029-GPOS-00010
     stigid@ol7: OL07-00-040160
     stigid@sle12: SLES-12-010090
-    stigid@ubuntu2004: UBTU-20-010013
 
 ocil_clause: 'the TMOUT value is not configured, is set to 0, or is not less than or equal to the expected setting'
 
