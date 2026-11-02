@@ -2,7 +2,7 @@
 policy: Canonical Ubuntu 24.04 LTS Security Technical Implementation Guide (STIG)
 title: Canonical Ubuntu 24.04 LTS Security Technical Implementation Guide (STIG)
 id: stig_ubuntu2404
-version: V1R6
+version: V1R7
 source: https://www.cyber.mil/stigs/downloads/
 
 levels:
@@ -52,7 +52,6 @@ controls:
           - high
       rules:
           - package_nfs-kernel-server_removed
-          - package_nfs-common_removed
           - service_nfs_disabled
       status: automated
 
@@ -131,7 +130,7 @@ controls:
 
     - id: UBTU-24-100410
       title: Ubuntu 24.04 LTS must produce audit records and reports containing information to establish
-          when, where, what type, the source, and the outcome for all DOD-defined auditable events and
+          when, where, what type, the source, and the outcome for all DoW-defined auditable events and
           actions in near real time.
       levels:
           - medium
@@ -290,6 +289,14 @@ controls:
           - medium
       rules:
           - vlock_installed
+      status: automated
+
+    - id: UBTU-24-101100
+      title: Ubuntu 24.04 LTS must not assign an interactive login shell for system accounts.
+      levels:
+          - medium
+      rules:
+          - no_shelllogin_for_systemaccounts
       status: automated
 
     - id: UBTU-24-102000
@@ -480,7 +487,7 @@ controls:
       status: automated
 
     - id: UBTU-24-200640
-      title: Ubuntu 24.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+      title: Ubuntu 24.04 LTS must display the Standard Mandatory DoW Notice and Consent Banner before
           granting access to via an SSH logon.
       levels:
           - medium
@@ -493,7 +500,7 @@ controls:
 
     - id: UBTU-24-200650
       title: Ubuntu 24.04 LTS must enable the graphical user logon banner to display the Standard Mandatory
-          DOD Notice and Consent Banner before granting local access to the system via a graphical user
+          DoW Notice and Consent Banner before granting local access to the system via a graphical user
           logon.
       levels:
           - medium
@@ -502,7 +509,7 @@ controls:
       status: automated
 
     - id: UBTU-24-200660
-      title: Ubuntu 24.04 LTS must display the Standard Mandatory DOD Notice and Consent Banner before
+      title: Ubuntu 24.04 LTS must display the Standard Mandatory DoW Notice and Consent Banner before
           granting local access to the system via a graphical user logon.
       levels:
           - medium
@@ -510,16 +517,6 @@ controls:
           - dconf_login_banner_text=dod_banners
           - dconf_login_banner_contents=dod_default
           - dconf_gnome_login_banner_text
-      status: automated
-
-    - id: UBTU-24-200680
-      title: Ubuntu 24.04 LTS must be configured to enforce the acknowledgement of the Standard Mandatory
-          DOD Notice and Consent Banner for all SSH connections.
-      levels:
-          - medium
-      rules:
-          - banner_etc_profiled_ssh_confirm
-          - var_ssh_confirm_text=dod_default
       status: automated
 
     - id: UBTU-24-300001
@@ -853,12 +850,11 @@ controls:
       status: automated
 
     - id: UBTU-24-400310
-      title: Ubuntu 24.04 LTS must enforce a 60-day maximum password lifetime restriction. Passwords
-          for new users must have a 60-day maximum password lifetime restriction.
+      title: Ubuntu 24.04 LTS must be able to enforce a 180-day maximum password lifetime restriction.
       levels:
           - medium
       rules:
-          - var_accounts_maximum_age_login_defs=60
+          - var_accounts_maximum_age_login_defs=180
           - accounts_maximum_age_login_defs
       status: automated
 
@@ -989,7 +985,7 @@ controls:
       status: automated
 
     - id: UBTU-24-600060
-      title: Ubuntu 24.04 LTS must use DOD PKI-established certificate authorities (CAs) for verification
+      title: Ubuntu 24.04 LTS must use DoW PKI-established certificate authorities (CAs) for verification
           of the establishment of protected sessions.
       levels:
           - medium
@@ -1006,10 +1002,10 @@ controls:
       status: automated
 
     - id: UBTU-24-600090
-      title: Ubuntu 24.04 LTS handling data requiring "data at rest" protections must employ cryptographic
+      title: Ubuntu 24.04 LTS handling data requiring data-at-rest protections must employ cryptographic
           mechanisms to prevent unauthorized disclosure and modification of the information at rest.
       levels:
-          - medium
+          - high
       rules:
           - encrypt_partitions
       status: automated
@@ -1513,6 +1509,15 @@ controls:
           - medium
       rules:
           - audit_rules_privileged_commands_usermod
+      status: automated
+
+    - id: UBTU-24-900315
+      title: Ubuntu 24.04 LTS must generate audit records for successful/unsuccessful uses of the useradd
+          command.
+      levels:
+          - medium
+      rules:
+          - audit_rules_privileged_commands_useradd
       status: automated
 
     - id: UBTU-24-900320
