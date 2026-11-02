@@ -1,5 +1,10 @@
 #!/bin/bash
 # platform = multi_platform_ubuntu
+{{% if product == "ubuntu2404" %}}
+{{% set loose_mode = "2775" %}}
+{{% else %}}
+{{% set loose_mode = "2755" %}}
+{{% endif %}}
 
 # Precedence dimension: FILE NAME ordering, drop-in sorting AFTER the drop-in
 # written by the remediation.
@@ -11,9 +16,9 @@
 # neutralizes conflicting journal entries in the other drop-ins.
 mkdir -p /etc/tmpfiles.d
 cat > /etc/tmpfiles.d/zzzz-late-override.conf <<'EOF'
-z /run/log/journal 2755 root systemd-journal - -
-z /var/log/journal 2755 root systemd-journal - -
+z /run/log/journal {{{ loose_mode }}} root systemd-journal - -
+z /var/log/journal {{{ loose_mode }}} root systemd-journal - -
 EOF
 
 mkdir -p /run/log/journal /var/log/journal
-chmod 2755 /run/log/journal /var/log/journal
+chmod {{{ loose_mode }}} /run/log/journal /var/log/journal
