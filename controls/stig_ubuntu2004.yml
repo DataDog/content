@@ -473,6 +473,7 @@ controls:
           - var_accounts_passwords_pam_faillock_fail_interval=900
           - var_accounts_passwords_pam_faillock_unlock_time=never
           - accounts_passwords_pam_faillock_audit
+          - accounts_passwords_pam_faillock_authsucc
           - accounts_passwords_pam_faillock_deny
           - accounts_passwords_pam_faillock_interval
           - accounts_passwords_pam_faillock_silent
