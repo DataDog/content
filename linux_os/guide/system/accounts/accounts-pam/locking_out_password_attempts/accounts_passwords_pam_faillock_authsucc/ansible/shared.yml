@@ -1,0 +1,27 @@
+# platform = multi_platform_ubuntu
+# reboot = false
+# strategy = configure
+# complexity = low
+# disruption = medium
+
+{{{ ansible_pam_faillock_enable(rule_title=rule_title) }}}
+
+- name: {{{ rule_title }}} - Reset the tally upon success where pam-auth-update tool is present
+  block:
+    - name: {{{ rule_title }}} - Put the content into cac_faillock_authsucc
+      ansible.builtin.copy:
+        dest: /usr/share/pam-configs/cac_faillock_authsucc
+        content: |+
+          Name: Reset the pam_faillock tally upon successful authentication
+          Default: yes
+          Priority: 0
+          Auth-Type: Additional
+          Auth:
+              sufficient                      pam_faillock.so authsucc
+        force: yes
+        mode: 0644
+
+    {{{ ansible_apply_pam_auth_update_changes('cac_faillock_authsucc', rule_title=rule_title) | indent(4) }}}
+
+  when:
+    - result_pam_auth_update_present.stat.exists
