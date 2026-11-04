@@ -1,0 +1,39 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The pam_faillock.so authsucc line follows the authfail line of common-auth, and no authsucc line comes before pam_unix.so.", rule_title=rule_title) }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_accounts_passwords_pam_faillock_authsucc_after_authfail"
+                 comment="the pam_faillock.so authsucc line follows the authfail line in common-auth"/>
+      <criterion test_ref="test_accounts_passwords_pam_faillock_authsucc_before_pam_unix"
+                 comment="no pam_faillock.so authsucc line comes before pam_unix.so in common-auth"/>
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" version="1"
+      id="test_accounts_passwords_pam_faillock_authsucc_after_authfail"
+      comment="the pam_faillock.so authsucc line follows the authfail line in common-auth">
+    <ind:object object_ref="object_accounts_passwords_pam_faillock_authsucc_after_authfail"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object version="1"
+      id="object_accounts_passwords_pam_faillock_authsucc_after_authfail"
+      comment="pam_unix.so, then the pam_faillock.so authfail line, then the authsucc line">
+    <ind:filepath>/etc/pam.d/common-auth</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*auth[^\n]*\spam_unix\.so\b[\s\S]*^\s*auth\s+\[default=die\]\s+pam_faillock\.so\s+authfail\b[\s\S]*^\s*auth\s+sufficient\s+pam_faillock\.so\s+authsucc\s*$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <ind:textfilecontent54_test check="all" check_existence="none_exist" version="1"
+      id="test_accounts_passwords_pam_faillock_authsucc_before_pam_unix"
+      comment="no pam_faillock.so authsucc line comes before pam_unix.so in common-auth">
+    <ind:object object_ref="object_accounts_passwords_pam_faillock_authsucc_before_pam_unix"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object version="1"
+      id="object_accounts_passwords_pam_faillock_authsucc_before_pam_unix"
+      comment="a pam_faillock.so authsucc line followed by the pam_unix.so line">
+    <ind:filepath>/etc/pam.d/common-auth</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*auth[^\n]*\spam_faillock\.so\b[^\n]*\bauthsucc\b[\s\S]*^\s*auth[^\n]*\spam_unix\.so\b</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

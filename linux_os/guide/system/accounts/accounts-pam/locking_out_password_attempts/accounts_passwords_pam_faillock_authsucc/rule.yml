@@ -1,0 +1,58 @@
+documentation_complete: true
+
+
+title: 'Reset the pam_faillock Records After a Successful Authentication'
+
+description: |-
+    Called with the <tt>authsucc</tt> option after a successful authentication, the
+    <tt>pam_faillock.so</tt> module clears the failure records of the user.
+    Ensure that <tt>/etc/pam.d/common-auth</tt> holds the line
+    <pre>auth     sufficient     pam_faillock.so authsucc</pre>
+    after the <tt>pam_faillock.so</tt> authfail line, and that no authsucc line comes before
+    the <tt>pam_unix.so</tt> line.
+    {{% if 'ubuntu' in product %}}
+    On {{{ full_name }}}, <tt>pam-auth-update</tt> writes <tt>/etc/pam.d/common-auth</tt> from
+    the profiles in <tt>/usr/share/pam-configs</tt>. A profile of type Additional with priority
+    0 puts the line at the end of the auth stack, which only a successful authentication
+    reaches.
+    {{% endif %}}
+
+rationale: |-
+    Clearing the failure records after a successful logon keeps the count of failed attempts to
+    consecutive failures, which is the count that the deny option of pam_faillock limits.
+    The line must follow <tt>pam_unix.so</tt>: placed before it, the sufficient control would end
+    the authentication with success before the password is checked.
+
+severity: medium
+
+references:
+    nist: AC-7(a)
+    srg: SRG-OS-000021-GPOS-00005,SRG-OS-000329-GPOS-00128
+
+platform: package[pam]
+
+ocil_clause: 'the pam_faillock.so authsucc line is missing, or comes before the pam_unix.so line'
+
+ocil: |-
+    Verify that {{{ full_name }}} clears the pam_faillock records of a user after a successful
+    authentication with the following command:
+    <pre>$ grep -E 'pam_unix\.so|pam_faillock\.so' /etc/pam.d/common-auth</pre>
+    The output must show the line
+    <pre>auth     sufficient     pam_faillock.so authsucc</pre>
+    after the <tt>pam_faillock.so authfail</tt> line, and no authsucc line before the
+    <tt>pam_unix.so</tt> line.
+
+fixtext: |-
+    Create the file <tt>/usr/share/pam-configs/cac_faillock_authsucc</tt> with the following
+    content:
+    <pre>Name: Reset the pam_faillock tally upon successful authentication
+    Default: yes
+    Priority: 0
+    Auth-Type: Additional
+    Auth:
+        sufficient                      pam_faillock.so authsucc</pre>
+    Then enable it with the following command:
+    <pre>$ sudo pam-auth-update --enable cac_faillock_authsucc</pre>
+
+srg_requirement: |-
+    {{{ full_name }}} must clear the pam_faillock records of an account after a successful logon.
