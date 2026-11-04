@@ -3,6 +3,9 @@
 # strategy = restrict
 # complexity = low
 # disruption = low
+{{%- if product == "ubuntu2404" %}}
+{{{ ansible_instantiate_variables("var_aide_audit_tools_sbin") }}}
+{{%- endif %}}
 - name: "{{{ rule_title }}} - Gather List of Packages"
   tags:
     - aide_check_audit_tools
@@ -50,3 +53,47 @@
   with_items: "{{ audit_tools }}"
   when:
     - '"aide" in ansible_facts.packages'
+{{%- if product == "ubuntu2404" %}}
+
+- name: "{{{ rule_title }}} - Remove the /sbin Entries of the Audit Tools from {{{ aide_conf_path }}}"
+  ansible.builtin.lineinfile:
+    path: {{{ aide_conf_path }}}
+    regexp: '^/sbin/({{{ aide_audit_binaries | join("|") }}})(\s|$)'
+    state: absent
+  when:
+    - var_aide_audit_tools_sbin | bool
+    - '"aide" in ansible_facts.packages'
+
+- name: "{{{ rule_title }}} - Find the AIDE Drop-in Files with Audit Tool Entries"
+  ansible.builtin.find:
+    paths: /etc/aide/aide.conf.d
+    patterns: '^[a-zA-Z0-9_-]+$'
+    use_regex: true
+    contains: '^(/usr)?/sbin/({{{ aide_audit_binaries | join("|") }}})(\s|$)'
+  register: aide_conf_d_files
+  when: var_aide_audit_tools_sbin | bool
+
+- name: "{{{ rule_title }}} - Correct the Audit Tool Entries of the AIDE Drop-in Files"
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: '^((?:/usr)?/sbin/(?:{{{ aide_audit_binaries | join("|") }}}))(?:\s.*)?$'
+    replace: '\1 {{{ aide_string() }}}'
+  loop: "{{ aide_conf_d_files.files }}"
+  when:
+    - var_aide_audit_tools_sbin | bool
+    - '"aide" in ansible_facts.packages'
+
+- name: "{{{ rule_title }}} - Write the AIDE Drop-in File of the STIG"
+  ansible.builtin.copy:
+    dest: /etc/aide/aide.conf.d/90-stig_audit_tools
+    content: |
+      {{%- for dir in ["/usr/sbin", "/sbin"] %}}
+      {{%- for audit_tool in aide_audit_binaries %}}
+      {{{ dir }}}/{{{ audit_tool }}} {{{ aide_string() }}}
+      {{%- endfor %}}
+      {{%- endfor %}}
+    mode: 0644
+  when:
+    - var_aide_audit_tools_sbin | bool
+    - '"aide" in ansible_facts.packages'
+{{%- endif %}}
