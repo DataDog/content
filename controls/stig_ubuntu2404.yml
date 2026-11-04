@@ -1788,5 +1788,6 @@ controls:
       levels:
           - medium
       rules:
+          - var_aide_audit_tools_sbin=true
           - aide_check_audit_tools
       status: automated
