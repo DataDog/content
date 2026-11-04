@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'AIDE Checks the Audit Tools Under /usr/sbin and /sbin'
+
+description: |-
+    Whether every audit tool needs an AIDE entry under /usr/sbin and another
+    under /sbin, in the AIDE configuration file or in a file of its drop-in
+    directory, each with the exact attributes, as the Ubuntu 24.04 STIG asks.
+
+type: boolean
+
+operator: equals
+
+interactive: false
+
+options:
+    default: false
+    false: false
+    true: true
