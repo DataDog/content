@@ -17,6 +17,22 @@
           {{% endfor %}}
         </criteria>
       </criteria>
+{{%- elif product == "ubuntu2404" %}}
+      <criteria operator="OR">
+        <criteria operator="AND" comment="every audit tool is checked in {{{ aide_conf_path }}}">
+          <criterion comment="var_aide_audit_tools_sbin is false" test_ref="test_aide_audit_tools_sbin" negate="true" />
+          {{% for audit_tool in aide_audit_binaries -%}}
+          <criterion comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}}" test_ref="test_aide_verify_{{{ audit_tool }}}" />
+          {{% endfor %}}
+        </criteria>
+        <criteria operator="AND" comment="every audit tool is checked under /usr/sbin and /sbin in {{{ aide_conf_path }}} or its drop-in directory">
+          <criterion comment="var_aide_audit_tools_sbin is true" test_ref="test_aide_audit_tools_sbin" />
+          {{% for audit_tool in aide_audit_binaries -%}}
+          <criterion comment="/usr/sbin/{{{ audit_tool }}} is checked in {{{ aide_conf_path }}} or its drop-in directory" test_ref="test_aide_verify_{{{ audit_tool }}}_usr_sbin" />
+          <criterion comment="/sbin/{{{ audit_tool }}} is checked in {{{ aide_conf_path }}} or its drop-in directory" test_ref="test_aide_verify_{{{ audit_tool }}}_sbin" />
+          {{% endfor %}}
+        </criteria>
+      </criteria>
 {{%- else %}}
       {{% for audit_tool in aide_audit_binaries -%}}
       <criterion comment="{{{ audit_tool }}} is checked in {{{ aide_conf_path }}}" test_ref="test_aide_verify_{{{ audit_tool }}}" />
@@ -71,5 +87,46 @@
   </ind:variable_state>
   <external_variable id="var_aide_audit_tools_cis" datatype="boolean" version="1"
   comment="the audit tools of the CIS Benchmark suffice" />
+{{%- endif %}}
+{{%- if product == "ubuntu2404" %}}
+
+  {{#- The Ubuntu 24.04 STIG (UBTU-24-909890) names each audit tool under
+      /usr/sbin and /sbin, in the configuration file or a drop-in file,
+      with the exact attributes. AIDE reads the drop-in files whose names
+      match its include pattern, and the first entry of a path wins, so
+      every entry of a tool must carry them. -#}}
+  <ind:textfilecontent54_state id="state_aide_check_attributes_stig" version="1">
+    <ind:subexpression operation="equals">{{{ aide_string() }}}</ind:subexpression>
+  </ind:textfilecontent54_state>
+  {{% for audit_tool in aide_audit_binaries %}}
+  {{% for dir in ["/usr/sbin", "/sbin"] %}}
+  {{% set suffix = dir[1:] | replace("/", "_") %}}
+  <ind:textfilecontent54_test id="test_aide_verify_{{{ audit_tool }}}_{{{ suffix }}}"
+  comment="{{{ dir }}}/{{{ audit_tool }}} is checked in {{{ aide_conf_path }}} or its drop-in directory" check="all"
+  check_existence="at_least_one_exists" version="1">
+    <ind:object object_ref="object_aide_verify_{{{ audit_tool }}}_{{{ suffix }}}" />
+    <ind:state state_ref="state_aide_check_attributes_stig" />
+  </ind:textfilecontent54_test>
+  <ind:textfilecontent54_object id="object_aide_verify_{{{ audit_tool }}}_{{{ suffix }}}" version="1">
+    <ind:filepath operation="pattern match">^/etc/aide/aide\.conf(\.d/[a-zA-Z0-9_-]+)?$</ind:filepath>
+    <ind:pattern operation="pattern match">^{{{ dir }}}/{{{ audit_tool }}}\s+([^\n]+)$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+  {{% endfor %}}
+  {{% endfor %}}
+
+  <ind:variable_test id="test_aide_audit_tools_sbin" version="1" check="all"
+  check_existence="all_exist" comment="var_aide_audit_tools_sbin is true">
+    <ind:object object_ref="obj_aide_audit_tools_sbin" />
+    <ind:state state_ref="state_aide_audit_tools_sbin" />
+  </ind:variable_test>
+  <ind:variable_object id="obj_aide_audit_tools_sbin" version="1">
+    <ind:var_ref>var_aide_audit_tools_sbin</ind:var_ref>
+  </ind:variable_object>
+  <ind:variable_state id="state_aide_audit_tools_sbin" version="1">
+    <ind:value datatype="boolean">true</ind:value>
+  </ind:variable_state>
+  <external_variable id="var_aide_audit_tools_sbin" datatype="boolean" version="1"
+  comment="every audit tool needs an entry under /usr/sbin and /sbin" />
 {{%- endif %}}
 </def-group>
