@@ -5,6 +5,11 @@ title: 'Configure AIDE to Verify the Audit Tools'
 
 description: |-
     The operating system file integrity tool must be configured to protect the integrity of the audit tools.
+    {{% if product == "ubuntu2404" %}}
+    When <tt>var_aide_audit_tools_sbin</tt> is true, every audit tool needs an entry under
+    /usr/sbin and another under /sbin, in {{{ aide_conf_path }}} or in a file of
+    /etc/aide/aide.conf.d, each with the attributes {{{ aide_string() }}}.
+    {{% endif %}}
 
 rationale: |-
     Protecting the integrity of the tools used for auditing purposes is a
